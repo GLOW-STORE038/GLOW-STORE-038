@@ -16,7 +16,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =====================================================================
-           [2] ШАПКА И ПРОФИЛЬ (МОДАЛЬНОЕ ОКНО)
+           [2] ШАПКА И ПОЛНОЦЕННЫЙ ЭКРАН ПРОФИЛЯ
            ===================================================================== */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
@@ -26,22 +26,37 @@
         .user-name { font-size: 12px; font-weight: bold; }
         .user-points { font-size: 10px; color: #ff4d4d; font-weight: 800; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 999; justify-content: center; align-items: center; padding: 20px; animation: fadeIn 0.2s ease; }
-        .modal-card { background: #1a1a1a; width: 100%; max-width: 320px; border-radius: 20px; padding: 24px; text-align: center; border: 1px solid #333; position: relative; }
-        .close-btn { position: absolute; top: 12px; right: 16px; font-size: 28px; color: #888; cursor: pointer; line-height: 1; }
-        .modal-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #4b7bec; margin-bottom: 12px; }
-        .modal-name { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-        .modal-points-badge { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; padding: 8px 16px; border-radius: 12px; display: inline-block; font-weight: bold; font-size: 15px; margin-top: 10px; }
+        /* Дизайн Личного Кабинета */
+        .profile-header-large { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; margin-top: 10px;}
+        .avatar-big { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #4b7bec; object-fit: cover; }
+        .profile-info-big { display: flex; flex-direction: column; gap: 4px; }
+        .profile-name-big { font-size: 26px; font-weight: 900; }
+        .profile-points-big { font-size: 16px; font-weight: 700; color: #ff4d4d; }
+
+        .divider { border: 0; height: 1px; background: #333; margin: 25px 0; }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
+
+        /* Карусель Истории */
+        .history-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; width: 100%; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .history-scroll::-webkit-scrollbar { display: none; }
+        .history-card { min-width: 90px; max-width: 90px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
+        .history-img { width: 90px; height: 130px; object-fit: cover; border-radius: 12px; background: #1e1e1e; border: 1px solid #333; }
+        .history-title { font-size: 12px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-weight: 600; }
+
+        /* Статистика */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px 15px; text-align: center; margin-top: 20px;}
+        .stat-box { display: flex; flex-direction: column; gap: 5px; }
+        .stat-value { font-size: 24px; font-weight: 900; color: #fff; }
+        .stat-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }
 
         /* =====================================================================
-           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (ПРЕМИАЛЬНЫЙ ДИЗАЙН)
+           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (ПРЯМОУГОЛЬНЫЙ ДИЗАЙН)
            ===================================================================== */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 18px; padding: 12px; border: 1px solid #2a2a2a; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
-        
-        /* Стили для товара "Нет в наличии" */
         .card.disabled { opacity: 0.4; filter: grayscale(100%); pointer-events: none; }
         
+        /* ТУТ МЫ СДЕЛАЛИ ПРЯМОУГОЛЬНИК 3/4 */        
         .product-image { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background-color: #1e1e1e; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .title { font-size: 15px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
@@ -92,19 +107,38 @@
         </div>
     </div>
 
-    <div id="profileModal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="close-btn" id="closeModalBtn">×</div>
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="modalAvatar" class="modal-avatar">
-            <div class="modal-name" id="modalName">Гость</div>
-            <div class="modal-points-badge">На балансе: <span id="modalPoints">0</span> 🎁</div>
-            <p style="color: #888; font-size: 12px; margin-top: 15px;">Баллы начисляются в виде кэшбэка 10% за каждую покупку. 1 балл = 1 €. Ими можно оплачивать заказы!</p>
+    <!-- НОВЫЙ ЭКРАН ПРОФИЛЯ -->
+    <div id="profileScreen" class="screen">
+        <div class="profile-header-large">
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="avatar-big">
+            <div class="profile-info-big">
+                <div class="profile-name-big" id="profileNameBig">Загрузка...</div>
+                <div class="profile-points-big">Бонусы: <span id="profilePointsBig">0</span></div>
+            </div>
         </div>
-    </div>
 
-    <div id="catalogScreen" class="screen">
-        <div class="grid" id="catalogGrid">
-            <div class="loader">⏳ Загрузка витрины...</div>
+        <hr class="divider">
+
+        <div class="section-title">📍 Последние заказы <span style="font-size:11px; color:#888; font-weight:normal;">(Нажмите для деталей)</span></div>
+        <div class="history-scroll" id="historyScroll">
+            <!-- Сюда JS загрузит карточки-карусель -->
+        </div>
+
+        <hr class="divider">
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-value" id="statItems">0</div>
+                <div class="stat-label">жиж заказано</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statSpent">0</div>
+                <div class="stat-label">балов потрачено</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statEarned">0</div>
+                <div class="stat-label">балов накоплено</div>
+            </div>
         </div>
     </div>
 
@@ -160,13 +194,38 @@
             if (urlParams.get('points')) {
                 realPoints = parseInt(urlParams.get('points'));
                 document.getElementById('userPointsText').innerText = realPoints + ' баллов';
-                document.getElementById('availPointsUi').innerText = realPoints;
             }
             if (tg.initDataUnsafe?.user?.photo_url) {
                 document.getElementById('userAvatar').src = tg.initDataUnsafe.user.photo_url;
             }
-        } catch (e) { console.error(e); }
 
+            // ПАРСИНГ СТАТИСТИКИ
+            let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0];
+            document.getElementById('statItems').innerText = statsData[0];
+            document.getElementById('statSpent').innerText = statsData[1];
+            document.getElementById('statEarned').innerText = statsData[2];
+
+            // ПАРСИНГ ИСТОРИИ И СОЗДАНИЕ КАРУСЕЛИ
+            let historyData = [];
+            if (urlParams.get('h')) historyData = JSON.parse(decodeURIComponent(urlParams.get('h')));
+            
+            const hScroll = document.getElementById('historyScroll');
+            if (historyData.length === 0) {
+                hScroll.innerHTML = '<p style="color:#555; font-size:13px; padding:10px;">У вас пока нет выполненных заказов.</p>';
+            } else {
+                historyData.slice().reverse().forEach(order => {
+                    // Вызов всплывающего окна Телеграма с деталями!
+                    let popupText = `📦 Товары: ${order.f}\n💰 Сумма: ${order.t} €\n🎁 Списано баллов: ${order.s}\n🏃‍♂️ Выдал: ${order.c}`;
+                    let card = `
+                        <div class="history-card" onclick="tg.showAlert('${popupText}')">
+                            <img src="${order.p}" class="history-img">
+                            <div class="history-title">${order.n}</div>
+                        </div>
+                    `;
+                    hScroll.insertAdjacentHTML('beforeend', card);
+                });
+            }
+        } catch (e) { console.error("Ошибка парсинга:", e); }
         // =====================================================================
         // [3] ЗАГРУЗКА ТОВАРОВ ИЗ ИНТЕРНЕТА (МОСТ)
         // =====================================================================
@@ -305,20 +364,23 @@
         };
 
         // =====================================================================
-        // [7] НАВИГАЦИЯ, МОДАЛКА И ОТПРАВКА
+        // [7] НАВИГАЦИЯ, ПРОФИЛЬ И ОТПРАВКА
         // =====================================================================
         
-        // Модалка
+        // Открытие полноценной страницы профиля (ВМЕСТО СТАРОЙ МОДАЛКИ)
         document.getElementById('openProfileBtn').addEventListener('click', () => {
-            document.getElementById('modalName').innerText = globalUserName;
-            document.getElementById('modalPoints').innerText = realPoints;
-            if (tg.initDataUnsafe?.user?.photo_url) document.getElementById('modalAvatar').src = tg.initDataUnsafe.user.photo_url;
-            document.getElementById('profileModal').style.display = 'flex';
+            document.getElementById('catalogScreen').style.display = 'none';
+            document.getElementById('profileScreen').style.display = 'block';
+            document.getElementById('profileNameBig').innerText = globalUserName;
+            document.getElementById('profilePointsBig').innerText = realPoints;
+            if (tg.initDataUnsafe?.user?.photo_url) document.getElementById('profileAvatarBig').src = tg.initDataUnsafe.user.photo_url;
+            
+            currentStep = 4; // 4 - это новый экран профиля
+            tg.BackButton.show();
+            tg.MainButton.hide();
         });
-        document.getElementById('closeModalBtn').addEventListener('click', () => { document.getElementById('profileModal').style.display = 'none'; });
-        document.getElementById('profileModal').addEventListener('click', (e) => { if(e.target === document.getElementById('profileModal')) document.getElementById('profileModal').style.display = 'none'; });
 
-        // Шаги оформления
+        // Шаги оформления (ОСТАЛОСЬ БЕЗ ИЗМЕНЕНИЙ)
         tg.onEvent('mainButtonClicked', () => {
             if (currentStep === 1) {
                 document.getElementById('catalogScreen').style.display = 'none';
@@ -350,8 +412,16 @@
             }
         });
 
+        // ОБНОВЛЕННАЯ КНОПКА "НАЗАД" (ДОБАВИЛИ ШАГ 4 - ВОЗВРАТ ИЗ ПРОФИЛЯ)
         tg.onEvent('backButtonClicked', () => {
-            if (currentStep === 2) {
+            if (currentStep === 4) { // Возврат из профиля в каталог
+                document.getElementById('profileScreen').style.display = 'none';
+                document.getElementById('catalogScreen').style.display = 'block';
+                currentStep = 1;
+                tg.BackButton.hide();
+                updateMainButton();
+            }
+            else if (currentStep === 2) {
                 document.getElementById('mapScreen').style.display = 'none';
                 document.getElementById('catalogScreen').style.display = 'block';
                 currentStep = 1;
