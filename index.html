@@ -107,7 +107,12 @@
         </div>
     </div>
 
-    <!-- НОВЫЙ ЭКРАН ПРОФИЛЯ -->
+    <div id="catalogScreen" class="screen">
+        <div class="grid" id="catalogGrid">
+            <div class="loader">⏳ Загрузка витрины...</div>
+        </div>
+    </div>
+
     <div id="profileScreen" class="screen">
         <div class="profile-header-large">
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="avatar-big">
@@ -121,8 +126,7 @@
 
         <div class="section-title">📍 Последние заказы <span style="font-size:11px; color:#888; font-weight:normal;">(Нажмите для деталей)</span></div>
         <div class="history-scroll" id="historyScroll">
-            <!-- Сюда JS загрузит карточки-карусель -->
-        </div>
+            </div>
 
         <hr class="divider">
 
@@ -146,7 +150,7 @@
         <div class="screen-title">📍 Зоны доставки</div>
         <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Ознакомьтесь с картой доставки. Приближайте и изучайте зоны</p>
         
-        <iframe src="https://www.google.com/maps/d/embed?mid=1Ux0f7u-18K3nzHVKztj5zbn451XDtlI&ehbc=2E312F" class="map-container" frameborder="0"></iframe>
+        <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container" frameborder="0"></iframe>
         
         <p style="color: #888; font-size: 13px; margin-bottom: 5px;">Впишите точку самовывоза ниже:</p>
         <input type="text" id="addressInput" class="input-field" placeholder="Например: ройтлинген/Reutlingen, бетцинген и тд.">
@@ -229,30 +233,33 @@
         // =====================================================================
         // [3] ЗАГРУЗКА ТОВАРОВ ИЗ ИНТЕРНЕТА (МОСТ)
         // =====================================================================
-       async function loadMenu() {
-            try {
-                let url = "https://api.jsonbin.io/v3/b/6a26b5f6f5f4af5e29cb37ba"; 
-                let response = await fetch(url, {
-                    method: 'GET',
-                    headers: { 
-                        "X-Master-Key": "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe",
-                        "X-Bin-Meta": "false" 
-                    }
-                });
-                
-                if (!response.ok) throw new Error("Ошибка сервера: " + response.status);
-                
-                let data = await response.json();
-                
-                // --- ИСПРАВЛЕНИЕ: БЕРЕМ ТОВАРЫ ИЗ .record ---
-                menuData = data.record; 
-                
-                renderCatalog();
-            } catch (e) {
-                document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка: ' + e.message + '</div>';
-                console.error("Ошибка загрузки:", e);
-            }
-        }
+       /* =====================================================================
+           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (ПРЯМОУГОЛЬНЫЙ ДИЗАЙН)
+           ===================================================================== */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 18px; padding: 12px; border: 1px solid #2a2a2a; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+        .card.disabled { opacity: 0.4; filter: grayscale(100%); pointer-events: none; }
+        
+        /* ТУТ МЫ СДЕЛАЛИ ПРЯМОУГОЛЬНИК 3/4 (ДУБЛИКАТ УДАЛЕН) */        
+        .product-image { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background-color: #1e1e1e; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        .title { font-size: 15px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
+        .specs { color: #aaa; font-size: 12px; margin-bottom: 8px; }
+        
+        /* Статусы наличия */
+        .stock-ok { color: #00d2d3; font-size: 11px; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stock-empty { color: #ff4d4d; font-size: 11px; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; }
+
+        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; min-height: 36px; }
+        .price-box { display: flex; flex-direction: column; }
+        .old-price { text-decoration: line-through; color: #666; font-size: 12px; min-height: 14px; }
+        .new-price { color: #fff; font-size: 20px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        .add-btn { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(75, 123, 236, 0.4); }
+        .quantity-controls { display: none; align-items: center; gap: 8px; background: #1a1a1a; border-radius: 12px; padding: 4px; border: 1px solid #333; }
+        .btn-minus, .btn-plus { background: #2f3640; color: white; border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .item-count { font-weight: bold; font-size: 15px; min-width: 16px; text-align: center; }
 
         // =====================================================================
         // [4] ОТРИСОВКА КАРТОЧЕК НА ЭКРАНЕ
