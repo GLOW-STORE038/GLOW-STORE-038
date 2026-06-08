@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GLOW STORE</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* =====================================================================
+           [1] БАЗОВЫЕ СТИЛИ И ШРИФТЫ
+           ===================================================================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #0d0d0d; color: #ffffff; padding: 15px; padding-bottom: 80px; max-width: 480px; margin: 0 auto; }
+        .screen { display: none; animation: fadeIn 0.3s ease; }
+        #catalogScreen { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =====================================================================
+           [2] ШАПКА И ПРОФИЛЬ (МОДАЛЬНОЕ ОКНО)
+           ===================================================================== */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
+        .profile-btn { display: flex; align-items: center; background: #1a1a1a; padding: 6px 12px 6px 6px; border-radius: 20px; border: 1px solid #333; cursor: pointer;}
+        .avatar { width: 30px; height: 30px; border-radius: 50%; background: #222; object-fit: cover; margin-right: 8px; border: 1px solid #444; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 12px; font-weight: bold; }
+        .user-points { font-size: 10px; color: #ff4d4d; font-weight: 800; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 999; justify-content: center; align-items: center; padding: 20px; animation: fadeIn 0.2s ease; }
+        .modal-card { background: #1a1a1a; width: 100%; max-width: 320px; border-radius: 20px; padding: 24px; text-align: center; border: 1px solid #333; position: relative; }
+        .close-btn { position: absolute; top: 12px; right: 16px; font-size: 28px; color: #888; cursor: pointer; line-height: 1; }
+        .modal-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #4b7bec; margin-bottom: 12px; }
+        .modal-name { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+        .modal-points-badge { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; padding: 8px 16px; border-radius: 12px; display: inline-block; font-weight: bold; font-size: 15px; margin-top: 10px; }
+
+        /* =====================================================================
+           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА
+           ===================================================================== */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background-color: #121212; border-radius: 14px; padding: 10px; border: 1px solid #222; display: flex; flex-direction: column; position: relative; }
+        
+        /* Стили для товара "Нет в наличии" */
+        .card.disabled { opacity: 0.5; pointer-events: none; }
+        
+        .product-image { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; margin-bottom: 10px; background-color: #1e1e1e; }
+        .title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .timer-badge { background-color: rgba(255, 50, 50, 0.1); color: #ff4d4d; font-size: 10px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; font-weight: bold; }
+        .specs { color: #888; font-size: 11px; margin-bottom: 4px; }
+        
+        /* Статусы наличия */
+        .stock-ok { color: #4b7bec; font-size: 11px; margin-bottom: 12px; font-weight: 600; }
+        .stock-empty { color: #ff4d4d; font-size: 11px; margin-bottom: 12px; font-weight: 600; }
+
+        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; min-height: 32px; }
+        .price-box { display: flex; flex-direction: column; }
+        .old-price { text-decoration: line-through; color: #555; font-size: 12px; min-height: 14px; }
+        .new-price { color: #ff4d4d; font-size: 18px; font-weight: 800; }
+
+        .add-btn { background-color: #1f1f1f; color: #fff; border: none; width: 32px; height: 32px; border-radius: 10px; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .quantity-controls { display: none; align-items: center; gap: 8px; background: #1f1f1f; border-radius: 10px; padding: 4px; }
+        .btn-minus, .btn-plus { background: #333; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .item-count { font-weight: bold; font-size: 14px; min-width: 14px; text-align: center; }
+
+        /* =====================================================================
+           [4] ОФОРМЛЕНИЕ ЗАКАЗА (КАРТА И БАЛЛЫ)
+           ===================================================================== */
+        .screen-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
+        .input-field { width: 100%; padding: 14px; background: #121212; color: white; border: 1px solid #333; border-radius: 10px; margin-top: 10px; font-size: 14px; outline: none; }
+        .input-field:focus { border-color: #4b7bec; }
+        
+        .map-container { 
+            width: 100%; height: 60vh; min-height: 350px; max-height: 550px; 
+            border-radius: 14px; overflow: hidden; margin-bottom: 15px; 
+            border: 1px solid #333; background: #1a1a1a; -webkit-overflow-scrolling: touch; 
+        }
+        .points-box { background: #1a1a1a; padding: 15px; border-radius: 14px; border: 1px dashed #444; margin-bottom: 20px; }
+        
+        /* Анимация загрузки */
+        .loader { text-align: center; padding: 50px 0; color: #888; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">GLOW STORE</div>
+        <div class="profile-btn" id="openProfileBtn">
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="userAvatar" class="avatar">
+            <div class="user-info">
+                <span class="user-name" id="userName">Загрузка...</span>
+                <span class="user-points" id="userPointsText">0 баллов</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="close-btn" id="closeModalBtn">×</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="modalAvatar" class="modal-avatar">
+            <div class="modal-name" id="modalName">Гость</div>
+            <div class="modal-points-badge">На балансе: <span id="modalPoints">0</span> 🎁</div>
+            <p style="color: #888; font-size: 12px; margin-top: 15px;">Баллы начисляются в виде кэшбэка 10% за каждую покупку. 1 балл = 1 €. Ими можно оплачивать заказы!</p>
+        </div>
+    </div>
+
+    <div id="catalogScreen" class="screen">
+        <div class="grid" id="catalogGrid">
+            <div class="loader">⏳ Загрузка витрины...</div>
+        </div>
+    </div>
+
+    <div id="mapScreen" class="screen">
+        <div class="screen-title">📍 Зоны доставки</div>
+        <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Ознакомьтесь с картой доставки. Приближайте и изучайте зоны.</p>
+        <iframe src="https://www.google.com/maps/d/embed?mid=1Ux0f7u-18K3nzHVKztj5zbn451XDtlI&ehbc=2E312F" class="map-container" frameborder="0"></iframe>
+        <p style="color: #888; font-size: 13px; margin-bottom: 5px;">Впишите ваш адрес доставки ниже:</p>
+        <input type="text" id="addressInput" class="input-field" placeholder="Например: Штутгарт, Кёнигштрассе 10">
+    </div>
+
+    <div id="pointsScreen" class="screen">
+        <div class="screen-title">🎁 Списание баллов</div>
+        <div class="points-box">
+            <p style="margin-bottom: 5px;">Сумма заказа: <b id="finalTotalUi" style="font-size: 18px;">0 €</b></p>
+            <p style="color: #888; font-size: 13px;">У вас накоплено: <b id="availPointsUi" style="color:#ff4d4d;">0</b> баллов</p>
+        </div>
+        <p style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Сколько баллов списать? (Минимум 4)</p>
+        <input type="number" id="pointsInput" class="input-field" placeholder="Оставьте пустым, если не списываем">
+    </div>
+
+    <script>
+        // =====================================================================
+        // [1] ИНИЦИАЛИЗАЦИЯ И НАСТРОЙКИ
+        // =====================================================================
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        tg.MainButton.textColor = "#ffffff";
+        tg.MainButton.color = "#4b7bec";
+
+        // === ВАЖНО: ВСТАВЬ СВОИ ДАННЫЕ ИЗ JSONBIN ===
+        const JSONBIN_URL = "ТВОЯ_ССЫЛКА_НА_BIN"; // Например: https://api.jsonbin.io/v3/b/65a...
+        const JSONBIN_KEY = "ТВОЙ_MASTER_KEY"; 
+
+        let cart = {};
+        let currentStep = 1; 
+        let realPoints = 0;
+        let cartTotal = 0;
+        let globalUserName = 'Гость';
+        let menuData = {}; // Сюда загрузится база
+
+        // =====================================================================
+        // [2] ПАРСИНГ ДАННЫХ КЛИЕНТА (ИЗ БОТА)
+        // =====================================================================
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('name')) globalUserName = urlParams.get('name');
+            document.getElementById('userName').innerText = globalUserName;
+
+            if (urlParams.get('points')) {
+                realPoints = parseInt(urlParams.get('points'));
+                document.getElementById('userPointsText').innerText = realPoints + ' баллов';
+                document.getElementById('availPointsUi').innerText = realPoints;
+            }
+            if (tg.initDataUnsafe?.user?.photo_url) {
+                document.getElementById('userAvatar').src = tg.initDataUnsafe.user.photo_url;
+            }
+        } catch (e) { console.error(e); }
+
+        // =====================================================================
+        // [3] ЗАГРУЗКА ТОВАРОВ ИЗ ИНТЕРНЕТА (МОСТ)
+        // =====================================================================
+        async function loadMenu() {
+            try {
+                let url = "https://api.jsonbin.io/v3/b/6a26b5f6f5f4af5e29cb37ba"; 
+                let response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 
+                        "X-Master-Key": "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe",
+                        "X-Bin-Meta": "false" 
+                    }
+                });
+                
+                if (!response.ok) throw new Error("Ошибка сервера: " + response.status);
+                
+                let data = await response.json();
+                
+                // --- ДЕТЕКТИВ ---
+                console.log("Данные из облака:", data); 
+                
+                menuData = data; // Попробуем так, если record вдруг пустой
+                
+                renderCatalog();
+            } catch (e) {
+                // ... (остальной код ошибки)
+            }
+        }
+
+        // =====================================================================
+        // [4] ОТРИСОВКА КАРТОЧЕК НА ЭКРАНЕ
+        // =====================================================================
+        function renderCatalog() {
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = '';
+
+            for (let id in menuData) {
+                let item = menuData[id];
+                
+                // Проверяем наличие (item.stock — это число, item.status — строка)
+                let isOut = item.stock <= 0;
+                let cardClass = isOut ? "card disabled" : "card";
+                let stockHtml = isOut 
+                    ? `<div class="stock-empty">Нет в наличии</div>` 
+                    : `<div class="stock-ok">В наличии</div>`;
+
+                // Цены
+                let oldPriceHtml = (item.old_price && item.old_price > 0) 
+                    ? `<span class="old-price">${item.old_price} €</span>` 
+                    : `<span class="old-price"></span>`;
+
+                // Таймер
+                let timerHtml = (item.timer_end && item.timer_end > 0)
+                    ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>`
+                    : ``;
+
+                // ВАЖНО: используем item.name, item.desc, item.price
+                let cardHtml = `
+                    <div class="${cardClass}" data-id="${id}" data-name="${item.name}" data-price="${item.price}">
+                        <img src="${item.photo}" class="product-image" alt="Товар">
+                        <div class="title">${item.name}</div>
+                        ${timerHtml}
+                        <div class="specs">${item.desc || ''}</div>
+                        ${stockHtml}
+                        <div class="price-row">
+                            <div class="price-box">${oldPriceHtml}<span class="new-price">${item.price} €</span></div>
+                            <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price}, this)">+</button>
+                            <div class="quantity-controls">
+                                <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
+                                <span class="item-count">1</span>
+                                <button class="btn-plus" onclick="changeCount('${id}', 1, this)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            }
+        }
+
+        // =====================================================================
+        // [5] АНИМАЦИЯ ТАЙМЕРОВ (ОБНОВЛЕНИЕ КАЖДУЮ СЕКУНДУ)
+        // =====================================================================
+        setInterval(() => {
+            document.querySelectorAll('.timer-badge').forEach(badge => {
+                let end = parseInt(badge.getAttribute('data-end'));
+                let now = Math.floor(Date.now() / 1000); // Текущее время в секундах
+                
+                if (end > now) {
+                    let diff = end - now;
+                    let h = Math.floor(diff / 3600);
+                    let m = Math.floor((diff % 3600) / 60);
+                    let s = diff % 60;
+                    badge.innerText = `⏳ ${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+                } else {
+                    badge.style.display = 'none'; // Скрываем таймер, если акция кончилась
+                }
+            });
+        }, 1000);
+
+        // =====================================================================
+        // [6] КОРЗИНА И ЛОГИКА КНОПОК ТОВАРОВ
+        // =====================================================================
+        function updateMainButton() {
+            cartTotal = 0;
+            for (let id in cart) { cartTotal += cart[id].price * cart[id].count; }
+            
+            if (currentStep === 1) {
+                if (cartTotal > 0) { tg.MainButton.setText(`ДАЛЕЕ: ${cartTotal} €`); tg.MainButton.show(); } 
+                else { tg.MainButton.hide(); }
+            } else if (currentStep === 2) {
+                tg.MainButton.setText(`ПОДТВЕРДИТЬ АДРЕС`); tg.MainButton.show();
+            } else if (currentStep === 3) {
+                tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show();
+            }
+        }
+
+        window.addToCart = function(id, name, price, btn) {
+            cart[id] = { name: name, price: price, count: 1 };
+            let card = btn.closest('.card');
+            btn.style.display = 'none';
+            card.querySelector('.quantity-controls').style.display = 'flex';
+            card.querySelector('.item-count').innerText = 1;
+            updateMainButton();
+        };
+
+        window.changeCount = function(id, delta, btn) {
+            cart[id].count += delta;
+            let card = btn.closest('.card');
+            if (cart[id].count <= 0) {
+                delete cart[id];
+                card.querySelector('.quantity-controls').style.display = 'none';
+                card.querySelector('.add-btn').style.display = 'flex';
+            } else {
+                card.querySelector('.item-count').innerText = cart[id].count;
+            }
+            updateMainButton();
+        };
+
+        // =====================================================================
+        // [7] НАВИГАЦИЯ, МОДАЛКА И ОТПРАВКА
+        // =====================================================================
+        
+        // Модалка
+        document.getElementById('openProfileBtn').addEventListener('click', () => {
+            document.getElementById('modalName').innerText = globalUserName;
+            document.getElementById('modalPoints').innerText = realPoints;
+            if (tg.initDataUnsafe?.user?.photo_url) document.getElementById('modalAvatar').src = tg.initDataUnsafe.user.photo_url;
+            document.getElementById('profileModal').style.display = 'flex';
+        });
+        document.getElementById('closeModalBtn').addEventListener('click', () => { document.getElementById('profileModal').style.display = 'none'; });
+        document.getElementById('profileModal').addEventListener('click', (e) => { if(e.target === document.getElementById('profileModal')) document.getElementById('profileModal').style.display = 'none'; });
+
+        // Шаги оформления
+        tg.onEvent('mainButtonClicked', () => {
+            if (currentStep === 1) {
+                document.getElementById('catalogScreen').style.display = 'none';
+                document.getElementById('mapScreen').style.display = 'block';
+                currentStep = 2;
+                tg.BackButton.show(); 
+                updateMainButton();
+            } 
+            else if (currentStep === 2) {
+                let address = document.getElementById('addressInput').value;
+                if (address.trim() === '') { alert("Пожалуйста, впишите адрес доставки!"); return; }
+                document.getElementById('mapScreen').style.display = 'none';
+                document.getElementById('pointsScreen').style.display = 'block';
+                document.getElementById('finalTotalUi').innerText = cartTotal + ' €';
+                currentStep = 3;
+                updateMainButton();
+            }
+            else if (currentStep === 3) {
+                let ptsSpent = parseInt(document.getElementById('pointsInput').value) || 0;
+                let address = document.getElementById('addressInput').value;
+                
+                if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
+                if (ptsSpent > realPoints) { alert("У вас недостаточно баллов!"); return; }
+                if (ptsSpent > cartTotal) { alert("Нельзя списать баллов больше, чем сумма заказа!"); return; }
+
+                let finalOrder = { cart: cart, address: address, points: ptsSpent, total: cartTotal };
+                tg.sendData(JSON.stringify(finalOrder));
+                tg.close();
+            }
+        });
+
+        tg.onEvent('backButtonClicked', () => {
+            if (currentStep === 2) {
+                document.getElementById('mapScreen').style.display = 'none';
+                document.getElementById('catalogScreen').style.display = 'block';
+                currentStep = 1;
+                tg.BackButton.hide();
+                updateMainButton();
+            } else if (currentStep === 3) {
+                document.getElementById('pointsScreen').style.display = 'none';
+                document.getElementById('mapScreen').style.display = 'block';
+                currentStep = 2;
+                updateMainButton();
+            }
+        });
+
+        // ЗАПУСК!
+        loadMenu();
+
+    </script>
+</body>
+</html>
