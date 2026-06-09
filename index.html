@@ -52,27 +52,35 @@
         /* =====================================================================
            [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА
            ===================================================================== */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 18px; padding: 12px; border: 1px solid #2a2a2a; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+        /* =====================================================================
+           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (3 В РЯД + КАРТИНКА ОТ КРАЯ ДО КРАЯ)
+           ===================================================================== */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        
+        .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 16px; padding: 10px; border: 1px solid #2a2a2a; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.4); height: 100%; justify-content: space-between; }
         .card.disabled { opacity: 0.4; filter: grayscale(100%); pointer-events: none; }
         
-        .product-image { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 12px; margin-bottom: 12px; background-color: #1e1e1e; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .title { font-size: 15px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
-        .specs { color: #aaa; font-size: 12px; margin-bottom: 8px; }
+        /* Картинка игнорирует внутренние отступы карточки и заполняет верх */
+        .product-image { width: calc(100% + 20px); margin: -10px -10px 8px -10px; aspect-ratio: 1; object-fit: cover; border-radius: 16px 16px 0 0; background-color: #1e1e1e; border-bottom: 1px solid #2a2a2a; }
         
-        .stock-ok { color: #00d2d3; font-size: 11px; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stock-empty { color: #ff4d4d; font-size: 11px; margin-bottom: 12px; font-weight: 700; text-transform: uppercase; }
+        /* Название с переносом по словам и жестким лимитом в 2 строки */
+        .title { font-size: 12px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; height: 28px; }
+        
+        .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 9px; padding: 4px 6px; border-radius: 6px; display: inline-block; margin-bottom: 6px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
+        .specs { color: #aaa; font-size: 10px; margin-bottom: 6px; }
+        
+        .stock-ok { color: #00d2d3; font-size: 9px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stock-empty { color: #ff4d4d; font-size: 9px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
 
-        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; min-height: 36px; }
+        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; min-height: 30px; }
         .price-box { display: flex; flex-direction: column; }
-        .old-price { text-decoration: line-through; color: #666; font-size: 12px; min-height: 14px; }
-        .new-price { color: #fff; font-size: 20px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .old-price { text-decoration: line-through; color: #666; font-size: 10px; min-height: 12px; }
+        .new-price { color: #fff; font-size: 16px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        .add-btn { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(75, 123, 236, 0.4); }
-        .quantity-controls { display: none; align-items: center; gap: 8px; background: #1a1a1a; border-radius: 12px; padding: 4px; border: 1px solid #333; }
-        .btn-minus, .btn-plus { background: #2f3640; color: white; border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .item-count { font-weight: bold; font-size: 15px; min-width: 16px; text-align: center; }
+        .add-btn { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; width: 30px; height: 30px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(75, 123, 236, 0.4); }
+        .quantity-controls { display: none; align-items: center; gap: 4px; background: #1a1a1a; border-radius: 10px; padding: 3px; border: 1px solid #333; }
+        .btn-minus, .btn-plus { background: #2f3640; color: white; border: none; width: 24px; height: 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .item-count { font-weight: bold; font-size: 13px; min-width: 14px; text-align: center; }
 
         /* =====================================================================
            [4] ОФОРМЛЕНИЕ ЗАКАЗА (КАРТА И БАЛЛЫ)
