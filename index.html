@@ -16,79 +16,76 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =====================================================================
-           [2] ШАПКА И ПОЛНОЦЕННЫЙ ЭКРАН ПРОФИЛЯ
+           [2] НОВОЕ ВЕРХНЕЕ МЕНЮ И ШТОРКА
            ===================================================================== */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; }
-        .profile-btn { display: flex; align-items: center; background: #1a1a1a; padding: 6px 12px 6px 6px; border-radius: 20px; border: 1px solid #333; cursor: pointer;}
-        .avatar { width: 30px; height: 30px; border-radius: 50%; background: #222; object-fit: cover; margin-right: 8px; border: 1px solid #444; }
-        .user-info { display: flex; flex-direction: column; }
-        .user-name { font-size: 12px; font-weight: bold; }
-        .user-points { font-size: 10px; color: #ff4d4d; font-weight: 800; }
+        /* Навигация (3 квадратные кнопки слева) */
+        .top-nav { display: flex; gap: 12px; margin-bottom: 25px; }
+        .nav-btn { width: 46px; height: 46px; background: #161616; border-radius: 14px; display: flex; justify-content: center; align-items: center; border: 1px solid #333; position: relative; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .nav-icon { width: 22px; height: 22px; fill: #ffffff; }
+        
+        /* Кружок с количеством товаров на корзине */
+        .cart-badge { position: absolute; bottom: -6px; right: -6px; background: #ff4d4d; color: white; font-size: 11px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; border: 2px solid #0d0d0d; display: none; }
 
-        /* Дизайн Личного Кабинета */
+        /* Заголовки */
+        .main-title { font-size: 38px; font-weight: 900; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); }
+        .sub-title { font-size: 15px; color: #888; text-align: center; margin-bottom: 25px; font-weight: 600; }
+
+        /* Кнопка "Выбор товаров" (Категории) */
+        .filter-btn { width: 100%; padding: 16px; background: #161616; border-radius: 16px; border: 1px solid #333; color: #fff; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+        /* Всплывающая шторка (Три полоски) */
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .menu-panel { background: #161616; border-radius: 24px; margin: 20px; padding: 20px; display: flex; flex-direction: column; gap: 12px; border: 1px solid #333; transform: translateY(-20px); transition: transform 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .menu-overlay.active { display: block; opacity: 1; }
+        .menu-overlay.active .menu-panel { transform: translateY(0); }
+        .menu-item { background: #1e1e1e; padding: 16px; border-radius: 14px; text-align: center; font-weight: bold; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; }
+
+        /* Стили старого профиля (оставляем для экрана профиля) */
         .profile-header-large { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; margin-top: 10px;}
         .avatar-big { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #4b7bec; object-fit: cover; }
         .profile-info-big { display: flex; flex-direction: column; gap: 4px; }
         .profile-name-big { font-size: 26px; font-weight: 900; }
         .profile-points-big { font-size: 16px; font-weight: 700; color: #ff4d4d; }
-
         .divider { border: 0; height: 1px; background: #333; margin: 25px 0; }
         .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
-
-        /* Карусель Истории */
-        .history-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; width: 100%; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .history-scroll::-webkit-scrollbar { display: none; }
-        .history-card { min-width: 90px; max-width: 90px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
-        .history-img { width: 90px; height: 130px; object-fit: cover; border-radius: 12px; background: #1e1e1e; border: 1px solid #333; }
-        .history-title { font-size: 12px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-weight: 600; }
-
-        /* Статистика */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px 15px; text-align: center; margin-top: 20px;}
-        .stat-box { display: flex; flex-direction: column; gap: 5px; }
-        .stat-value { font-size: 24px; font-weight: 900; color: #fff; }
-        .stat-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }
+        .history-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; }
+        .history-card { min-width: 90px; max-width: 90px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
+        .history-img { width: 90px; height: 130px; object-fit: cover; border-radius: 12px; border: 1px solid #333; }
+        .history-title { font-size: 12px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; margin-top: 20px;}
+        .stat-value { font-size: 20px; font-weight: 900; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
 
         /* =====================================================================
-           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (3 В РЯД, ТОНКИЕ РАМКИ, ПЕРЕНОСЫ)
+           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (ВОЗВРАЩАЕМ 2 В РЯД)
            ===================================================================== */
-        /* =====================================================================
-           [3] КАРТОЧКИ ТОВАРОВ И ВИТРИНА (3 В РЯД, ТОНКИЕ РАМКИ, ПЕРЕНОСЫ)
-           ===================================================================== */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        /* Изменили с 3 на 2 колонки */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
         
-        /* Карточка: тонкая рамка, скрытие вылезающей картинки, одинаковая высота */
-        .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.15); display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.4); overflow: hidden; height: 100%; }
-        
-        /* ИЗМЕНЕНИЕ ЗДЕСЬ: Легкая серость (40%), полупрозрачность и отправка в конец списка (order: 99) */
+        .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.15); display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.4); overflow: hidden; height: 100%; }
         .card.disabled { opacity: 0.5; filter: grayscale(40%); pointer-events: none; order: 99; }
         
-        /* Картинка от края до края (без отступов) */
         .product-image { width: 100%; aspect-ratio: 1; object-fit: cover; background-color: #1e1e1e; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
         
-        /* Блок с текстом: дает аккуратные отступы от краев рамки */
-        .card-body { padding: 8px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
-        
-        /* Название: перенос с дефисом, ровно 2 строки, чтобы карточки не прыгали по высоте */
-        .title { font-size: 11px; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; 
+        .title { font-size: 14px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; 
                  word-wrap: break-word; overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; 
-                 display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; height: 26px; }
+                 display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; height: 33px; }
         
-        .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 9px; padding: 4px 6px; border-radius: 6px; display: inline-block; margin-bottom: 6px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
-        .specs { color: #aaa; font-size: 10px; margin-bottom: 6px; }
-        
-        .stock-ok { color: #00d2d3; font-size: 9px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
-        .stock-empty { color: #ff4d4d; font-size: 9px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+        .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
+        .specs { color: #aaa; font-size: 12px; margin-bottom: 8px; }
+        .stock-ok { color: #00d2d3; font-size: 11px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
+        .stock-empty { color: #ff4d4d; font-size: 11px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
 
-        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; min-height: 28px; }
+        .price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; min-height: 36px; }
         .price-box { display: flex; flex-direction: column; }
-        .old-price { text-decoration: line-through; color: #666; font-size: 9px; min-height: 12px; }
-        .new-price { color: #fff; font-size: 15px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .old-price { text-decoration: line-through; color: #666; font-size: 11px; min-height: 14px; }
+        .new-price { color: #fff; font-size: 20px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        .add-btn { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; width: 28px; height: 28px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-        .quantity-controls { display: none; align-items: center; gap: 4px; background: #1a1a1a; border-radius: 8px; padding: 2px; border: 1px solid #333; }
-        .btn-minus, .btn-plus { background: #2f3640; color: white; border: none; width: 22px; height: 22px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .item-count { font-weight: bold; font-size: 12px; min-width: 14px; text-align: center; }
+        .add-btn { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; width: 36px; height: 36px; border-radius: 12px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .quantity-controls { display: none; align-items: center; gap: 6px; background: #1a1a1a; border-radius: 12px; padding: 4px; border: 1px solid #333; }
+        .btn-minus, .btn-plus { background: #2f3640; color: white; border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .item-count { font-weight: bold; font-size: 14px; min-width: 16px; text-align: center; }
 
         /* =====================================================================
            [4] ОФОРМЛЕНИЕ ЗАКАЗА (КАРТА И БАЛЛЫ)
@@ -105,18 +102,33 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">GLOW STORE</div>
-        <div class="profile-btn" id="openProfileBtn">
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="userAvatar" class="avatar">
-            <div class="user-info">
-                <span class="user-name" id="userName">Загрузка...</span>
-                <span class="user-points" id="userPointsText">0 баллов</span>
-            </div>
+    <div class="top-nav" id="topNav">
+        <div class="nav-btn" id="openProfileBtn">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div class="nav-btn" id="cartTopBtn">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            <div class="cart-badge" id="cartBadge">0</div>
+        </div>
+        <div class="nav-btn" id="openMenuBtn">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </div>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-panel">
+            <div class="menu-item">Общая информация</div>
+            <div class="menu-item">Отзывы</div>
+            <div class="menu-item">Поддержка</div>
         </div>
     </div>
 
     <div id="catalogScreen" class="screen">
+        <div class="main-title">WÜRTEN STORE</div>
+        <div class="sub-title">Каталог</div>
+        
+        <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
+        
         <div class="grid" id="catalogGrid">
             <div class="loader">⏳ Загрузка витрины...</div>
         </div>
@@ -321,7 +333,21 @@
         // =====================================================================
         function updateMainButton() {
             cartTotal = 0;
-            for (let id in cart) { cartTotal += cart[id].price * cart[id].count; }
+            let totalItems = 0;
+            
+            for (let id in cart) { 
+                cartTotal += cart[id].price * cart[id].count; 
+                totalItems += cart[id].count; // Считаем штуки для кружочка
+            }
+            
+            // Обновляем кружочек на верхней корзине
+            const badge = document.getElementById('cartBadge');
+            if (totalItems > 0) {
+                badge.style.display = 'flex';
+                badge.innerText = totalItems;
+            } else {
+                badge.style.display = 'none';
+            }
             
             if (currentStep === 1) {
                 if (cartTotal > 0) { tg.MainButton.setText(`ДАЛЕЕ: ${cartTotal} €`); tg.MainButton.show(); } 
@@ -356,10 +382,13 @@
         };
 
         // =====================================================================
-        // [7] НАВИГАЦИЯ, ПРОФИЛЬ И ОТПРАВКА
+        // [7] НАВИГАЦИЯ, ПРОФИЛЬ, ШТОРКА И ОТПРАВКА
         // =====================================================================
+        
+        // 1. Открытие профиля
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none';
+            document.getElementById('topNav').style.display = 'none'; // Прячем меню в профиле
             document.getElementById('profileScreen').style.display = 'block';
             document.getElementById('profileNameBig').innerText = globalUserName;
             document.getElementById('profilePointsBig').innerText = realPoints;
@@ -370,9 +399,35 @@
             tg.MainButton.hide();
         });
 
+        // 2. Открытие/Закрытие шторки меню
+        const overlay = document.getElementById('menuOverlay');
+        document.getElementById('openMenuBtn').addEventListener('click', () => {
+            overlay.classList.add('active');
+        });
+        overlay.addEventListener('click', (e) => {
+            if(e.target === overlay) overlay.classList.remove('active');
+        });
+
+        // 3. Работа верхней кнопки "Корзина" (действует как кнопка ДАЛЕЕ)
+        document.getElementById('cartTopBtn').addEventListener('click', () => {
+            if (currentStep === 1 && cartTotal > 0) {
+                // Имитируем нажатие главной кнопки Телеграма
+                document.getElementById('catalogScreen').style.display = 'none';
+                document.getElementById('topNav').style.display = 'none';
+                document.getElementById('mapScreen').style.display = 'block';
+                currentStep = 2;
+                tg.BackButton.show(); 
+                updateMainButton();
+            } else if (cartTotal === 0) {
+                tg.showAlert("Ваша корзина пуста!");
+            }
+        });
+
+        // Обычные переходы (как и раньше)
         tg.onEvent('mainButtonClicked', () => {
             if (currentStep === 1) {
                 document.getElementById('catalogScreen').style.display = 'none';
+                document.getElementById('topNav').style.display = 'none';
                 document.getElementById('mapScreen').style.display = 'block';
                 currentStep = 2;
                 tg.BackButton.show(); 
@@ -402,20 +457,22 @@
         });
 
         tg.onEvent('backButtonClicked', () => {
-            if (currentStep === 4) { 
+            if (currentStep === 4) { // Возврат из профиля
                 document.getElementById('profileScreen').style.display = 'none';
                 document.getElementById('catalogScreen').style.display = 'block';
+                document.getElementById('topNav').style.display = 'flex';
                 currentStep = 1;
                 tg.BackButton.hide();
                 updateMainButton();
             }
-            else if (currentStep === 2) {
+            else if (currentStep === 2) { // Возврат с карты
                 document.getElementById('mapScreen').style.display = 'none';
                 document.getElementById('catalogScreen').style.display = 'block';
+                document.getElementById('topNav').style.display = 'flex';
                 currentStep = 1;
                 tg.BackButton.hide();
                 updateMainButton();
-            } else if (currentStep === 3) {
+            } else if (currentStep === 3) { // Возврат со списания баллов
                 document.getElementById('pointsScreen').style.display = 'none';
                 document.getElementById('mapScreen').style.display = 'block';
                 currentStep = 2;
