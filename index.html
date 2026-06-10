@@ -40,10 +40,16 @@
         .menu-item:not(:last-child)::after { content: ''; display: block; width: 30%; height: 1px; background: rgba(255, 255, 255, 0.6); box-shadow: 0 0 10px rgba(255, 255, 255, 1); margin: 20px auto 0 auto; border-radius: 10px; }
 
         /* =====================================================================
-           ДИЗАЙН КАРТЫ И ЗАГОЛОВКА (БОЛЬШЕ ПРОСТРАНСТВА)
+           ДИЗАЙН КАРТЫ И ЗАГОЛОВКА (МАКСИМУМ ВОЗДУХА И ТОНКИЙ НЕОН)
            ===================================================================== */
-        /* Контейнер теперь занимает ~40% высоты экрана */
-        .store-title-container { position: relative; text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; height: 38vh; min-height: 220px; max-height: 350px; pointer-events: none; }
+        /* Контейнер на 45% высоты экрана для максимума пространства */
+        .store-title-container { position: relative; text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; height: 45vh; min-height: 260px; max-height: 400px; pointer-events: none; }
+        
+        /* Детализированная карта: ультра-тонкая линия с мощным неоновым свечением */
+        .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 320px; width: auto; fill: none; stroke: #ffffff; stroke-width: 0.5px; filter: drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 2px rgba(255,255,255,0.8)); z-index: 1; pointer-events: none; }
+        
+        /* Надпись, разрезающая неоновую карту по центру */
+        .main-title { position: relative; z-index: 2; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2.5px; background: #0d0d0d; padding: 10px 18px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); color: #fff; }
         
         /* Светящаяся карта: высота на максимум, ширина ограничена, чтобы не вылезать за текст */
         .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 280px; width: auto; fill: none; stroke: rgba(255, 255, 255, 0.4); stroke-width: 1.2; filter: drop-shadow(0 0 6px rgba(255,255,255,0.4)); z-index: 1; pointer-events: none; }
@@ -143,7 +149,7 @@
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
             <svg class="bw-map" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                <path d="M38,12 L40,8 L36,5 L44,4 L46,8 L52,5 L58,10 L56,14 L62,11 L68,14 L65,18 L72,16 L70,22 L76,24 L73,32 L82,30 L78,42 L84,40 L81,48 L86,52 L80,58 L85,64 L78,68 L82,74 L76,82 L80,88 L72,92 L66,88 L62,94 L54,90 L50,96 L46,92 L42,95 L36,90 L32,94 L28,86 L22,90 L20,82 L15,85 L18,74 L12,70 L16,62 L10,58 L14,50 L8,44 L14,38 L11,30 L18,26 L22,30 L25,20 L32,22 L34,16 Z" />
+                <path d="M38.5,12.1 l2.3,-3.1 l-1.2,-2.4 l3.5,-1.8 l1.2,2.9 l4.1,-1.5 l2.2,3.1 l1.5,0.8 l-1.2,3.4 l4.1,-2.1 l2.8,1.5 l3.1,0.5 l-1.2,2.4 l2.1,3.1 l-2.5,2.4 l3.8,1.2 l2.1,4.5 l-1.8,2.1 l2.5,3.4 l3.1,-1.2 l1.8,2.4 l4.2,-1.5 l-1.2,3.8 l3.5,4.1 l-2.1,5.2 l1.5,3.1 l3.8,-1.5 l1.2,4.5 l-1.5,3.2 l2.8,1.8 l1.5,4.1 l-2.1,2.8 l3.5,2.1 l-1.2,5.2 l2.1,3.1 l-3.5,2.4 l1.2,4.1 l-4.5,3.8 l1.8,2.4 l-3.1,3.5 l-1.2,4.1 l-2.5,-1.5 l-2.1,2.8 l-3.5,-1.2 l-1.8,3.1 l-4.5,-2.1 l-1.2,2.8 l-3.1,1.5 l-1.5,3.8 l-4.2,-2.1 l-2.1,3.5 l-2.8,-1.2 l-1.2,3.1 l-4.5,-1.8 l-1.5,2.4 l-3.8,-1.2 l-1.2,-3.5 l-3.1,1.5 l-2.1,-2.8 l-3.5,1.2 l-1.8,-3.1 l-4.5,2.1 l-1.2,-2.8 l-3.1,-0.5 l-2.1,2.4 l-1.5,-3.1 l-3.8,1.5 l-1.2,-4.2 l-2.5,1.8 l-1.8,-3.5 l2.1,-2.4 l-3.1,-3.1 l1.2,-4.5 l2.5,1.2 l1.5,-3.8 l-2.8,-2.1 l1.2,-4.1 l2.5,1.5 l1.8,-3.1 l-2.1,-3.8 l3.5,-2.1 l1.2,-4.5 l-1.8,-2.8 l3.1,-1.5 l1.5,-3.8 l3.8,1.2 l1.2,-4.1 l-2.5,-1.8 l2.1,-3.5 l3.1,1.2 l1.5,-4.2 l3.8,-1.5 l1.2,-3.1 l-2.5,-2.4 l1.8,-3.5 l-2.1,-1.8 l3.5,-2.4 l1.2,-4.5 Z" />
             </svg>
             <div class="main-title">WÜRTEN STORE</div>
         </div>
