@@ -31,7 +31,8 @@
         .menu-overlay.active { visibility: visible; background: rgba(0,0,0,0.85); }
 
         /* Сама панель меню: ОЧЕНЬ тонкая рамка для мягкого перехода */
-        .menu-panel { position: absolute; top: 15px; left: 15px; right: 15px; height: 50vh; background: #121212; border-radius: 24px; padding: 40px 20px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(0.95); opacity: 0; transform-origin: top center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+        /* Сама панель меню: уменьшили высоту до 35vh, сделали тонкую грань */
+        .menu-panel { position: absolute; top: 15px; left: 15px; right: 15px; height: 35vh; background: #121212; border-radius: 24px; padding: 25px 20px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(0.95); opacity: 0; transform-origin: top center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
         .menu-overlay.active .menu-panel { transform: scale(1); opacity: 1; }
 
         /* Слова-кнопки и светящиеся полоски */
@@ -142,7 +143,7 @@
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
             <svg class="bw-map" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                <path d="M35,10 L45,15 L50,5 L65,15 L70,10 L80,25 L75,40 L85,55 L80,70 L90,85 L70,95 L60,90 L50,100 L30,95 L20,85 L15,65 L5,50 L10,35 L20,20 L30,15 Z" />
+                <path d="M38,12 L40,8 L36,5 L44,4 L46,8 L52,5 L58,10 L56,14 L62,11 L68,14 L65,18 L72,16 L70,22 L76,24 L73,32 L82,30 L78,42 L84,40 L81,48 L86,52 L80,58 L85,64 L78,68 L82,74 L76,82 L80,88 L72,92 L66,88 L62,94 L54,90 L50,96 L46,92 L42,95 L36,90 L32,94 L28,86 L22,90 L20,82 L15,85 L18,74 L12,70 L16,62 L10,58 L14,50 L8,44 L14,38 L11,30 L18,26 L22,30 L25,20 L32,22 L34,16 Z" />
             </svg>
             <div class="main-title">WÜRTEN STORE</div>
         </div>
