@@ -218,8 +218,8 @@
         }
         .cart-badge { animation: cartPulse 1.5s infinite; border-color: #121212 !important; }
 
-        /* Медленная орбита с крошечными пылинками */
-        .orbit-dots { transform-origin: 50px 55px; animation: spin-orbit 24s linear infinite; }
+        /* Ультра-медленное перетекание сгустков света */
+        .orbit-dots { transform-origin: 50px 55px; animation: spin-orbit 72s linear infinite; }
         @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -270,11 +270,11 @@
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
             <svg class="bw-map" viewBox="0 0 100 110" preserveAspectRatio="xMidYMid meet" style="filter: none; stroke-width: 0;">
-                <circle cx="50" cy="55" r="40" stroke="#ffffff" stroke-width="0.3" fill="none" style="filter: drop-shadow(0 0 4px rgba(255,255,255,0.6));" />
+                <circle cx="50" cy="55" r="40" stroke="#ffffff" stroke-width="0.3" fill="none" style="filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)) drop-shadow(0 0 2px rgba(255,255,255,1));" />
                 
                 <g class="orbit-dots">
-                    <circle cx="50" cy="15" r="1.2" fill="#ffffff" style="filter: drop-shadow(0 0 5px #ffffff);" />
-                    <circle cx="50" cy="95" r="1.2" fill="#ffffff" style="filter: drop-shadow(0 0 5px #ffffff);" />
+                    <circle cx="50" cy="15" r="0.6" fill="#ffffff" style="filter: drop-shadow(0 0 6px rgba(255,255,255,1)) drop-shadow(0 0 2px #fff);" />
+                    <circle cx="50" cy="95" r="0.6" fill="#ffffff" style="filter: drop-shadow(0 0 6px rgba(255,255,255,1)) drop-shadow(0 0 2px #fff);" />
                 </g>
             </svg>
             <div class="main-title">WÜRTEN STORE</div>
