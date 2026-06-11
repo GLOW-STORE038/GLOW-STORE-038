@@ -149,13 +149,50 @@
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; margin-top: 20px;}
         .stat-value { font-size: 20px; font-weight: 900; }
         .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
+    /* =====================================================================
+           ОБНОВЛЕНИЕ ДИЗАЙНА (БЛОК 1)
+           ===================================================================== */
+        /* Прямоугольные картинки товаров */
+        .product-image { aspect-ratio: 3/4 !important; border-radius: 18px 18px 0 0; }
+        
+        /* Цветовые акценты (Голубой Telegram и Красная акция) */
+        .stock-ok { color: #3390ec !important; }
+        .add-btn { background: #3390ec !important; }
+        .promo-price { color: #ff4d4d !important; text-shadow: 0 0 10px rgba(255, 77, 77, 0.4); }
+        
+        /* Кнопка избранного (Сердечко) */
+        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; z-index: 10; backdrop-filter: blur(5px); border: none; cursor: pointer; }
+        .fav-icon { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; transition: all 0.3s; }
+        .fav-btn.active .fav-icon { fill: url(#pinkGradient); stroke: none; transform: scale(1.1); }
+
+        /* Фиксированный низ корзины намертво к экрану */
+        #cartScreen { padding-bottom: 120px; }
+        .cart-fixed-bottom { position: fixed !important; bottom: 0; left: 0; width: 100%; background: rgba(18,18,18,0.95); padding: 15px 20px 30px; z-index: 100; backdrop-filter: blur(10px); border-top: 1px solid #333; }
+        
+        /* Шторка меню (Справа налево, прозрачная, на весь экран) */
+        .menu-panel { position: fixed !important; top: 0 !important; right: -100% !important; left: auto !important; width: 100% !important; height: 100vh !important; background: rgba(18,18,18,0.8) !important; backdrop-filter: blur(15px) !important; border-radius: 0 !important; border: none !important; transform: none !important; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 40px !important; }
+        .menu-overlay.active .menu-panel { right: 0 !important; }
+        .menu-item { font-size: 24px !important; padding: 20px 0 !important; width: 100%; }
+        .menu-item:not(:last-child)::after { display: none !important; } /* Отключаем старые линии */
+        .glow-divider-menu { width: 100%; height: 2px; background: rgba(255,255,255,0.6); box-shadow: 0 0 15px rgba(255,255,255,1); border-radius: 10px; margin: 5px 0; }
+        .close-menu-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: white; font-size: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff4d94" />
+            <stop offset="100%" stop-color="#ff0055" />
+        </linearGradient>
+    </svg>
+
     <div class="top-nav" id="topNav">
         <div class="nav-btn" id="openProfileBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+        <div class="nav-btn" id="openFavBtn" onclick="selectCategory('favorites')">
+            <svg class="nav-icon" viewBox="0 0 24 24" style="fill:white;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
         <div class="nav-btn" id="cartTopBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>
@@ -168,8 +205,11 @@
 
     <div class="menu-overlay" id="menuOverlay">
         <div class="menu-panel">
+            <button class="close-menu-btn" onclick="document.getElementById('menuOverlay').classList.remove('active')">✖</button>
             <div class="menu-item">Общая информация</div>
+            <div class="glow-divider-menu"></div>
             <div class="menu-item">Отзывы</div>
+            <div class="glow-divider-menu"></div>
             <div class="menu-item">Поддержка</div>
         </div>
     </div>
@@ -263,15 +303,18 @@
         let tg = window.Telegram.WebApp;
         tg.ready(); tg.expand(); 
         
-        // Установка БЕЛОГО цвета кнопки и черного текста
-        tg.MainButton.color = "#ffffff"; 
-        tg.MainButton.textColor = "#000000";
+        // Главная кнопка теперь ГОЛУБАЯ с белым текстом
+        tg.MainButton.color = "#3390ec"; 
+        tg.MainButton.textColor = "#ffffff";
 
         const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6a26b5f6f5f4af5e29cb37ba"; 
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
 
         let cart = {}; let currentStep = 1; let realPoints = 0; let cartTotal = 0; let globalUserName = 'Гость';
         let menuData = {}; let categoriesData = {}; let currentCategory = 'all'; 
+        
+        // Загружаем сохраненные сердечки из памяти телефона
+        let favorites = JSON.parse(localStorage.getItem('glow_favs')) || {};
 
         const cartIconSvg = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white;"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>`;
 
@@ -318,24 +361,43 @@
         window.selectCategory = function(cat_id, btnElement) {
             currentCategory = cat_id;
             document.querySelectorAll('#filterPanel .cat-btn, #filterPanel .cat-btn-all').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
+            if(btnElement) btnElement.classList.add('active');
             document.getElementById('filterOverlay').classList.remove('active');
             renderCatalog();
+        };
+
+        window.toggleFav = function(id, btn) {
+            if (favorites[id]) { delete favorites[id]; btn.classList.remove('active'); } 
+            else { favorites[id] = true; btn.classList.add('active'); tg.HapticFeedback.impactOccurred('light'); }
+            localStorage.setItem('glow_favs', JSON.stringify(favorites));
+            if (currentCategory === 'favorites') renderCatalog();
         };
 
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
             for (let id in menuData) {
                 let item = menuData[id];
-                if (currentCategory !== 'all' && item.category !== currentCategory) continue;
+                
+                // Фильтр категорий + фильтр Избранного
+                if (currentCategory === 'favorites' && !favorites[id]) continue;
+                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
 
                 let isOut = item.stock <= 0; let cardClass = isOut ? "card disabled" : "card";
                 let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
-                let oldPriceHtml = (item.old_price && item.old_price > 0) ? `<span class="old-price">${item.old_price} €</span>` : `<span class="old-price"></span>`;
+                
+                // Логика акционной красной цены
+                let hasDiscount = (item.old_price && item.old_price > 0);
+                let priceClass = hasDiscount ? "new-price promo-price" : "new-price";
+                let oldPriceHtml = hasDiscount ? `<span class="old-price">${item.old_price} €</span>` : `<span class="old-price"></span>`;
+                
                 let timerHtml = (item.timer_end && item.timer_end > 0) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
+                let isFavClass = favorites[id] ? "active" : "";
 
                 let cardHtml = `
                     <div class="${cardClass}" data-id="${id}">
+                        <button class="fav-btn ${isFavClass}" onclick="toggleFav('${id}', this)">
+                            <svg class="fav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </button>
                         <img src="${item.photo}" class="product-image" alt="Товар" onclick="openProductModal('${id}')">
                         <div class="card-body">
                             <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
@@ -343,7 +405,7 @@
                             <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
                             ${stockHtml}
                             <div class="price-row">
-                                <div class="price-box">${oldPriceHtml}<span class="new-price">${item.price} €</span></div>
+                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${item.price} €</span></div>
                                 <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price}, this)">${cartIconSvg}</button>
                                 <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
                                     <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
@@ -357,7 +419,7 @@
                 grid.insertAdjacentHTML('beforeend', cardHtml);
                 if (cart[id]) grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
             }
-            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">В этой категории пока пусто 🥲</div>';
+            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
         }
 
         setInterval(() => {
@@ -426,7 +488,6 @@
         function openCartScreen() {
             if (cartTotal === 0) return tg.showAlert("Ваша корзина пуста!");
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-            // Включаем flex-отображение для корзины, чтобы работала прокрутка
             document.getElementById('cartScreen').style.display = 'flex'; currentStep = 2; tg.BackButton.show(); renderCartScreen(); updateMainButton();
         }
 
