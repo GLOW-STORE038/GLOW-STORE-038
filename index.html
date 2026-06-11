@@ -176,6 +176,30 @@
         .menu-item:not(:last-child)::after { display: none !important; } /* Отключаем старые линии */
         .glow-divider-menu { width: 100%; height: 2px; background: rgba(255,255,255,0.6); box-shadow: 0 0 15px rgba(255,255,255,1); border-radius: 10px; margin: 5px 0; }
         .close-menu-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: white; font-size: 30px; cursor: pointer; }
+    /* =====================================================================
+           НОВЫЙ ПРЕМИУМ-ПРОФИЛЬ (НЕОН И ЦЕНТРОВКА)
+           ===================================================================== */
+        .profile-card { background: #121212; border-radius: 28px; padding: 40px 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-top: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .profile-avatar-center { width: 110px; height: 110px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; margin: 0 auto 20px auto; display: block; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .profile-name-center { font-size: 32px; font-weight: 900; margin-bottom: 30px; text-shadow: 0 0 15px rgba(255,255,255,0.4); line-height: 1.1; }
+        
+        .history-title-main { text-align: left; font-size: 16px; font-weight: 800; margin-bottom: 15px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .history-scroll-new { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; text-align: left; align-items: center; }
+        .history-card-new { min-width: 80px; max-width: 80px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
+        .history-img-new { width: 80px; height: 110px; object-fit: cover; border-radius: 16px; border: 1px solid #333; }
+        .history-title-new { font-size: 11px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #ccc; font-weight: 600; }
+        .history-more-btn { min-width: 60px; height: 60px; border-radius: 50%; background: #1a1a1a; border: 1px solid #333; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: bold; cursor: pointer; flex-shrink: 0; margin-left: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: background 0.2s; }
+        .history-more-btn:active { background: #333; }
+
+        .stat-glow-box { margin-bottom: 35px; text-align: center; }
+        .stat-glow-num { font-size: 42px; font-weight: 900; margin-bottom: 5px; }
+        /* Фиолетовый неон */
+        .stat-glow-num.c1 { color: #d6a2e8; text-shadow: 0 0 20px rgba(214, 162, 232, 0.5); } 
+        /* Синий неон */
+        .stat-glow-num.c2 { color: #82ccdd; text-shadow: 0 0 20px rgba(130, 204, 221, 0.5); } 
+        /* Сиреневый неон */
+        .stat-glow-num.c3 { color: #bca0dc; text-shadow: 0 0 20px rgba(188, 160, 220, 0.5); } 
+        .stat-glow-label { font-size: 14px; color: #888; font-weight: 600; text-transform: lowercase; }
     </style>
 </head>
 <body>
@@ -263,21 +287,28 @@
     </div>
 
     <div id="profileScreen" class="screen">
-        <div class="profile-header-large">
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="avatar-big">
-            <div class="profile-info-big">
-                <div class="profile-name-big" id="profileNameBig">Загрузка...</div>
-                <div class="profile-points-big">Бонусы: <span id="profilePointsBig">0</span></div>
+        <div class="profile-card">
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="profile-avatar-center">
+            <div class="profile-name-center" id="profileNameBig">Загрузка...</div>
+            
+            <div class="history-title-main">Последние заказы</div>
+            <div class="history-scroll-new" id="historyScroll">
+                </div>
+            
+            <hr class="glow-divider" style="margin: 35px 0;">
+            
+            <div class="stat-glow-box">
+                <div class="stat-glow-num c1" id="statItems">0</div>
+                <div class="stat-glow-label">товаров заказано</div>
             </div>
-        </div>
-        <hr class="divider">
-        <div class="section-title">Последние заказы</div>
-        <div class="history-scroll" id="historyScroll"></div>
-        <hr class="divider">
-        <div class="stats-grid">
-            <div class="stat-box"><div class="stat-value" id="statItems">0</div><div class="stat-label">товаров заказано</div></div>
-            <div class="stat-box"><div class="stat-value" id="statSpent">0</div><div class="stat-label">балов потрачено</div></div>
-            <div class="stat-box"><div class="stat-value" id="statEarned">0</div><div class="stat-label">балов накоплено</div></div>
+            <div class="stat-glow-box">
+                <div class="stat-glow-num c2" id="statSpent">0</div>
+                <div class="stat-glow-label">баллов потрачено</div>
+            </div>
+            <div class="stat-glow-box" style="margin-bottom: 0;">
+                <div class="stat-glow-num c3" id="statEarned">0</div>
+                <div class="stat-glow-label">баллов накоплено</div>
+            </div>
         </div>
     </div>
 
@@ -324,18 +355,30 @@
             if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
             
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0];
-            document.getElementById('statItems').innerText = statsData[0];
+            document.getElementById('statItems').innerText = statsData[0] + '+'; // Добавил плюсики как на скрине
             document.getElementById('statSpent').innerText = statsData[1];
             document.getElementById('statEarned').innerText = statsData[2];
 
             let historyData = urlParams.get('h') ? JSON.parse(decodeURIComponent(urlParams.get('h'))) : [];
             const hScroll = document.getElementById('historyScroll');
+            
             if (historyData.length > 0) {
-                historyData.slice().reverse().forEach(order => {
+                // Берем только 5 самых новых заказов
+                let recentOrders = historyData.slice().reverse().slice(0, 5);
+                
+                recentOrders.forEach(order => {
                     let popupText = `📦 Товары: ${order.f}\n💰 Сумма: ${order.t} €\n🎁 Списано баллов: ${order.s}`;
-                    let card = `<div class="history-card" onclick="tg.showAlert('${popupText}')"><img src="${order.p}" class="history-img"><div class="history-title">${order.n}</div></div>`;
+                    let card = `<div class="history-card-new" onclick="tg.showAlert('${popupText}')"><img src="${order.p}" class="history-img-new"><div class="history-title-new">${order.n}</div></div>`;
                     hScroll.insertAdjacentHTML('beforeend', card);
                 });
+                
+                // Если заказов было больше 5, рисуем кнопку "еще..."
+                if (historyData.length > 5) {
+                    let moreBtn = `<div class="history-more-btn" onclick="tg.showAlert('Всего заказов: ${historyData.length}\\n\\nФункция полной истории в разработке!')">еще...</div>`;
+                    hScroll.insertAdjacentHTML('beforeend', moreBtn);
+                }
+            } else {
+                hScroll.innerHTML = '<p style="color:#666; font-size:13px; text-align:center; width:100%;">У вас пока нет заказов</p>';
             }
         } catch (e) {}
 
