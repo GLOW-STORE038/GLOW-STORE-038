@@ -16,48 +16,37 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =====================================================================
-           [2] ПАНЕЛЬ НАВИГАЦИИ (СПРАВА), ШТОРКА И ЗАГОЛОВОК
+           [2] ПАНЕЛЬ НАВИГАЦИИ (ЗАКРЕПЛЕНА ПОВЕРХ ЭКРАНА)
            ===================================================================== */
-        /* Панелька с кнопками: оставили ширину, но уменьшили высоту */
-        .top-nav { display: flex; justify-content: flex-end; gap: 8px; background: #161616; padding: 8px; border-radius: 16px; border: 1px solid #333; margin-left: auto; width: max-content; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        /* position: fixed намертво крепит меню, а backdrop-filter делает размытие фона */
+        .top-nav { position: fixed; top: 15px; right: 15px; z-index: 999; display: flex; gap: 8px; background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 8px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
         .nav-btn { width: 40px; height: 32px; background: transparent; border-radius: 10px; display: flex; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
         .nav-icon { width: 20px; height: 20px; fill: #ffffff; }
 
         /* Кружок на корзине */
         .cart-badge { position: absolute; bottom: -6px; right: -6px; background: #ff4d4d; color: white; font-size: 10px; font-weight: 900; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; border: 2px solid #161616; display: none; }
 
-        /* Всплывающая шторка (анимация "ползунка яркости") */
+        /* Всплывающая шторка */
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); z-index: 1000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; }
         .menu-overlay.active { visibility: visible; background: rgba(0,0,0,0.85); }
 
-        /* Сама панель меню: ОЧЕНЬ тонкая рамка для мягкого перехода */
-        /* Сама панель меню: уменьшили высоту до 35vh, сделали тонкую грань */
-        .menu-panel { position: absolute; top: 15px; left: 15px; right: 15px; height: 35vh; background: #121212; border-radius: 24px; padding: 25px 20px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(0.95); opacity: 0; transform-origin: top center; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+        .menu-panel { position: absolute; top: 15px; left: 15px; right: 15px; height: 35vh; background: #121212; border-radius: 24px; padding: 25px 20px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(0.95); opacity: 0; transform-origin: top right; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
         .menu-overlay.active .menu-panel { transform: scale(1); opacity: 1; }
 
-        /* Слова-кнопки и светящиеся полоски */
         .menu-item { background: transparent; border: none; color: white; font-size: 18px; font-weight: bold; text-align: center; padding: 10px 0; cursor: pointer; letter-spacing: 0.5px; }
         .menu-item:not(:last-child)::after { content: ''; display: block; width: 30%; height: 1px; background: rgba(255, 255, 255, 0.6); box-shadow: 0 0 10px rgba(255, 255, 255, 1); margin: 20px auto 0 auto; border-radius: 10px; }
 
         /* =====================================================================
-           ДИЗАЙН КАРТЫ И ЗАГОЛОВКА (МАКСИМУМ ВОЗДУХА И ТОНКИЙ НЕОН)
+           ДИЗАЙН КАРТЫ И ЗАГОЛОВКА
            ===================================================================== */
-        /* Контейнер на 45% высоты экрана для максимума пространства */
-        .store-title-container { position: relative; text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; height: 45vh; min-height: 260px; max-height: 400px; pointer-events: none; }
+        /* margin-top: 70px не дает заголовку залезть под закрепленное меню */
+        .store-title-container { position: relative; text-align: center; margin-bottom: 20px; margin-top: 70px; display: flex; justify-content: center; align-items: center; height: 45vh; min-height: 260px; max-height: 400px; pointer-events: none; }
         
-        /* Детализированная карта: ультра-тонкая линия с мощным неоновым свечением */
-        .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 320px; width: auto; fill: none; stroke: #ffffff; stroke-width: 0.5px; filter: drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 2px rgba(255,255,255,0.8)); z-index: 1; pointer-events: none; }
+        /* Это стиль для твоей прозрачной PNG картинки (сразу добавляет неон) */
+        .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 320px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 2px rgba(255,255,255,0.8)); z-index: 1; pointer-events: none; }
         
-        /* Надпись, разрезающая неоновую карту по центру */
         .main-title { position: relative; z-index: 2; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2.5px; background: #0d0d0d; padding: 10px 18px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); color: #fff; }
         
-        /* Светящаяся карта: высота на максимум, ширина ограничена, чтобы не вылезать за текст */
-        .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 280px; width: auto; fill: none; stroke: rgba(255, 255, 255, 0.4); stroke-width: 1.2; filter: drop-shadow(0 0 6px rgba(255,255,255,0.4)); z-index: 1; pointer-events: none; }
-        
-        /* Надпись, разрезающая карту */
-        .main-title { position: relative; z-index: 2; font-size: 34px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; background: #0d0d0d; padding: 8px 15px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); color: #fff; }
-        
-        /* Воздух перед каталогом */
         .sub-title { font-size: 15px; color: #888; text-align: center; margin-bottom: 50px; font-weight: 600; letter-spacing: 0.5px; }
 
         .filter-btn { width: 100%; padding: 18px; background: #161616; border-radius: 16px; border: 1px solid #333; color: #fff; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: background 0.2s; }
@@ -121,6 +110,29 @@
         .points-box { background: #1a1a1a; padding: 15px; border-radius: 14px; border: 1px dashed #444; margin-bottom: 20px; }
         
         .loader { text-align: center; padding: 50px 0; color: #888; font-size: 14px; }
+
+        /* =====================================================================
+           ШТОРКА ФИЛЬТРА И АНИМАЦИЯ ТРЯСКИ (ОШИБКА ОСТАТКА)
+           ===================================================================== */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-6px); }
+        }
+        .shake-error { animation: shake 0.4s ease-in-out; border-color: #ff4d4d !important; box-shadow: 0 0 15px rgba(255, 77, 77, 0.4) !important; }
+        
+        .filter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); z-index: 1000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; }
+        .filter-overlay.active { visibility: visible; background: rgba(0,0,0,0.85); }
+        
+        .filter-panel { position: absolute; bottom: 0; left: 0; width: 100%; background: #121212; border-radius: 28px 28px 0 0; padding: 25px 20px 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 12px; max-height: 75vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+        .filter-overlay.active .filter-panel { transform: translateY(0); }
+        
+        .filter-header { text-align: center; color: #888; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        
+        .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; }
+        .cat-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border-color: #fff; }
+        .cat-btn-all.active { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; box-shadow: 0 4px 15px rgba(75, 123, 236, 0.4); }
     </style>
 </head>
 <body>
@@ -146,11 +158,19 @@
         </div>
     </div>
 
+    <div class="filter-overlay" id="filterOverlay">
+        <div class="filter-panel" id="filterPanel">
+            <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
+            
+            <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">📦 Все товары</div>
+            <div id="dynamicCategories" style="display: contents;"></div>
+        </div>
+    </div>
+
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
-            <svg class="bw-map" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                <path d="M38.5,12.1 l2.3,-3.1 l-1.2,-2.4 l3.5,-1.8 l1.2,2.9 l4.1,-1.5 l2.2,3.1 l1.5,0.8 l-1.2,3.4 l4.1,-2.1 l2.8,1.5 l3.1,0.5 l-1.2,2.4 l2.1,3.1 l-2.5,2.4 l3.8,1.2 l2.1,4.5 l-1.8,2.1 l2.5,3.4 l3.1,-1.2 l1.8,2.4 l4.2,-1.5 l-1.2,3.8 l3.5,4.1 l-2.1,5.2 l1.5,3.1 l3.8,-1.5 l1.2,4.5 l-1.5,3.2 l2.8,1.8 l1.5,4.1 l-2.1,2.8 l3.5,2.1 l-1.2,5.2 l2.1,3.1 l-3.5,2.4 l1.2,4.1 l-4.5,3.8 l1.8,2.4 l-3.1,3.5 l-1.2,4.1 l-2.5,-1.5 l-2.1,2.8 l-3.5,-1.2 l-1.8,3.1 l-4.5,-2.1 l-1.2,2.8 l-3.1,1.5 l-1.5,3.8 l-4.2,-2.1 l-2.1,3.5 l-2.8,-1.2 l-1.2,3.1 l-4.5,-1.8 l-1.5,2.4 l-3.8,-1.2 l-1.2,-3.5 l-3.1,1.5 l-2.1,-2.8 l-3.5,1.2 l-1.8,-3.1 l-4.5,2.1 l-1.2,-2.8 l-3.1,-0.5 l-2.1,2.4 l-1.5,-3.1 l-3.8,1.5 l-1.2,-4.2 l-2.5,1.8 l-1.8,-3.5 l2.1,-2.4 l-3.1,-3.1 l1.2,-4.5 l2.5,1.2 l1.5,-3.8 l-2.8,-2.1 l1.2,-4.1 l2.5,1.5 l1.8,-3.1 l-2.1,-3.8 l3.5,-2.1 l1.2,-4.5 l-1.8,-2.8 l3.1,-1.5 l1.5,-3.8 l3.8,1.2 l1.2,-4.1 l-2.5,-1.8 l2.1,-3.5 l3.1,1.2 l1.5,-4.2 l3.8,-1.5 l1.2,-3.1 l-2.5,-2.4 l1.8,-3.5 l-2.1,-1.8 l3.5,-2.4 l1.2,-4.5 Z" />
-            </svg>
+            <img src="https://files.catbox.moe/твой_файл.png" alt="Map" class="bw-map">
+            
             <div class="main-title">WÜRTEN STORE</div>
         </div>
         <div class="sub-title">Каталог</div>
@@ -209,9 +229,6 @@
     </div>
 
     <script>
-        // =====================================================================
-        // [1] ИНИЦИАЛИЗАЦИЯ И НАСТРОЙКИ
-        // =====================================================================
         let tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -226,61 +243,55 @@
         let realPoints = 0;
         let cartTotal = 0;
         let globalUserName = 'Гость';
+        
         let menuData = {}; 
+        let categoriesData = {}; // Новая база категорий
+        let currentCategory = 'all'; // Текущий фильтр
 
         // =====================================================================
-        // [2] ПАРСИНГ ДАННЫХ КЛИЕНТА (ИЗ БОТА)
+        // ПАРСИНГ ДАННЫХ ИЗ БОТА
         // =====================================================================
         try {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('name')) globalUserName = urlParams.get('name');
-            document.getElementById('userName').innerText = globalUserName;
-
-            if (urlParams.get('points')) {
-                realPoints = parseInt(urlParams.get('points'));
-                document.getElementById('userPointsText').innerText = realPoints + ' баллов';
-            }
-            if (tg.initDataUnsafe?.user?.photo_url) {
-                document.getElementById('userAvatar').src = tg.initDataUnsafe.user.photo_url;
-            }
-
-            // ПАРСИНГ СТАТИСТИКИ
+            if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
+            
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0];
             document.getElementById('statItems').innerText = statsData[0];
             document.getElementById('statSpent').innerText = statsData[1];
             document.getElementById('statEarned').innerText = statsData[2];
 
-            // ПАРСИНГ ИСТОРИИ И СОЗДАНИЕ КАРУСЕЛИ
-            let historyData = [];
-            if (urlParams.get('h')) historyData = JSON.parse(decodeURIComponent(urlParams.get('h')));
-            
+            let historyData = urlParams.get('h') ? JSON.parse(decodeURIComponent(urlParams.get('h'))) : [];
             const hScroll = document.getElementById('historyScroll');
             if (historyData.length === 0) {
                 hScroll.innerHTML = '<p style="color:#555; font-size:13px; padding:10px;">У вас пока нет выполненных заказов.</p>';
             } else {
                 historyData.slice().reverse().forEach(order => {
                     let popupText = `📦 Товары: ${order.f}\n💰 Сумма: ${order.t} €\n🎁 Списано баллов: ${order.s}\n🏃‍♂️ Выдал: ${order.c}`;
-                    let card = `
-                        <div class="history-card" onclick="tg.showAlert('${popupText}')">
-                            <img src="${order.p}" class="history-img">
-                            <div class="history-title">${order.n}</div>
-                        </div>
-                    `;
+                    let card = `<div class="history-card" onclick="tg.showAlert('${popupText}')"><img src="${order.p}" class="history-img"><div class="history-title">${order.n}</div></div>`;
                     hScroll.insertAdjacentHTML('beforeend', card);
                 });
             }
         } catch (e) { console.error("Ошибка парсинга:", e); }
 
         // =====================================================================
-        // [3] ЗАГРУЗКА ТОВАРОВ ИЗ ИНТЕРНЕТА (МОСТ)
+        // ЗАГРУЗКА ИЗ ОБЛАКА И ФИЛЬТРЫ
         // =====================================================================
         async function loadMenu() {
             try {
-                const response = await fetch(JSONBIN_URL, {
-                    headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
-                });
+                const response = await fetch(JSONBIN_URL, { headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" } });
                 const json = await response.json();
-                menuData = json.record || json; 
+                let rawData = json.record || json; 
+                
+                // Проверяем, в новом ли формате данные (с категориями)
+                if (rawData.items) {
+                    menuData = rawData.items;
+                    categoriesData = rawData.categories || {};
+                } else {
+                    menuData = rawData; 
+                }
+                
+                renderCategories();
                 renderCatalog();
             } catch (e) {
                 console.error("Ошибка:", e);
@@ -288,8 +299,25 @@
             }
         }
 
+        function renderCategories() {
+            const container = document.getElementById('dynamicCategories');
+            container.innerHTML = '';
+            for (let cat_id in categoriesData) {
+                let catHtml = `<div class="cat-btn" data-id="${cat_id}" onclick="selectCategory('${cat_id}', this)">${categoriesData[cat_id]}</div>`;
+                container.insertAdjacentHTML('beforeend', catHtml);
+            }
+        }
+
+        window.selectCategory = function(cat_id, btnElement) {
+            currentCategory = cat_id;
+            document.querySelectorAll('#filterPanel .cat-btn, #filterPanel .cat-btn-all').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('filterOverlay').classList.remove('active');
+            renderCatalog();
+        };
+
         // =====================================================================
-        // [4] ОТРИСОВКА КАРТОЧЕК НА ЭКРАНЕ
+        // ОТРИСОВКА ВИТРИНЫ
         // =====================================================================
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid');
@@ -298,19 +326,14 @@
             for (let id in menuData) {
                 let item = menuData[id];
                 
+                // ПРИМЕНЕНИЕ ФИЛЬТРА
+                if (currentCategory !== 'all' && item.category !== currentCategory) continue;
+
                 let isOut = item.stock <= 0;
                 let cardClass = isOut ? "card disabled" : "card";
-                let stockHtml = isOut 
-                    ? `<div class="stock-empty">Нет в наличии</div>` 
-                    : `<div class="stock-ok">В наличии</div>`;
-
-                let oldPriceHtml = (item.old_price && item.old_price > 0) 
-                    ? `<span class="old-price">${item.old_price} €</span>` 
-                    : `<span class="old-price"></span>`;
-
-                let timerHtml = (item.timer_end && item.timer_end > 0)
-                    ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>`
-                    : ``;
+                let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
+                let oldPriceHtml = (item.old_price && item.old_price > 0) ? `<span class="old-price">${item.old_price} €</span>` : `<span class="old-price"></span>`;
+                let timerHtml = (item.timer_end && item.timer_end > 0) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
 
                 let cardHtml = `
                     <div class="${cardClass}" data-id="${id}" data-name="${item.name}" data-price="${item.price}">
@@ -323,9 +346,9 @@
                             <div class="price-row">
                                 <div class="price-box">${oldPriceHtml}<span class="new-price">${item.price} €</span></div>
                                 <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price}, this)">+</button>
-                                <div class="quantity-controls">
+                                <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
                                     <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
-                                    <span class="item-count">1</span>
+                                    <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
                                     <button class="btn-plus" onclick="changeCount('${id}', 1, this)">+</button>
                                 </div>
                             </div>
@@ -333,63 +356,51 @@
                     </div>
                 `;
                 grid.insertAdjacentHTML('beforeend', cardHtml);
+                
+                if (cart[id]) {
+                    grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
+                }
             }
+            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">В этой категории пока пусто 🥲</div>';
         }
 
-        // =====================================================================
-        // [5] АНИМАЦИЯ ТАЙМЕРОВ (ОБНОВЛЕНИЕ КАЖДУЮ СЕКУНДУ)
-        // =====================================================================
         setInterval(() => {
             document.querySelectorAll('.timer-badge').forEach(badge => {
                 let end = parseInt(badge.getAttribute('data-end'));
                 let now = Math.floor(Date.now() / 1000); 
-                
                 if (end > now) {
                     let diff = end - now;
-                    let h = Math.floor(diff / 3600);
-                    let m = Math.floor((diff % 3600) / 60);
-                    let s = diff % 60;
+                    let h = Math.floor(diff / 3600); let m = Math.floor((diff % 3600) / 60); let s = diff % 60;
                     badge.innerText = `⏳ ${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-                } else {
-                    badge.style.display = 'none'; 
-                }
+                } else { badge.style.display = 'none'; }
             });
         }, 1000);
 
         // =====================================================================
-        // [6] КОРЗИНА И ЛОГИКА КНОПОК ТОВАРОВ
+        // КОРЗИНА И АНИМАЦИЯ ТРЯСКИ ПРИ НЕХВАТКЕ
         // =====================================================================
         function updateMainButton() {
-            cartTotal = 0;
-            let totalItems = 0;
+            cartTotal = 0; let totalItems = 0;
+            for (let id in cart) { cartTotal += cart[id].price * cart[id].count; totalItems += cart[id].count; }
             
-            for (let id in cart) { 
-                cartTotal += cart[id].price * cart[id].count; 
-                totalItems += cart[id].count; // Считаем штуки для кружочка
-            }
-            
-            // Обновляем кружочек на верхней корзине
             const badge = document.getElementById('cartBadge');
-            if (totalItems > 0) {
-                badge.style.display = 'flex';
-                badge.innerText = totalItems;
-            } else {
-                badge.style.display = 'none';
-            }
+            if (totalItems > 0) { badge.style.display = 'flex'; badge.innerText = totalItems; } 
+            else { badge.style.display = 'none'; }
             
             if (currentStep === 1) {
-                if (cartTotal > 0) { tg.MainButton.setText(`ДАЛЕЕ: ${cartTotal} €`); tg.MainButton.show(); } 
-                else { tg.MainButton.hide(); }
-            } else if (currentStep === 2) {
-                tg.MainButton.setText(`ПОДТВЕРДИТЬ АДРЕС`); tg.MainButton.show();
-            } else if (currentStep === 3) {
-                tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show();
-            }
+                if (cartTotal > 0) { tg.MainButton.setText(`ДАЛЕЕ: ${cartTotal} €`); tg.MainButton.show(); } else { tg.MainButton.hide(); }
+            } else if (currentStep === 2) { tg.MainButton.setText(`ПОДТВЕРДИТЬ АДРЕС`); tg.MainButton.show(); } 
+            else if (currentStep === 3) { tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show(); }
         }
 
         window.addToCart = function(id, name, price, btn) {
-            cart[id] = { name: name, price: price, count: 1 };
             let card = btn.closest('.card');
+            if (menuData[id].stock <= 0) {
+                card.classList.add('shake-error');
+                setTimeout(() => card.classList.remove('shake-error'), 400);
+                return;
+            }
+            cart[id] = { name: name, price: price, count: 1 };
             btn.style.display = 'none';
             card.querySelector('.quantity-controls').style.display = 'flex';
             card.querySelector('.item-count').innerText = 1;
@@ -397,8 +408,18 @@
         };
 
         window.changeCount = function(id, delta, btn) {
-            cart[id].count += delta;
             let card = btn.closest('.card');
+            let newCount = cart[id].count + delta;
+            
+            // ТРЯСКА, ЕСЛИ ПРЕВЫШЕН СКЛАД
+            if (newCount > menuData[id].stock) {
+                card.classList.add('shake-error');
+                setTimeout(() => card.classList.remove('shake-error'), 400);
+                tg.HapticFeedback.notificationOccurred('error'); // Вибрация ошибки
+                return; 
+            }
+
+            cart[id].count = newCount;
             if (cart[id].count <= 0) {
                 delete cart[id];
                 card.querySelector('.quantity-controls').style.display = 'none';
@@ -410,107 +431,64 @@
         };
 
         // =====================================================================
-        // [7] НАВИГАЦИЯ, ПРОФИЛЬ, ШТОРКА И ОТПРАВКА
+        // НАВИГАЦИЯ И СОБЫТИЯ
         // =====================================================================
-        
-        // 1. Открытие профиля
         document.getElementById('openProfileBtn').addEventListener('click', () => {
-            document.getElementById('catalogScreen').style.display = 'none';
-            document.getElementById('topNav').style.display = 'none'; // Прячем меню в профиле
-            document.getElementById('profileScreen').style.display = 'block';
-            document.getElementById('profileNameBig').innerText = globalUserName;
-            document.getElementById('profilePointsBig').innerText = realPoints;
-            if (tg.initDataUnsafe?.user?.photo_url) document.getElementById('profileAvatarBig').src = tg.initDataUnsafe.user.photo_url;
-            
-            currentStep = 4; 
-            tg.BackButton.show();
-            tg.MainButton.hide();
+            document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
+            document.getElementById('profileScreen').style.display = 'block'; currentStep = 4; 
+            tg.BackButton.show(); tg.MainButton.hide();
         });
 
-        // 2. Открытие/Закрытие шторки меню
-        const overlay = document.getElementById('menuOverlay');
-        document.getElementById('openMenuBtn').addEventListener('click', () => {
-            overlay.classList.add('active');
-        });
-        overlay.addEventListener('click', (e) => {
-            if(e.target === overlay) overlay.classList.remove('active');
-        });
+        const menuOverlay = document.getElementById('menuOverlay');
+        document.getElementById('openMenuBtn').addEventListener('click', () => menuOverlay.classList.add('active'));
+        menuOverlay.addEventListener('click', (e) => { if(e.target === menuOverlay) menuOverlay.classList.remove('active'); });
 
-        // 3. Работа верхней кнопки "Корзина" (действует как кнопка ДАЛЕЕ)
+        // Открытие шторки категорий
+        const filterOverlay = document.getElementById('filterOverlay');
+        document.getElementById('categoryFilterBtn').addEventListener('click', () => filterOverlay.classList.add('active'));
+        filterOverlay.addEventListener('click', (e) => { if(e.target === filterOverlay) filterOverlay.classList.remove('active'); });
+
         document.getElementById('cartTopBtn').addEventListener('click', () => {
             if (currentStep === 1 && cartTotal > 0) {
-                // Имитируем нажатие главной кнопки Телеграма
-                document.getElementById('catalogScreen').style.display = 'none';
-                document.getElementById('topNav').style.display = 'none';
-                document.getElementById('mapScreen').style.display = 'block';
-                currentStep = 2;
-                tg.BackButton.show(); 
-                updateMainButton();
-            } else if (cartTotal === 0) {
-                tg.showAlert("Ваша корзина пуста!");
-            }
+                document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
+                document.getElementById('mapScreen').style.display = 'block'; currentStep = 2;
+                tg.BackButton.show(); updateMainButton();
+            } else if (cartTotal === 0) { tg.showAlert("Ваша корзина пуста!"); }
         });
 
-        // Обычные переходы (как и раньше)
         tg.onEvent('mainButtonClicked', () => {
             if (currentStep === 1) {
-                document.getElementById('catalogScreen').style.display = 'none';
-                document.getElementById('topNav').style.display = 'none';
-                document.getElementById('mapScreen').style.display = 'block';
-                currentStep = 2;
-                tg.BackButton.show(); 
-                updateMainButton();
-            } 
-            else if (currentStep === 2) {
+                document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
+                document.getElementById('mapScreen').style.display = 'block'; currentStep = 2;
+                tg.BackButton.show(); updateMainButton();
+            } else if (currentStep === 2) {
                 let address = document.getElementById('addressInput').value;
                 if (address.trim() === '') { alert("Пожалуйста, впишите адрес доставки!"); return; }
-                document.getElementById('mapScreen').style.display = 'none';
-                document.getElementById('pointsScreen').style.display = 'block';
-                document.getElementById('finalTotalUi').innerText = cartTotal + ' €';
-                currentStep = 3;
-                updateMainButton();
-            }
-            else if (currentStep === 3) {
+                document.getElementById('mapScreen').style.display = 'none'; document.getElementById('pointsScreen').style.display = 'block';
+                document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; currentStep = 3; updateMainButton();
+            } else if (currentStep === 3) {
                 let ptsSpent = parseInt(document.getElementById('pointsInput').value) || 0;
                 let address = document.getElementById('addressInput').value;
-                
                 if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
                 if (ptsSpent > realPoints) { alert("У вас недостаточно баллов!"); return; }
                 if (ptsSpent > cartTotal) { alert("Нельзя списать баллов больше, чем сумма заказа!"); return; }
-
-                let finalOrder = { cart: cart, address: address, points: ptsSpent, total: cartTotal };
-                tg.sendData(JSON.stringify(finalOrder));
+                tg.sendData(JSON.stringify({ cart: cart, address: address, points: ptsSpent, total: cartTotal }));
                 tg.close();
             }
         });
 
         tg.onEvent('backButtonClicked', () => {
-            if (currentStep === 4) { // Возврат из профиля
-                document.getElementById('profileScreen').style.display = 'none';
-                document.getElementById('catalogScreen').style.display = 'block';
-                document.getElementById('topNav').style.display = 'flex';
-                currentStep = 1;
-                tg.BackButton.hide();
-                updateMainButton();
-            }
-            else if (currentStep === 2) { // Возврат с карты
-                document.getElementById('mapScreen').style.display = 'none';
-                document.getElementById('catalogScreen').style.display = 'block';
-                document.getElementById('topNav').style.display = 'flex';
-                currentStep = 1;
-                tg.BackButton.hide();
-                updateMainButton();
-            } else if (currentStep === 3) { // Возврат со списания баллов
-                document.getElementById('pointsScreen').style.display = 'none';
-                document.getElementById('mapScreen').style.display = 'block';
-                currentStep = 2;
-                updateMainButton();
+            if (currentStep === 4 || currentStep === 2) { 
+                document.getElementById('profileScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'none';
+                document.getElementById('catalogScreen').style.display = 'block'; document.getElementById('topNav').style.display = 'flex';
+                currentStep = 1; tg.BackButton.hide(); updateMainButton();
+            } else if (currentStep === 3) {
+                document.getElementById('pointsScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
+                currentStep = 2; updateMainButton();
             }
         });
 
-        // ЗАПУСК И ОТРИСОВКА ВИТРИНЫ!
         loadMenu();
-
     </script>
 </body>
 </html>
