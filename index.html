@@ -18,11 +18,14 @@
         /* =====================================================================
            ПАНЕЛЬ НАВИГАЦИИ (ЗАКРЕПЛЕНА ПОВЕРХ ЭКРАНА)
            ===================================================================== */
-        .top-nav { position: fixed; top: 15px; right: 15px; z-index: 999; display: flex; gap: 8px; background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.6); padding: 6px 8px; }
-        .nav-btn { width: 40px; height: 26px; background: transparent; border-radius: 10px; display: flex; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
+        .top-nav { position: fixed; top: 15px; right: 15px; z-index: 999; display: flex; gap: 8px; background: rgba(22, 22, 22, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.6); padding: 6px 8px; margin-bottom: 25px; }
+        
+        /* Сделали кнопки меню ВЫШЕ (height 34px) */
+        .nav-btn { width: 40px; height: 34px; background: transparent; border-radius: 10px; display: flex; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
         .nav-icon { width: 20px; height: 20px; fill: #ffffff; }
 
-        .cart-badge { position: absolute; bottom: -6px; right: -6px; background: #ff4d4d; color: white; font-size: 10px; font-weight: 900; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; border: 2px solid #161616; display: none; }
+        /* Голубой кружок уведомлений (Стиль Telegram) */
+        .cart-badge { position: absolute; bottom: -6px; right: -6px; background: #3390ec; color: white; font-size: 10px; font-weight: 900; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; border: 2px solid #161616; display: none; }
 
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); z-index: 1000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; }
         .menu-overlay.active { visibility: visible; background: rgba(0,0,0,0.85); }
@@ -41,17 +44,18 @@
         
         .main-title { position: relative; z-index: 2; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2.5px; background: #0d0d0d; padding: 10px 18px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); color: #fff; }
         
-        /* Измененное слово "Ассортимент" */
-        .sub-title { font-size: 18px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); text-align: center; margin-top: -15px; margin-bottom: 25px; font-weight: 800; letter-spacing: 0.5px; }
+        /* Возвращен серый цвет и увеличен размер */
+        .sub-title { font-size: 18px; color: #888; text-align: center; margin-top: -15px; margin-bottom: 25px; font-weight: 800; letter-spacing: 0.5px; }
 
-        .filter-btn { width: 100%; padding: 18px; background: #161616; border-radius: 16px; border: 1px solid #333; color: #fff; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: background 0.2s; }
+        /* Сделали кнопку выбора товаров МЕНЬШЕ (padding 13px) */
+        .filter-btn { width: 100%; padding: 13px; background: #161616; border-radius: 16px; border: 1px solid #333; color: #fff; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: background 0.2s; }
         .filter-btn:active { background: #222; }
 
         /* =====================================================================
-           ШТОРКА ФИЛЬТРА И АНИМАЦИЯ ТРЯСКИ
+           ШТОРКА ФИЛЬТРА И БЕЛАЯ ТРЯСКА
            ===================================================================== */
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-6px); } }
-        /* Белая тряска без ошибки */
+        /* Белая тряска */
         .shake-error { animation: shake 0.4s ease-in-out; border-color: #ffffff !important; box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important; }
         
         .filter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); z-index: 1000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; }
@@ -73,10 +77,11 @@
         .product-image { width: 100%; aspect-ratio: 1; object-fit: cover; background-color: #1e1e1e; border-bottom: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; }
         .card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
         
-        .title { font-size: 14px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; word-wrap: break-word; overflow-wrap: break-word; -webkit-hyphens: auto; hyphens: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; height: 33px; cursor: pointer; }
+        .title { font-size: 14px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; word-wrap: break-word; overflow-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; height: 33px; cursor: pointer; }
         .timer-badge { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; font-size: 11px; padding: 4px 8px; border-radius: 6px; display: inline-block; margin-bottom: 8px; font-weight: bold; border: 1px solid rgba(255, 77, 77, 0.3); }
         .specs { color: #aaa; font-size: 12px; margin-bottom: 8px; cursor: pointer; }
-        /* Голубой текст наличия */
+        
+        /* Голубой статус наличия */
         .stock-ok { color: #3390ec; font-size: 11px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
         .stock-empty { color: #ff4d4d; font-size: 11px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
 
@@ -91,23 +96,29 @@
         .item-count { font-weight: bold; font-size: 14px; min-width: 16px; text-align: center; }
 
         /* =====================================================================
-           ПРОМЕЖУТОЧНАЯ КОРЗИНА
+           ПРОМЕЖУТОЧНАЯ КОРЗИНА (ЛИСТАЕТСЯ, ИТОГ ВНИЗУ)
            ===================================================================== */
+        /* Настроили высоту, чтобы корзина листалась, а итог стоял намертво */
+        #cartScreen { flex-direction: column; height: calc(100vh - 40px); }
+        .cart-scroll-area { flex-grow: 1; overflow-y: auto; padding-right: 5px; margin-bottom: 10px; }
+        .cart-fixed-bottom { flex-shrink: 0; padding-bottom: 10px; }
+
         .cart-item-card { background: #1a1a1a; border-radius: 16px; padding: 12px; margin-bottom: 12px; display: flex; gap: 15px; align-items: center; border: 1px solid #333; }
         .cart-item-img { width: 65px; height: 65px; border-radius: 12px; object-fit: cover; background: #0d0d0d; }
         .cart-item-info { flex-grow: 1; }
         .cart-item-title { font-weight: 800; font-size: 15px; margin-bottom: 6px; line-height: 1.2; }
         .cart-item-price { color: #aaa; font-size: 14px; font-weight: bold; }
-        .glow-divider { border: 0; height: 1px; background: rgba(255,255,255,0.6); box-shadow: 0 0 12px rgba(255,255,255,1); margin: 30px 0; border-radius: 10px; }
-        .cart-total-text { font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 20px; letter-spacing: 1px; }
+        .glow-divider { border: 0; height: 1px; background: rgba(255,255,255,0.6); box-shadow: 0 0 12px rgba(255,255,255,1); margin: 20px 0; border-radius: 10px; }
+        .cart-total-text { font-size: 22px; font-weight: 900; text-align: center; margin-bottom: 10px; letter-spacing: 1px; }
 
         /* =====================================================================
-           МОДАЛЬНОЕ ОКНО ТОВАРА (ФУЛЛСКРИН)
+           МОДАЛЬНОЕ ОКНО ТОВАРА (FULLSCREEN РЯМОУГОЛЬНИК)
            ===================================================================== */
         .product-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d0d; z-index: 2000; visibility: hidden; opacity: 0; transition: opacity 0.3s ease; overflow-y: auto; padding-bottom: 50px; }
         .product-modal-overlay.active { visibility: visible; opacity: 1; }
         .modal-close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); z-index: 2001; }
-        .modal-image { width: 100%; height: 50vh; max-height: 400px; object-fit: contain; background: #121212; border-bottom: 1px solid #333; padding: 20px; border-radius: 0 0 30px 30px; }
+        /* Картинка прямоугольная (aspect-ratio 3/4) и на весь экран */
+        .modal-image { width: 100%; height: auto; max-height: 65vh; aspect-ratio: 3/4; object-fit: cover; background: #1a1a1a; border-bottom: 1px solid #333; padding: 0; border-radius: 0 0 24px 24px; }
         .modal-info { padding: 25px 20px; }
         .modal-title { font-size: 26px; font-weight: 900; margin-bottom: 10px; line-height: 1.2; }
         .modal-desc { font-size: 15px; color: #aaa; line-height: 1.5; margin-bottom: 20px; }
@@ -116,7 +127,7 @@
         /* =====================================================================
            ОФОРМЛЕНИЕ И ПРОФИЛЬ
            ===================================================================== */
-        .screen-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
+        .screen-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
         .input-field { width: 100%; padding: 14px; background: #121212; color: white; border: 1px solid #333; border-radius: 10px; margin-top: 10px; font-size: 14px; outline: none; }
         .map-container { width: 100%; height: 60vh; min-height: 350px; max-height: 550px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; -webkit-overflow-scrolling: touch; }
         .points-box { background: #1a1a1a; padding: 15px; border-radius: 14px; border: 1px dashed #444; margin-bottom: 20px; }
@@ -126,7 +137,9 @@
         .avatar-big { width: 90px; height: 90px; border-radius: 50%; border: 2px solid #4b7bec; object-fit: cover; }
         .profile-info-big { display: flex; flex-direction: column; gap: 4px; }
         .profile-name-big { font-size: 26px; font-weight: 900; }
-        .profile-points-big { font-size: 16px; font-weight: 700; color: #ff4d4d; }
+        
+        /* Бонусы теперь белые */
+        .profile-points-big { font-size: 16px; font-weight: 700; color: #ffffff; }
         .divider { border: 0; height: 1px; background: #333; margin: 25px 0; }
         .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
         .history-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; width: 100%; scrollbar-width: none; }
@@ -145,7 +158,7 @@
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         </div>
         <div class="nav-btn" id="cartTopBtn">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>
             <div class="cart-badge" id="cartBadge">0</div>
         </div>
         <div class="nav-btn" id="openMenuBtn">
@@ -169,10 +182,8 @@
         </div>
     </div>
 
-    <!-- 1. КАТАЛОГ -->
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
-            <!-- Идеальный неоновый круг -->
             <svg class="bw-map" viewBox="0 0 100 110" preserveAspectRatio="xMidYMid meet">
                 <circle cx="50" cy="55" r="40" />
             </svg>
@@ -187,15 +198,20 @@
         </div>
     </div>
 
-    <!-- 2. ПРОМЕЖУТОЧНАЯ КОРЗИНА -->
     <div id="cartScreen" class="screen">
-        <div class="screen-title">🛒 Ваша корзина</div>
-        <div id="cartItemsList"></div>
-        <hr class="glow-divider">
-        <div class="cart-total-text">СУММА: <span id="cartTotalUiDisplay">0</span> €</div>
+        <div class="screen-title">
+            <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:white;"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>
+            Ваша корзина
+        </div>
+        
+        <div class="cart-scroll-area" id="cartItemsList"></div>
+        
+        <div class="cart-fixed-bottom">
+            <hr class="glow-divider">
+            <div class="cart-total-text">СУММА: <span id="cartTotalUiDisplay">0</span> €</div>
+        </div>
     </div>
 
-    <!-- ВЫПАДАЮЩЕЕ ОКНО ТОВАРА (FULLSCREEN) -->
     <div class="product-modal-overlay" id="productModal">
         <button class="modal-close-btn" onclick="closeProductModal()">✖</button>
         <img id="modalImg" src="" class="modal-image">
@@ -206,7 +222,6 @@
         </div>
     </div>
 
-    <!-- 3. ПРОФИЛЬ -->
     <div id="profileScreen" class="screen">
         <div class="profile-header-large">
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="avatar-big">
@@ -216,17 +231,16 @@
             </div>
         </div>
         <hr class="divider">
-        <div class="section-title">📍 Последние заказы</div>
+        <div class="section-title">Последние заказы</div>
         <div class="history-scroll" id="historyScroll"></div>
         <hr class="divider">
         <div class="stats-grid">
-            <div class="stat-box"><div class="stat-value" id="statItems">0</div><div class="stat-label">жиж заказано</div></div>
+            <div class="stat-box"><div class="stat-value" id="statItems">0</div><div class="stat-label">товаров заказано</div></div>
             <div class="stat-box"><div class="stat-value" id="statSpent">0</div><div class="stat-label">балов потрачено</div></div>
             <div class="stat-box"><div class="stat-value" id="statEarned">0</div><div class="stat-label">балов накоплено</div></div>
         </div>
     </div>
 
-    <!-- 4. КАРТА (ДОСТАВКА) -->
     <div id="mapScreen" class="screen">
         <div class="screen-title">📍 Зоны доставки</div>
         <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Ознакомьтесь с картой доставки.</p>
@@ -235,7 +249,6 @@
         <input type="text" id="addressInput" class="input-field" placeholder="Например: ройтлинген/Reutlingen...">
     </div>
 
-    <!-- 5. БАЛЛЫ -->
     <div id="pointsScreen" class="screen">
         <div class="screen-title">🎁 Списание баллов</div>
         <div class="points-box">
@@ -248,7 +261,11 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); tg.MainButton.textColor = "#ffffff"; tg.MainButton.color = "#4b7bec";
+        tg.ready(); tg.expand(); 
+        
+        // Установка БЕЛОГО цвета кнопки и черного текста
+        tg.MainButton.color = "#ffffff"; 
+        tg.MainButton.textColor = "#000000";
 
         const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6a26b5f6f5f4af5e29cb37ba"; 
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
@@ -256,7 +273,7 @@
         let cart = {}; let currentStep = 1; let realPoints = 0; let cartTotal = 0; let globalUserName = 'Гость';
         let menuData = {}; let categoriesData = {}; let currentCategory = 'all'; 
 
-        const cartIconSvg = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white;"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>`;
+        const cartIconSvg = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white;"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>`;
 
         try {
             const urlParams = new URLSearchParams(window.location.search);
@@ -409,7 +426,8 @@
         function openCartScreen() {
             if (cartTotal === 0) return tg.showAlert("Ваша корзина пуста!");
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-            document.getElementById('cartScreen').style.display = 'block'; currentStep = 2; tg.BackButton.show(); renderCartScreen(); updateMainButton();
+            // Включаем flex-отображение для корзины, чтобы работала прокрутка
+            document.getElementById('cartScreen').style.display = 'flex'; currentStep = 2; tg.BackButton.show(); renderCartScreen(); updateMainButton();
         }
 
         document.getElementById('openProfileBtn').addEventListener('click', () => {
@@ -455,7 +473,7 @@
                 document.getElementById('catalogScreen').style.display = 'block'; document.getElementById('topNav').style.display = 'flex';
                 currentStep = 1; tg.BackButton.hide(); updateMainButton();
             } else if (currentStep === 3) {
-                document.getElementById('mapScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'block';
+                document.getElementById('mapScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'flex';
                 currentStep = 2; updateMainButton();
             } else if (currentStep === 4) {
                 document.getElementById('pointsScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
