@@ -131,6 +131,30 @@
         .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; }
         .cat-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border-color: #fff; }
         .cat-btn-all.active { background: linear-gradient(135deg, #4b7bec, #3867d6); color: #fff; border: none; box-shadow: 0 4px 15px rgba(75, 123, 236, 0.4); }
+    /* =====================================================================
+           ОБНОВЛЕННЫЕ ДИЗАЙН-ПРАВИЛА И ЭКРАН КОРЗИНЫ
+           ===================================================================== */
+        /* Компактное верхнее меню (высота -20%) */
+        .top-nav { padding: 6px 8px !important; margin-bottom: 25px !important; }
+        .nav-btn { height: 26px !important; }
+        
+        /* Слово "Каталог" ближе к кнопке и чуть больше */
+        .sub-title { font-size: 18px !important; margin-bottom: 25px !important; font-weight: 800 !important; }
+        
+        /* Голубой текст "В наличии" (Telegram Style) */
+        .stock-ok { color: #3390ec !important; }
+        
+        /* Белая тряска без ошибки */
+        .shake-error { border-color: #ffffff !important; box-shadow: 0 0 15px rgba(255, 255, 255, 0.4) !important; }
+
+        /* --- СТИЛИ ПРОМЕЖУТОЧНОЙ КОРЗИНЫ --- */
+        .cart-item-card { background: #1a1a1a; border-radius: 16px; padding: 12px; margin-bottom: 12px; display: flex; gap: 15px; align-items: center; border: 1px solid #333; }
+        .cart-item-img { width: 65px; height: 65px; border-radius: 12px; object-fit: cover; background: #0d0d0d; }
+        .cart-item-info { flex-grow: 1; }
+        .cart-item-title { font-weight: 800; font-size: 15px; margin-bottom: 6px; line-height: 1.2; }
+        .cart-item-price { color: #aaa; font-size: 14px; font-weight: bold; }
+        .glow-divider { border: 0; height: 1px; background: rgba(255,255,255,0.6); box-shadow: 0 0 12px rgba(255,255,255,1); margin: 30px 0; border-radius: 10px; }
+        .cart-total-text { font-size: 22px; font-weight: 900; text-align: center
     </style>
 </head>
 <body>
@@ -207,6 +231,26 @@
             </div>
         </div>
     </div>
+<div id="cartScreen" class="screen">
+        <div class="screen-title">🛒 Ваша корзина</div>
+        <div id="cartItemsList"></div>
+        <hr class="glow-divider">
+        <div class="cart-total-text">СУММА: <span id="cartTotalUiDisplay">0</span> €</div>
+    </div>
+
+    <div class="product-modal-overlay" id="productModal">
+        <div class="product-modal-panel">
+            <button class="modal-close-btn" onclick="closeProductModal()">✖</button>
+            <img id="modalImg" src="" class="modal-image">
+            <div class="modal-info">
+                <div id="modalTitle" class="modal-title">Название</div>
+                <div id="modalDesc" class="modal-desc">Описание</div>
+                <div class="price-row" style="margin-top: 20px;">
+                    <div class="modal-price" id="modalPrice">0 €</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="mapScreen" class="screen">
         <div class="screen-title">📍 Зоны доставки</div>
@@ -237,18 +281,18 @@
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
 
         let cart = {};
-        let currentStep = 1; 
+        let currentStep = 1; // 1:Каталог, 2:Корзина, 3:Карта, 4:Оплата, 5:Профиль
         let realPoints = 0;
         let cartTotal = 0;
         let globalUserName = 'Гость';
         
         let menuData = {}; 
-        let categoriesData = {}; // Новая база категорий
-        let currentCategory = 'all'; // Текущий фильтр
+        let categoriesData = {}; 
+        let currentCategory = 'all'; 
 
-        // =====================================================================
-        // ПАРСИНГ ДАННЫХ ИЗ БОТА
-        // =====================================================================
+        // Иконка корзинки вместо плюса
+        const cartIconSvg = `<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white;"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>`;
+
         try {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('name')) globalUserName = urlParams.get('name');
@@ -272,29 +316,16 @@
             }
         } catch (e) { console.error("Ошибка парсинга:", e); }
 
-        // =====================================================================
-        // ЗАГРУЗКА ИЗ ОБЛАКА И ФИЛЬТРЫ
-        // =====================================================================
         async function loadMenu() {
             try {
                 const response = await fetch(JSONBIN_URL, { headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" } });
                 const json = await response.json();
                 let rawData = json.record || json; 
-                
-                // Проверяем, в новом ли формате данные (с категориями)
-                if (rawData.items) {
-                    menuData = rawData.items;
-                    categoriesData = rawData.categories || {};
-                } else {
-                    menuData = rawData; 
-                }
-                
+                if (rawData.items) { menuData = rawData.items; categoriesData = rawData.categories || {}; } 
+                else { menuData = rawData; }
                 renderCategories();
                 renderCatalog();
-            } catch (e) {
-                console.error("Ошибка:", e);
-                document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка загрузки</div>';
-            }
+            } catch (e) { document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка загрузки</div>'; }
         }
 
         function renderCategories() {
@@ -314,17 +345,12 @@
             renderCatalog();
         };
 
-        // =====================================================================
-        // ОТРИСОВКА ВИТРИНЫ
-        // =====================================================================
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid');
             grid.innerHTML = '';
 
             for (let id in menuData) {
                 let item = menuData[id];
-                
-                // ПРИМЕНЕНИЕ ФИЛЬТРА
                 if (currentCategory !== 'all' && item.category !== currentCategory) continue;
 
                 let isOut = item.stock <= 0;
@@ -334,16 +360,16 @@
                 let timerHtml = (item.timer_end && item.timer_end > 0) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
 
                 let cardHtml = `
-                    <div class="${cardClass}" data-id="${id}" data-name="${item.name}" data-price="${item.price}">
-                        <img src="${item.photo}" class="product-image" alt="Товар">
+                    <div class="${cardClass}" data-id="${id}">
+                        <img src="${item.photo}" class="product-image" alt="Товар" onclick="openProductModal('${id}')">
                         <div class="card-body">
-                            <div class="title">${item.name}</div>
+                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
                             ${timerHtml}
-                            <div class="specs">${item.desc || ''}</div>
+                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
                             ${stockHtml}
                             <div class="price-row">
                                 <div class="price-box">${oldPriceHtml}<span class="new-price">${item.price} €</span></div>
-                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price}, this)">+</button>
+                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price}, this)">${cartIconSvg}</button>
                                 <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
                                     <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
                                     <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
@@ -354,10 +380,7 @@
                     </div>
                 `;
                 grid.insertAdjacentHTML('beforeend', cardHtml);
-                
-                if (cart[id]) {
-                    grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
-                }
+                if (cart[id]) grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
             }
             if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">В этой категории пока пусто 🥲</div>';
         }
@@ -367,73 +390,86 @@
                 let end = parseInt(badge.getAttribute('data-end'));
                 let now = Math.floor(Date.now() / 1000); 
                 if (end > now) {
-                    let diff = end - now;
-                    let h = Math.floor(diff / 3600); let m = Math.floor((diff % 3600) / 60); let s = diff % 60;
+                    let diff = end - now; let h = Math.floor(diff / 3600); let m = Math.floor((diff % 3600) / 60); let s = diff % 60;
                     badge.innerText = `⏳ ${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
                 } else { badge.style.display = 'none'; }
             });
         }, 1000);
 
-        // =====================================================================
-        // КОРЗИНА И АНИМАЦИЯ ТРЯСКИ ПРИ НЕХВАТКЕ
-        // =====================================================================
+        // --- МОДАЛЬНОЕ ОКНО ТОВАРА ---
+        window.openProductModal = function(id) {
+            const item = menuData[id];
+            document.getElementById('modalImg').src = item.photo;
+            document.getElementById('modalTitle').innerText = item.name;
+            document.getElementById('modalDesc').innerText = item.desc || 'Описание отсутствует';
+            document.getElementById('modalPrice').innerText = item.price + ' €';
+            document.getElementById('productModal').classList.add('active');
+            tg.MainButton.hide(); 
+        };
+        window.closeProductModal = function() {
+            document.getElementById('productModal').classList.remove('active');
+            updateMainButton(); 
+        };
+
+        // --- ЛОГИКА КОРЗИНЫ ---
         function updateMainButton() {
             cartTotal = 0; let totalItems = 0;
             for (let id in cart) { cartTotal += cart[id].price * cart[id].count; totalItems += cart[id].count; }
             
             const badge = document.getElementById('cartBadge');
-            if (totalItems > 0) { badge.style.display = 'flex'; badge.innerText = totalItems; } 
-            else { badge.style.display = 'none'; }
+            if (totalItems > 0) { badge.style.display = 'flex'; badge.innerText = totalItems; } else { badge.style.display = 'none'; }
             
             if (currentStep === 1) {
-                if (cartTotal > 0) { tg.MainButton.setText(`ДАЛЕЕ: ${cartTotal} €`); tg.MainButton.show(); } else { tg.MainButton.hide(); }
-            } else if (currentStep === 2) { tg.MainButton.setText(`ПОДТВЕРДИТЬ АДРЕС`); tg.MainButton.show(); } 
-            else if (currentStep === 3) { tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show(); }
+                if (cartTotal > 0) { tg.MainButton.setText(`В КОРЗИНУ: ${cartTotal} €`); tg.MainButton.show(); } else { tg.MainButton.hide(); }
+            } else if (currentStep === 2) { tg.MainButton.setText(`ОФОРМИТЬ ДОСТАВКУ`); tg.MainButton.show(); } 
+            else if (currentStep === 3) { tg.MainButton.setText(`ПОДТВЕРДИТЬ АДРЕС`); tg.MainButton.show(); }
+            else if (currentStep === 4) { tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show(); }
         }
 
         window.addToCart = function(id, name, price, btn) {
             let card = btn.closest('.card');
             if (menuData[id].stock <= 0) {
-                card.classList.add('shake-error');
-                setTimeout(() => card.classList.remove('shake-error'), 400);
-                return;
+                card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return;
             }
             cart[id] = { name: name, price: price, count: 1 };
-            btn.style.display = 'none';
-            card.querySelector('.quantity-controls').style.display = 'flex';
-            card.querySelector('.item-count').innerText = 1;
-            updateMainButton();
+            btn.style.display = 'none'; card.querySelector('.quantity-controls').style.display = 'flex';
+            card.querySelector('.item-count').innerText = 1; updateMainButton();
         };
 
         window.changeCount = function(id, delta, btn) {
-            let card = btn.closest('.card');
-            let newCount = cart[id].count + delta;
-            
-            // ТРЯСКА, ЕСЛИ ПРЕВЫШЕН СКЛАД
+            let card = btn.closest('.card'); let newCount = cart[id].count + delta;
             if (newCount > menuData[id].stock) {
-                card.classList.add('shake-error');
-                setTimeout(() => card.classList.remove('shake-error'), 400);
-                tg.HapticFeedback.notificationOccurred('error'); // Вибрация ошибки
-                return; 
+                card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return; 
             }
-
             cart[id].count = newCount;
             if (cart[id].count <= 0) {
-                delete cart[id];
-                card.querySelector('.quantity-controls').style.display = 'none';
-                card.querySelector('.add-btn').style.display = 'flex';
-            } else {
-                card.querySelector('.item-count').innerText = cart[id].count;
-            }
+                delete cart[id]; card.querySelector('.quantity-controls').style.display = 'none'; card.querySelector('.add-btn').style.display = 'flex';
+            } else { card.querySelector('.item-count').innerText = cart[id].count; }
             updateMainButton();
         };
 
-        // =====================================================================
-        // НАВИГАЦИЯ И СОБЫТИЯ
-        // =====================================================================
+        function renderCartScreen() {
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+            for(let id in cart) {
+                let item = cart[id]; let itemData = menuData[id];
+                let html = `<div class="cart-item-card"><img src="${itemData.photo}" class="cart-item-img"><div class="cart-item-info"><div class="cart-item-title">${item.name}</div><div class="cart-item-price">${item.count} шт. x ${item.price} € = ${item.count * item.price} €</div></div></div>`;
+                list.insertAdjacentHTML('beforeend', html);
+            }
+            document.getElementById('cartTotalUiDisplay').innerText = cartTotal;
+        }
+
+        function openCartScreen() {
+            if (cartTotal === 0) return tg.showAlert("Ваша корзина пуста!");
+            document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
+            document.getElementById('cartScreen').style.display = 'block';
+            currentStep = 2; tg.BackButton.show(); renderCartScreen(); updateMainButton();
+        }
+
+        // --- НАВИГАЦИЯ ---
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-            document.getElementById('profileScreen').style.display = 'block'; currentStep = 4; 
+            document.getElementById('profileScreen').style.display = 'block'; currentStep = 5; 
             tg.BackButton.show(); tg.MainButton.hide();
         });
 
@@ -441,30 +477,23 @@
         document.getElementById('openMenuBtn').addEventListener('click', () => menuOverlay.classList.add('active'));
         menuOverlay.addEventListener('click', (e) => { if(e.target === menuOverlay) menuOverlay.classList.remove('active'); });
 
-        // Открытие шторки категорий
         const filterOverlay = document.getElementById('filterOverlay');
         document.getElementById('categoryFilterBtn').addEventListener('click', () => filterOverlay.classList.add('active'));
         filterOverlay.addEventListener('click', (e) => { if(e.target === filterOverlay) filterOverlay.classList.remove('active'); });
 
-        document.getElementById('cartTopBtn').addEventListener('click', () => {
-            if (currentStep === 1 && cartTotal > 0) {
-                document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-                document.getElementById('mapScreen').style.display = 'block'; currentStep = 2;
-                tg.BackButton.show(); updateMainButton();
-            } else if (cartTotal === 0) { tg.showAlert("Ваша корзина пуста!"); }
-        });
+        document.getElementById('cartTopBtn').addEventListener('click', openCartScreen);
 
         tg.onEvent('mainButtonClicked', () => {
-            if (currentStep === 1) {
-                document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-                document.getElementById('mapScreen').style.display = 'block'; currentStep = 2;
-                tg.BackButton.show(); updateMainButton();
-            } else if (currentStep === 2) {
+            if (currentStep === 1) { openCartScreen(); } 
+            else if (currentStep === 2) {
+                document.getElementById('cartScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
+                currentStep = 3; updateMainButton();
+            } else if (currentStep === 3) {
                 let address = document.getElementById('addressInput').value;
                 if (address.trim() === '') { alert("Пожалуйста, впишите адрес доставки!"); return; }
                 document.getElementById('mapScreen').style.display = 'none'; document.getElementById('pointsScreen').style.display = 'block';
-                document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; currentStep = 3; updateMainButton();
-            } else if (currentStep === 3) {
+                document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; currentStep = 4; updateMainButton();
+            } else if (currentStep === 4) {
                 let ptsSpent = parseInt(document.getElementById('pointsInput').value) || 0;
                 let address = document.getElementById('addressInput').value;
                 if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
@@ -476,13 +505,16 @@
         });
 
         tg.onEvent('backButtonClicked', () => {
-            if (currentStep === 4 || currentStep === 2) { 
-                document.getElementById('profileScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'none';
+            if (currentStep === 5 || currentStep === 2) { 
+                document.getElementById('profileScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'none';
                 document.getElementById('catalogScreen').style.display = 'block'; document.getElementById('topNav').style.display = 'flex';
                 currentStep = 1; tg.BackButton.hide(); updateMainButton();
             } else if (currentStep === 3) {
-                document.getElementById('pointsScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
+                document.getElementById('mapScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'block';
                 currentStep = 2; updateMainButton();
+            } else if (currentStep === 4) {
+                document.getElementById('pointsScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
+                currentStep = 3; updateMainButton();
             }
         });
 
