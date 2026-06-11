@@ -218,8 +218,8 @@
         }
         .cart-badge { animation: cartPulse 1.5s infinite; border-color: #121212 !important; }
 
-        /* Орбита с маленькими кружочками-спутниками */
-        .orbit-dots { transform-origin: 50px 55px; animation: spin-orbit 8s linear infinite; }
+        /* Медленная орбита с крошечными пылинками */
+        .orbit-dots { transform-origin: 50px 55px; animation: spin-orbit 24s linear infinite; }
         @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -273,8 +273,8 @@
                 <circle cx="50" cy="55" r="40" stroke="#ffffff" stroke-width="0.3" fill="none" style="filter: drop-shadow(0 0 4px rgba(255,255,255,0.6));" />
                 
                 <g class="orbit-dots">
-                    <circle cx="50" cy="15" r="2.5" fill="#82ccdd" style="filter: drop-shadow(0 0 6px #82ccdd);" />
-                    <circle cx="50" cy="95" r="2.5" fill="#ffffff" style="filter: drop-shadow(0 0 6px #ffffff);" />
+                    <circle cx="50" cy="15" r="1.2" fill="#ffffff" style="filter: drop-shadow(0 0 5px #ffffff);" />
+                    <circle cx="50" cy="95" r="1.2" fill="#ffffff" style="filter: drop-shadow(0 0 5px #ffffff);" />
                 </g>
             </svg>
             <div class="main-title">WÜRTEN STORE</div>
@@ -608,21 +608,6 @@
             } else if (currentStep === 4) {
                 document.getElementById('pointsScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
                 currentStep = 3; updateMainButton();
-            }
-        });
-// ИНТЕРАКТИВ ЛОГОТИПА ПРИ КЛИКАХ (Только плавно)
-        let tapTimer = null;
-        document.addEventListener('touchstart', () => {
-            const orbit = document.querySelector('.orbit-dots');
-            if (orbit) {
-                // При касании скорость становится быстрой (1.5 секунды на круг)
-                orbit.style.animationDuration = '1.5s';
-                
-                // Через секунду покоя плавно возвращаем базовую медленную скорость (8 секунд)
-                clearTimeout(tapTimer);
-                tapTimer = setTimeout(() => {
-                    orbit.style.animationDuration = '8s';
-                }, 1000);
             }
         });
         loadMenu();
