@@ -200,6 +200,23 @@
         /* Сиреневый неон */
         .stat-glow-num.c3 { color: #bca0dc; text-shadow: 0 0 20px rgba(188, 160, 220, 0.5); } 
         .stat-glow-label { font-size: 14px; color: #888; font-weight: 600; text-transform: lowercase; }
+    /* =====================================================================
+           НЕБЕСНО-ГОЛУБЫЕ АКЦЕНТЫ И КОРЗИНА
+           ===================================================================== */
+        /* Голубой текст "В наличии" */
+        .stock-ok { color: #82ccdd !important; }
+        
+        /* Голубая кнопка добавления товара (с темным плюсиком/иконкой для контраста) */
+        .add-btn { background: #82ccdd !important; color: #121212 !important; font-weight: 900 !important; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4) !important; }
+        .add-btn svg { fill: #121212 !important; } 
+        
+        /* Пульсация кружочка корзины (белый <-> небесно-голубой) */
+        @keyframes cartPulse {
+            0% { background: #ffffff; color: #82ccdd; }
+            50% { background: #82ccdd; color: #ffffff; }
+            100% { background: #ffffff; color: #82ccdd; }
+        }
+        .cart-badge { animation: cartPulse 1.5s infinite !important; border-color: #121212 !important; }
     </style>
 </head>
 <body>
