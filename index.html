@@ -218,13 +218,9 @@
         }
         .cart-badge { animation: cartPulse 1.5s infinite; border-color: #121212 !important; }
 
-        /* Анимация бегающих огней вокруг логотипа */
-        .spin-layer { transform-origin: 50px 55px; }
-        .spinner-1 { stroke-dasharray: 40 211; animation: spin-forward 4s linear infinite; stroke: #82ccdd; filter: drop-shadow(0 0 6px #82ccdd); }
-        .spinner-2 { stroke-dasharray: 40 211; animation: spin-backward 4s linear infinite; stroke: #ffffff; filter: drop-shadow(0 0 6px #ffffff); }
-        
-        @keyframes spin-forward { 100% { transform: rotate(360deg); } }
-        @keyframes spin-backward { 100% { transform: rotate(-360deg); } }
+        /* Орбита с маленькими кружочками-спутниками */
+        .orbit-dots { transform-origin: 50px 55px; animation: spin-orbit 8s linear infinite; }
+        @keyframes spin-orbit { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -274,9 +270,12 @@
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
             <svg class="bw-map" viewBox="0 0 100 110" preserveAspectRatio="xMidYMid meet" style="filter: none; stroke-width: 0;">
-                <circle cx="50" cy="55" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="0.5" fill="none" />
-                <circle cx="50" cy="55" r="40" stroke-width="1.5" fill="none" stroke-linecap="round" class="spin-layer spinner-1" />
-                <circle cx="50" cy="55" r="40" stroke-width="1.5" fill="none" stroke-linecap="round" class="spin-layer spinner-2" />
+                <circle cx="50" cy="55" r="40" stroke="#ffffff" stroke-width="0.3" fill="none" style="filter: drop-shadow(0 0 4px rgba(255,255,255,0.6));" />
+                
+                <g class="orbit-dots">
+                    <circle cx="50" cy="15" r="2.5" fill="#82ccdd" style="filter: drop-shadow(0 0 6px #82ccdd);" />
+                    <circle cx="50" cy="95" r="2.5" fill="#ffffff" style="filter: drop-shadow(0 0 6px #ffffff);" />
+                </g>
             </svg>
             <div class="main-title">WÜRTEN STORE</div>
         </div>
@@ -611,36 +610,20 @@
                 currentStep = 3; updateMainButton();
             }
         });
-// ИНТЕРАКТИВ ЛОГОТИПА ПРИ КЛИКАХ
-        let tapCount = 0;
+// ИНТЕРАКТИВ ЛОГОТИПА ПРИ КЛИКАХ (Только плавно)
         let tapTimer = null;
         document.addEventListener('touchstart', () => {
-            tapCount++;
-            const spinners = document.querySelectorAll('.spin-layer');
-            
-            if (tapCount > 3) { 
-                // Если клиент бешено кликает (больше 3 раз подряд) - двигаются толчками
-                spinners.forEach(s => {
-                    s.style.animationDuration = '0.5s';
-                    s.style.animationTimingFunction = 'steps(4, end)';
-                });
-            } else {
-                // Обычное касание - просто красивое ускорение
-                spinners.forEach(s => {
-                    s.style.animationDuration = '1s';
-                    s.style.animationTimingFunction = 'linear';
-                });
+            const orbit = document.querySelector('.orbit-dots');
+            if (orbit) {
+                // При касании скорость становится быстрой (1.5 секунды на круг)
+                orbit.style.animationDuration = '1.5s';
+                
+                // Через секунду покоя плавно возвращаем базовую медленную скорость (8 секунд)
+                clearTimeout(tapTimer);
+                tapTimer = setTimeout(() => {
+                    orbit.style.animationDuration = '8s';
+                }, 1000);
             }
-            
-            // Сброс анимации к плавной (крутится медленно) если не трогать экран 1 секунду
-            clearTimeout(tapTimer);
-            tapTimer = setTimeout(() => {
-                tapCount = 0;
-                spinners.forEach(s => {
-                    s.style.animationDuration = '4s';
-                    s.style.animationTimingFunction = 'linear';
-                });
-            }, 1000);
         });
         loadMenu();
     </script>
