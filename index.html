@@ -108,19 +108,22 @@
         /* =====================================================================
            ОБНОВЛЕННАЯ КОРЗИНА (СТИЛЬ "СПИСОК" С КНОПКАМИ И БАЛЛАМИ)
            ===================================================================== */
-        /* Фиксируем корзину на весь экран, чтобы блокировать прокрутку фона */
-        #cartScreen { flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0d0d0d; z-index: 2500; padding: 15px; padding-bottom: 160px; box-sizing: border-box; }
+        /* =====================================================================
+           ОБНОВЛЕННАЯ КОРЗИНА (ИДЕАЛЬНЫЙ ВИЗУАЛ)
+           ===================================================================== */
+        /* Фиксируем корзину на весь экран, чтобы фон не листался */
+        #cartScreen { display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0d0d0d; z-index: 2500; padding: 15px; padding-bottom: 160px; box-sizing: border-box; }
         
-        /* Выравниваем шапку и крестик на одной линии */
-        .cart-header-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 5px; }
-        .cart-header-row .screen-title { margin-top: 0; margin-bottom: 0; }
-        .cart-close-btn { background: none; border: none; color: #ffffff; font-size: 36px; font-weight: 300; line-height: 0.5; cursor: pointer; padding: 10px; transition: transform 0.2s; }
+        /* Выравниваем шапку и крестик на одной оси */
+        .cart-header-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 0 5px; }
+        .cart-header-row .screen-title { margin: 0; line-height: 1; }
+        .cart-close-btn { background: none; border: none; color: #ffffff; font-size: 36px; font-weight: 300; line-height: 0.8; cursor: pointer; padding: 0 5px; transition: transform 0.2s; }
         .cart-close-btn:active { transform: scale(0.8); }
-        .cart-header-divider { border: 0; height: 1px; background: #333; margin: 15px 0 0 0; }
+        .cart-header-divider { border: 0; height: 1px; background: rgba(255, 255, 255, 0.15); margin: 15px 0 0 0; }
         
+        /* Зона скролла товаров */
         .cart-scroll-area { flex-grow: 1; overflow-y: auto; padding-right: 5px; margin-top: 15px; margin-bottom: 10px; }
         
-        /* Карточка товара в корзине без фона, с линией снизу */
         .cart-item-card { background: transparent; padding: 15px 0; display: flex; gap: 15px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .cart-item-card:last-child { border-bottom: none; }
         .cart-item-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #1a1a1a; }
@@ -128,7 +131,6 @@
         .cart-item-title { font-weight: 800; font-size: 15px; line-height: 1.2; }
         .cart-item-price { color: #82ccdd; font-size: 16px; font-weight: 900; }
         
-        /* Кнопки плюс/минус и удаление в корзине */
         .cart-controls-wrapper { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
         .cart-quantity-controls { display: flex; align-items: center; gap: 10px; background: #1a1a1a; border-radius: 8px; padding: 4px 8px; border: 1px solid #333; }
         .cart-btn-minus, .cart-btn-plus { background: transparent; color: white; border: none; font-size: 16px; font-weight: bold; cursor: pointer; padding: 0 5px; }
@@ -137,16 +139,25 @@
         .cart-trash-btn svg { width: 16px; height: 16px; fill: #ff2a5f; }
         .cart-trash-btn:active { transform: scale(0.8); }
 
-        /* Нижняя часть корзины с баллами и кнопкой */
-        .cart-fixed-bottom { position: fixed; bottom: 0; left: 0; width: 100%; background: #121212; padding: 20px; z-index: 100; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 15px; }
+        .cart-fixed-bottom { position: fixed; bottom: 0; left: 0; width: 100%; background: #121212; padding: 20px; z-index: 2600; border-top: 1px solid #333; display: flex; flex-direction: column; gap: 15px; }
         .cart-summary-row { display: flex; justify-content: space-between; align-items: flex-end; }
         .cart-total-label { font-size: 18px; font-weight: 900; }
         .cart-total-sum { font-size: 22px; font-weight: 900; color: #82ccdd; }
         .cart-points-label { font-size: 12px; color: #888; text-align: right; margin-bottom: 2px; }
-        .cart-points-val { font-size: 16px; font-weight: 900; color: #ffffff; text-align: right; }
+        .cart-points-val { font-size: 16px; font-weight: 900; color: #ffffff; text-align: right; } /* БЕЛЫЕ БАЛЛЫ */
         
         .cart-order-btn { width: 100%; padding: 16px; background: #82ccdd; border-radius: 16px; border: none; color: #121212; font-weight: 900; font-size: 16px; text-align: center; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); }
         .cart-order-btn:active { transform: scale(0.98); }
+
+        /* Всплывашка пустой корзины */
+        .empty-cart-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 4000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; }
+        .empty-cart-modal-overlay.active { opacity: 1; visibility: visible; }
+        .empty-cart-modal { background: rgba(18, 18, 18, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 30px 20px; text-align: center; width: 100%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .empty-cart-icon svg { width: 50px; height: 50px; fill: #ffffff; margin-bottom: 15px; }
+        .empty-cart-text { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 25px; }
+        /* ГОЛУБАЯ КНОПКА С ЧЕРНЫМ ТЕКСТОМ */
+        .empty-cart-close { background: #82ccdd; border: none; color: #121212; padding: 14px 30px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); text-transform: uppercase; } 
+        .empty-cart-close:active { transform: scale(0.98); }
 
         /* Всплывашка пустой корзины по центру */
         .empty-cart-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 4000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; }
@@ -292,8 +303,11 @@
     </div>
 
     <div id="cartScreen" class="screen" style="display: none;">
-        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
-        <div class="screen-title">Корзина</div>
+        <div class="cart-header-row">
+            <div class="screen-title">Корзина</div>
+            <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
+        </div>
+        <hr class="cart-header-divider">
         
         <div class="cart-scroll-area" id="cartItemsList"></div>
         
