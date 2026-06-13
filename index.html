@@ -218,24 +218,21 @@
         }
         .cart-badge { animation: cartPulse 1.5s infinite !important; border-color: #121212 !important; }
     /* =====================================================================
-           СТАТИСТИКА ТРЕУГОЛЬНИКОМ
+           СТАТИСТИКА ПЕРЕВЕРНУТЫМ ТРЕУГОЛЬНИКОМ
            ===================================================================== */
-        .stats-triangle { display: grid; grid-template-columns: 1fr 1fr; gap: 25px 10px; margin-top: 20px; margin-bottom: 10px; }
+        .stats-triangle { display: grid; grid-template-columns: 1fr 1fr; gap: 35px 10px; margin-top: 25px; margin-bottom: 30px; }
         .stat-glow-box { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        /* Вершина треугольника (растягивается на всю ширину по центру) */
-        .stat-glow-box.top-point { grid-column: 1 / -1; margin-bottom: 5px; }
+        /* Нижняя вершина (растягивается на всю ширину по центру) */
+        .stat-glow-box.bottom-point { grid-column: 1 / -1; }
         
-        .stat-glow-num { font-size: 38px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
-        /* Делаем нижние цифры чуть меньше для красивой пирамиды */
-        .stat-glow-box:not(.top-point) .stat-glow-num { font-size: 30px; }
+        /* Все цифры одного БОЛЬШОГО размера (поможет растянуть меню вниз) */
+        .stat-glow-num { font-size: 40px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
         
-        /* Цвета неонового свечения (как в твоем референсе) */
-        .stat-glow-num.c1 { color: #d6a2e8; text-shadow: 0 0 15px rgba(214, 162, 232, 0.4); } 
-        .stat-glow-num.c2 { color: #82ccdd; text-shadow: 0 0 15px rgba(130, 204, 221, 0.4); } 
-        .stat-glow-num.c3 { color: #bca0dc; text-shadow: 0 0 15px rgba(188, 160, 220, 0.4); } 
+        /* Единый сиреневый цвет для всех цифр */
+        .stat-glow-num.c-main { color: #d6a2e8; text-shadow: 0 0 15px rgba(214, 162, 232, 0.4); } 
         
-        .stat-glow-label { font-size: 12px; color: #888; font-weight: 600; text-transform: lowercase; }
+        .stat-glow-label { font-size: 13px; color: #888; font-weight: 600; text-transform: lowercase; }
     </style>
 </head>
 <body>
@@ -334,18 +331,18 @@
             <hr class="glow-divider" style="margin: 35px 0;">
             
             <div class="stats-triangle">
-            <div class="stat-glow-box top-point">
-                <div class="stat-glow-num c1" id="statItems">0</div>
+            <div class="stat-glow-box">
+                <div class="stat-glow-num c-main" id="statItems">0</div>
                 <div class="stat-glow-label">товаров заказано</div>
             </div>
             
             <div class="stat-glow-box">
-                <div class="stat-glow-num c2" id="statSpent">0</div>
+                <div class="stat-glow-num c-main" id="statSpent">0</div>
                 <div class="stat-glow-label">баллов потрачено</div>
             </div>
             
-            <div class="stat-glow-box">
-                <div class="stat-glow-num c3" id="statEarned">0</div>
+            <div class="stat-glow-box bottom-point">
+                <div class="stat-glow-num c-main" id="statEarned">0</div>
                 <div class="stat-glow-label">человек приглашено</div>
             </div>
         </div>
