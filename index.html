@@ -145,6 +145,37 @@
         .stat-glow-num { font-size: 40px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
         .stat-glow-num.c-main { color: #d6a2e8; text-shadow: 0 0 15px rgba(214, 162, 232, 0.4); } 
         .stat-glow-label { font-size: 13px; color: #888; font-weight: 600; text-transform: lowercase; }
+    /* =====================================================================
+           ОБНОВЛЕННОЕ БОКОВОЕ МЕНЮ (ПРОЗРАЧНОСТЬ И ОТСТУПЫ)
+           ===================================================================== */
+        /* 20% прозрачности (rgba 0.8) и размытие заднего фона */
+        .side-menu-fullscreen { background: rgba(0, 0, 0, 0.8) !important; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        /* Увеличили отступы (padding 25px), чтобы кнопки не теснились */
+        .side-menu-item { padding: 25px 0 !important; }
+        .soon-text { top: 85% !important; }
+
+        /* =====================================================================
+           ФИЛЬТР ТОВАРОВ (ПЛАВНАЯ ШТОРКА СНИЗУ С РАЗМЫТИЕМ)
+           ===================================================================== */
+        .filter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0); z-index: 2000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; display: flex; flex-direction: column; justify-content: flex-end; }
+        .filter-overlay.active { visibility: visible; background: rgba(0,0,0,0.5); }
+        
+        .filter-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 28px 28px 0 0; padding: 30px 20px 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+        .filter-overlay.active .filter-panel { transform: translateY(0); }
+        
+        .filter-panel .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; }
+        .filter-panel .cat-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border-color: #fff; }
+        .filter-panel .filter-header { text-align: center; color: #888; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+
+        /* =====================================================================
+           ПРОФИЛЬ НА 100% ЭКРАНА И СТРЕЛОЧКА
+           ===================================================================== */
+        /* Убираем отступы, растягиваем на весь экран */
+        .profile-card { min-height: 100vh; margin: -15px !important; margin-bottom: -80px !important; border-radius: 0 !important; border: none !important; padding-top: 80px !important; }
+        
+        /* Дизайнерская белая стрелочка */
+        .back-arrow-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+        .back-arrow-btn:active { transform: scale(0.8); }
     </style>
 </head>
 <body>
@@ -176,6 +207,7 @@
         </div>
     </div>
 
+    <!-- БОКОВОЕ МЕНЮ (С раздвинутыми кнопками и без скобок) -->
     <div class="side-menu-fullscreen" id="menuOverlay">
         <button class="unified-close-btn" onclick="document.getElementById('menuOverlay').classList.remove('active')">×</button>
         
@@ -184,16 +216,26 @@
         
         <div class="side-menu-item side-menu-disabled">
             Отзывы
-            <span class="soon-text">(в скором будущем)</span>
+            <span class="soon-text">в скором будущем</span>
         </div>
         <hr class="glow-divider-short">
         
         <div class="side-menu-item">Поддержка</div>
         <hr class="glow-divider-full">
         
-        <div class="side-menu-item" style="color: #d6a2e8;">
+        <div class="side-menu-item" style="color: #ffffff;">
             Реферальная программа
-            <span class="soon-text" style="color: #888;">(в разработке)</span>
+            <span class="soon-text" style="color: #888;">в разработке</span>
+        </div>
+    </div>
+
+    <!-- МЕНЮ КАТЕГОРИЙ (ПЛАВНАЯ ШТОРКА СНИЗУ) -->
+    <div class="filter-overlay" id="filterOverlay">
+        <div class="filter-panel" id="filterPanel">
+            <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
+            <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
+            <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">📦 Все товары</div>
+            <div id="dynamicCategories" style="display: contents;"></div>
         </div>
     </div>
 
@@ -243,7 +285,12 @@
     </div>
 
     <div id="profileScreen" class="screen">
-        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
+        <button class="back-arrow-btn" onclick="goBackToCatalog()">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        
         <div class="profile-card">
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="profile-avatar-center">
             <div class="profile-name-center" id="profileNameBig">Загрузка...</div>
@@ -361,7 +408,9 @@
 
         window.selectCategory = function(cat_id, btnElement) {
             currentCategory = cat_id;
-            document.querySelectorAll('.fullscreen-overlay .cat-btn, .fullscreen-overlay .cat-btn-all').forEach(b => b.classList.remove('active'));
+            
+            // Возвращаем старые классы (.filter-panel вместо .fullscreen-overlay)
+            document.querySelectorAll('.filter-panel .cat-btn, .filter-panel .cat-btn-all').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             
             let cleanName = btnElement.innerText.replace('📦 ', '');
