@@ -233,6 +233,25 @@
         .stat-glow-num.c-main { color: #d6a2e8; text-shadow: 0 0 15px rgba(214, 162, 232, 0.4); } 
         
         .stat-glow-label { font-size: 13px; color: #888; font-weight: 600; text-transform: lowercase; }
+    /* =====================================================================
+           ЕДИНЫЙ СТИЛЬ ОКОН, КРЕСТИКОВ И TOP-NAV
+           ===================================================================== */
+        /* Полоска-разделитель в верхнем меню и увеличенный бургер */
+        .nav-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.2); margin: 0 4px; }
+        #openMenuBtn .nav-icon { width: 26px; height: 26px; } /* Сделали бургер чуть больше */
+
+        /* Единый белый крестик для всех окон */
+        .unified-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #ffffff; font-size: 36px; font-weight: 300; line-height: 0.5; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; }
+        .unified-close-btn:active { transform: scale(0.8); }
+
+        /* Прозрачные меню на весь экран (до конца) с плавным появлением */
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(18, 18, 18, 0.8); /* 20% прозрачности */ backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 2000; display: flex; flex-direction: column; padding: 80px 20px 20px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.4s ease; overflow-y: auto; }
+        .fullscreen-overlay.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        /* Голубой цвет внутри меню (как кнопки товаров) */
+        .fullscreen-overlay .cat-btn, .fullscreen-overlay .menu-item { background: rgba(130, 204, 221, 0.05); border: 1px solid #82ccdd; color: #82ccdd; font-size: 16px; padding: 18px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; }
+        .fullscreen-overlay .cat-btn.active { background: #82ccdd; color: #121212; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); }
+        .fullscreen-overlay .filter-header { color: #82ccdd; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -310,7 +329,7 @@
     </div>
 
     <div class="product-modal-overlay" id="productModal">
-        <button class="modal-close-btn" onclick="closeProductModal()">✖</button>
+        <button class="unified-close-btn" onclick="closeProductModal()">×</button>
         <img id="modalImg" src="" class="modal-image">
         <div class="modal-info">
             <div id="modalTitle" class="modal-title">Название</div>
@@ -439,17 +458,16 @@
 
         window.selectCategory = function(cat_id, btnElement) {
             currentCategory = cat_id;
-            document.querySelectorAll('#filterPanel .cat-btn, #filterPanel .cat-btn-all').forEach(b => b.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
+            document.querySelectorAll('.fullscreen-overlay .cat-btn, .fullscreen-overlay .cat-btn-all').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            // МАГИЯ: Меняем текст кнопки на выбранную категорию
+            let cleanName = btnElement.innerText.replace('📦 ', '');
+            document.getElementById('categoryFilterBtn').innerText = cleanName;
+            
+            // Плавно закрываем меню
             document.getElementById('filterOverlay').classList.remove('active');
             renderCatalog();
-        };
-
-        window.toggleFav = function(id, btn) {
-            if (favorites[id]) { delete favorites[id]; btn.classList.remove('active'); } 
-            else { favorites[id] = true; btn.classList.add('active'); tg.HapticFeedback.impactOccurred('light'); }
-            localStorage.setItem('glow_favs', JSON.stringify(favorites));
-            if (currentCategory === 'favorites') renderCatalog();
         };
 
         function renderCatalog() {
