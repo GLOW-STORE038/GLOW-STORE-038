@@ -679,11 +679,28 @@
             const badge = document.getElementById('cartBadge');
             if (totalItems > 0) { badge.style.display = 'flex'; badge.innerText = totalItems; } else { badge.style.display = 'none'; }
             
-            if (currentStep === 1 || currentStep === 2) {
+            // На шагах 1, 2 и 3 синяя кнопка Телеграма скрыта (у нас свои HTML кнопки)
+            if (currentStep === 1 || currentStep === 2 || currentStep === 3) {
                 tg.MainButton.hide(); 
-            } else if (currentStep === 3) { tg.MainButton.setText(`ПОДТВЕРДИТЬ АДРЕС`); tg.MainButton.show(); }
-            else if (currentStep === 4) { tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show(); }
+            } else if (currentStep === 4) { tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show(); }
         }
+
+        tg.onEvent('mainButtonClicked', () => {
+            if (currentStep === 1) { openCartScreen(); } 
+            else if (currentStep === 2) { goToDelivery(); } 
+            else if (currentStep === 4) {
+                let ptsSpent = parseInt(document.getElementById('pointsInput').value) || 0; 
+                // Берем тот самый красиво собранный адрес из шага 4
+                let address = window.checkoutFinalAddress || 'Не указан'; 
+                
+                if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
+                if (ptsSpent > realPoints) { alert("У вас недостаточно баллов!"); return; }
+                if (ptsSpent > cartTotal) { alert("Нельзя списать баллов больше, чем сумма заказа!"); return; }
+                
+                tg.sendData(JSON.stringify({ cart: cart, address: address, points: ptsSpent, total: cartTotal })); 
+                tg.close();
+            }
+        });
 
         // ОБНОВЛЕННАЯ: Рисуем карточки с баком и кнопками
         function renderCartScreen() {
