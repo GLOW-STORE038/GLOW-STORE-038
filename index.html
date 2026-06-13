@@ -16,7 +16,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =====================================================================
-           ОБНОВЛЕННАЯ ПАНЕЛЬ И БОКОВОЕ МЕНЮ
+           ОБНОВЛЕННАЯ ПАНЕЛЬ
            ===================================================================== */
         .top-nav { position: fixed; top: 15px; right: 15px; z-index: 999; display: flex; gap: 8px; background: rgba(80, 80, 80, 0.3) !important; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.2) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.6); padding: 6px 8px; margin-bottom: 25px; align-items: center !important; }
         .nav-btn { width: 40px; height: 34px; background: transparent; border-radius: 10px; display: flex; justify-content: center; align-items: center; position: relative; cursor: pointer; transition: background 0.2s; }
@@ -27,25 +27,33 @@
         .cart-badge { position: absolute; bottom: -6px; right: -6px; background: #ffffff; color: #82ccdd; font-size: 10px; font-weight: 900; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; border: 2px solid #121212 !important; display: none; animation: cartPulse 1.5s infinite !important; }
         @keyframes cartPulse { 0% { background: #ffffff; color: #82ccdd; } 50% { background: #82ccdd; color: #ffffff; } 100% { background: #ffffff; color: #82ccdd; } }
 
-        .side-menu-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #0d0d0d; z-index: 2000; transform: translateX(100%); transition: transform 0.4s ease; display: flex; flex-direction: column; justify-content: center; padding: 20px; }
+        /* =====================================================================
+           БОКОВОЕ МЕНЮ (Равномерное распределение и прозрачность)
+           ===================================================================== */
+        .side-menu-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 2000; transform: translateX(100%); transition: transform 0.4s ease; display: flex; flex-direction: column; padding: 50px 20px 30px; }
         .side-menu-fullscreen.active { transform: translateX(0); }
-        .side-menu-item { font-size: 22px; font-weight: 800; text-align: center; color: #fff; padding: 15px 0; background: transparent; border: none; cursor: pointer; position: relative; }
+        .side-menu-top-section { display: flex; flex-direction: column; justify-content: space-evenly; flex-grow: 1; margin-top: 20px; margin-bottom: 20px; }
+        .side-menu-bottom-section { flex-shrink: 0; }
+        .side-menu-item { font-size: 22px; font-weight: 800; text-align: center; color: #fff; padding: 10px 0; background: transparent; border: none; cursor: pointer; position: relative; }
         .side-menu-disabled { color: #666; }
-        .soon-text { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; opacity: 0.6; font-weight: 600; white-space: nowrap; margin-top: -10px; }
+        .soon-text { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; opacity: 0.6; font-weight: 600; white-space: nowrap; margin-top: 5px; }
         .glow-divider-short { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 40%; margin: 0 auto; border-radius: 10px; }
         .glow-divider-full { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 100%; margin: 30px 0; border-radius: 10px; }
 
         /* =====================================================================
-           ЕДИНЫЙ КРЕСТИК И МЕНЮ ФИЛЬТРА
+           ЕДИНЫЙ КРЕСТИК И ФИЛЬТР (ШТОРКА СНИЗУ)
            ===================================================================== */
         .unified-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #ffffff; font-size: 36px; font-weight: 300; line-height: 0.5; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; }
         .unified-close-btn:active { transform: scale(0.8); }
 
-        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 2000; display: flex; flex-direction: column; padding: 80px 20px 20px; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.4s ease; overflow-y: auto; }
-        .fullscreen-overlay.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .fullscreen-overlay .cat-btn { background: rgba(130, 204, 221, 0.05); border: 1px solid #82ccdd; color: #82ccdd; font-size: 16px; padding: 18px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; text-align: center; cursor: pointer; }
-        .fullscreen-overlay .cat-btn.active { background: #82ccdd; color: #121212; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); }
-        .fullscreen-overlay .filter-header { color: #82ccdd; opacity: 0.7; text-align: center; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
+        .filter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0); z-index: 2000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; display: flex; flex-direction: column; justify-content: flex-end; }
+        .filter-overlay.active { visibility: visible; background: rgba(0,0,0,0.5); }
+        .filter-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 28px 28px 0 0; padding: 30px 20px 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); position: relative; }
+        .filter-overlay.active .filter-panel { transform: translateY(0); }
+        
+        .filter-panel .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; }
+        .filter-panel .cat-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border-color: #fff; }
+        .filter-panel .filter-header { text-align: center; color: #888; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
 
         /* =====================================================================
            ДИЗАЙН КАРТЫ И ЗАГОЛОВКА
@@ -53,7 +61,9 @@
         .store-title-container { position: relative; text-align: center; margin-bottom: 20px; margin-top: 70px; display: flex; justify-content: center; align-items: center; height: 45vh; min-height: 260px; max-height: 400px; pointer-events: none; }
         .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 320px; fill: none; stroke: #ffffff; stroke-width: 0.3px; filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)) drop-shadow(0 0 2px rgba(255,255,255,1)); z-index: 1; pointer-events: none; }
         .main-title { position: relative; z-index: 2; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2.5px; background: #0d0d0d; padding: 10px 18px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); color: #fff; }
-        .sub-title { font-size: 18px; color: #888; text-align: center; margin-top: -15px; margin-bottom: 25px; font-weight: 800; letter-spacing: 0.5px; }
+        
+        /* Идеальный тонкий заголовок "Наш Ассортимент" */
+        .sub-title { font-size: 22px; color: #a3a3b5; font-weight: 300; letter-spacing: 0.5px; text-align: center; margin-top: -15px; margin-bottom: 25px; }
 
         .filter-btn { width: 100%; padding: 13px; background: #161616; border-radius: 16px; border: 1px solid #333; color: #fff; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: background 0.2s; }
         .filter-btn:active { background: #222; }
@@ -120,15 +130,13 @@
         .modal-price { font-size: 32px; font-weight: 900; color: #fff; }
 
         /* =====================================================================
-           ОФОРМЛЕНИЕ И ПРОФИЛЬ
+           ПРОФИЛЬ (РОВНАЯ КАРТОЧКА ПО ЦЕНТРУ С ОТСТУПАМИ И СТРЕЛОЧКОЙ)
            ===================================================================== */
-        .screen-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; margin-top: 40px; display: flex; align-items: center; gap: 8px;}
-        .input-field { width: 100%; padding: 14px; background: #121212; color: white; border: 1px solid #333; border-radius: 10px; margin-top: 10px; font-size: 14px; outline: none; }
-        .map-container { width: 100%; height: 60vh; min-height: 350px; max-height: 550px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; -webkit-overflow-scrolling: touch; }
-        .points-box { background: #1a1a1a; padding: 15px; border-radius: 14px; border: 1px dashed #444; margin-bottom: 20px; }
-        .loader { text-align: center; padding: 50px 0; color: #888; font-size: 14px; }
+        #profileScreen { display: none; flex-direction: column; justify-content: center; min-height: 100vh; padding: 20px; }
+        .profile-card { background: #121212; border-radius: 28px; padding: 40px 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8); width: 100%; margin: 0; }
+        .back-arrow-btn { position: absolute; top: 20px; left: 15px; background: none; border: none; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+        .back-arrow-btn:active { transform: scale(0.8); }
         
-        .profile-card { background: #121212; border-radius: 28px; padding: 40px 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-top: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
         .profile-avatar-center { width: 110px; height: 110px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; margin: 0 auto 20px auto; display: block; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
         .profile-name-center { font-size: 32px; font-weight: 900; margin-bottom: 30px; text-shadow: 0 0 15px rgba(255,255,255,0.4); line-height: 1.1; }
         
@@ -145,37 +153,15 @@
         .stat-glow-num { font-size: 40px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
         .stat-glow-num.c-main { color: #d6a2e8; text-shadow: 0 0 15px rgba(214, 162, 232, 0.4); } 
         .stat-glow-label { font-size: 13px; color: #888; font-weight: 600; text-transform: lowercase; }
-    /* =====================================================================
-           ОБНОВЛЕННОЕ БОКОВОЕ МЕНЮ (ПРОЗРАЧНОСТЬ И ОТСТУПЫ)
-           ===================================================================== */
-        /* 20% прозрачности (rgba 0.8) и размытие заднего фона */
-        .side-menu-fullscreen { background: rgba(0, 0, 0, 0.8) !important; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
-        /* Увеличили отступы (padding 25px), чтобы кнопки не теснились */
-        .side-menu-item { padding: 25px 0 !important; }
-        .soon-text { top: 85% !important; }
 
         /* =====================================================================
-           ФИЛЬТР ТОВАРОВ (ПЛАВНАЯ ШТОРКА СНИЗУ С РАЗМЫТИЕМ)
+           ОФОРМЛЕНИЕ И КАРТА
            ===================================================================== */
-        .filter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0); z-index: 2000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; display: flex; flex-direction: column; justify-content: flex-end; }
-        .filter-overlay.active { visibility: visible; background: rgba(0,0,0,0.5); }
-        
-        .filter-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 28px 28px 0 0; padding: 30px 20px 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
-        .filter-overlay.active .filter-panel { transform: translateY(0); }
-        
-        .filter-panel .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; }
-        .filter-panel .cat-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border-color: #fff; }
-        .filter-panel .filter-header { text-align: center; color: #888; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
-
-        /* =====================================================================
-           ПРОФИЛЬ НА 100% ЭКРАНА И СТРЕЛОЧКА
-           ===================================================================== */
-        /* Убираем отступы, растягиваем на весь экран */
-        .profile-card { min-height: 100vh; margin: -15px !important; margin-bottom: -80px !important; border-radius: 0 !important; border: none !important; padding-top: 80px !important; }
-        
-        /* Дизайнерская белая стрелочка */
-        .back-arrow-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
-        .back-arrow-btn:active { transform: scale(0.8); }
+        .screen-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; margin-top: 40px; display: flex; align-items: center; gap: 8px;}
+        .input-field { width: 100%; padding: 14px; background: #121212; color: white; border: 1px solid #333; border-radius: 10px; margin-top: 10px; font-size: 14px; outline: none; }
+        .map-container { width: 100%; height: 60vh; min-height: 350px; max-height: 550px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; -webkit-overflow-scrolling: touch; }
+        .points-box { background: #1a1a1a; padding: 15px; border-radius: 14px; border: 1px dashed #444; margin-bottom: 20px; }
+        .loader { text-align: center; padding: 50px 0; color: #888; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -194,56 +180,45 @@
         <div class="nav-btn" id="favTopBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
-        
         <div class="nav-btn" id="cartTopBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
             <div class="cart-badge" id="cartBadge">0</div>
         </div>
-        
         <div class="nav-divider"></div>
-        
         <div class="nav-btn" id="openMenuBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </div>
     </div>
 
-    <!-- БОКОВОЕ МЕНЮ (С раздвинутыми кнопками и без скобок) -->
     <div class="side-menu-fullscreen" id="menuOverlay">
         <button class="unified-close-btn" onclick="document.getElementById('menuOverlay').classList.remove('active')">×</button>
-        
-        <div class="side-menu-item">Общая информация</div>
-        <hr class="glow-divider-short">
-        
-        <div class="side-menu-item side-menu-disabled">
-            Отзывы
-            <span class="soon-text">в скором будущем</span>
+        <div class="side-menu-top-section">
+            <div class="side-menu-item">Общая информация</div>
+            <hr class="glow-divider-short">
+            <div class="side-menu-item side-menu-disabled">
+                Отзывы
+                <span class="soon-text">в скором будущем</span>
+            </div>
+            <hr class="glow-divider-short">
+            <div class="side-menu-item">Поддержка</div>
         </div>
-        <hr class="glow-divider-short">
-        
-        <div class="side-menu-item">Поддержка</div>
-        <hr class="glow-divider-full">
-        
-        <div class="side-menu-item" style="color: #ffffff;">
-            Реферальная программа
-            <span class="soon-text" style="color: #888;">в разработке</span>
+        <div class="side-menu-bottom-section">
+            <hr class="glow-divider-full">
+            <div class="side-menu-item" style="color: #ffffff;">
+                Реферальная программа
+                <span class="soon-text" style="color: #888;">в разработке</span>
+            </div>
         </div>
     </div>
 
-    <!-- МЕНЮ КАТЕГОРИЙ (ПЛАВНАЯ ШТОРКА СНИЗУ) -->
     <div class="filter-overlay" id="filterOverlay">
         <div class="filter-panel" id="filterPanel">
             <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
             <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
-            <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">📦 Все товары</div>
+            <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">Все товары</div>
+            <div class="cat-btn" id="favFilterBtn" style="display: none; border-color: #ff4d94; color: #ff4d94;" onclick="selectCategory('favorites', this)">Избранное</div>
             <div id="dynamicCategories" style="display: contents;"></div>
         </div>
-    </div>
-
-    <div class="fullscreen-overlay" id="filterOverlay">
-        <button class="unified-close-btn" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
-        <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
-        <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">📦 Все товары</div>
-        <div id="dynamicCategories" style="display: contents;"></div>
     </div>
 
     <div id="catalogScreen" class="screen">
@@ -254,7 +229,7 @@
             <div class="main-title">WÜRTEN STORE</div>
         </div>
         
-        <div class="sub-title">Ассортимент</div>
+        <div class="sub-title">Наш Ассортимент</div>
         <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
         
         <div class="grid" id="catalogGrid">
@@ -265,9 +240,7 @@
     <div id="cartScreen" class="screen" style="display: none;">
         <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
         <div class="screen-title">🛒 Ваша корзина</div>
-        
         <div class="cart-scroll-area" id="cartItemsList"></div>
-        
         <div class="cart-fixed-bottom">
             <hr class="glow-divider">
             <div class="cart-total-text">СУММА: <span id="cartTotalUiDisplay">0</span> €</div>
@@ -284,7 +257,7 @@
         </div>
     </div>
 
-    <div id="profileScreen" class="screen">
+    <div id="profileScreen" class="screen" style="display: none;">
         <button class="back-arrow-btn" onclick="goBackToCatalog()">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -305,15 +278,13 @@
                     <div class="stat-glow-num c-main" id="statItems">0</div>
                     <div class="stat-glow-label">товаров заказано</div>
                 </div>
-                
                 <div class="stat-glow-box">
                     <div class="stat-glow-num c-main" id="statSpent">0</div>
                     <div class="stat-glow-label">баллов потрачено</div>
                 </div>
-                
                 <div class="stat-glow-box bottom-point">
                     <div class="stat-glow-num c-main" id="statEarned">0</div>
-                    <div class="stat-glow-label">человек приглашено</div>
+                    <div class="stat-glow-label">людей приглашено</div>
                 </div>
             </div>
         </div>
@@ -371,7 +342,6 @@
             
             if (historyData.length > 0) {
                 let recentOrders = historyData.slice().reverse().slice(0, 5);
-                
                 recentOrders.forEach(order => {
                     let popupText = `📦 Товары: ${order.f}\n💰 Сумма: ${order.t} €\n🎁 Списано баллов: ${order.s}`;
                     let card = `<div class="history-card-new" onclick="tg.showAlert('${popupText}')"><img src="${order.p}" class="history-img-new"><div class="history-title-new">${order.n}</div></div>`;
@@ -406,16 +376,22 @@
             }
         }
 
+        // ЛОГИКА ИЗБРАННОГО
+        document.getElementById('favTopBtn').addEventListener('click', () => {
+            let favBtn = document.getElementById('favFilterBtn');
+            favBtn.style.display = 'block'; 
+            selectCategory('favorites', favBtn);
+        });
+
         window.selectCategory = function(cat_id, btnElement) {
             currentCategory = cat_id;
-            
-            // Возвращаем старые классы (.filter-panel вместо .fullscreen-overlay)
             document.querySelectorAll('.filter-panel .cat-btn, .filter-panel .cat-btn-all').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
             
-            let cleanName = btnElement.innerText.replace('📦 ', '');
-            document.getElementById('categoryFilterBtn').innerText = cleanName;
+            // Если выбрали НЕ избранное, прячем эту скрытую кнопку
+            if (cat_id !== 'favorites') { document.getElementById('favFilterBtn').style.display = 'none'; }
             
+            document.getElementById('categoryFilterBtn').innerText = btnElement.innerText;
             document.getElementById('filterOverlay').classList.remove('active');
             renderCatalog();
         };
@@ -441,11 +417,9 @@
 
                 let isOut = item.stock <= 0; let cardClass = isOut ? "card disabled" : "card";
                 let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
-                
                 let hasDiscount = (item.old_price && item.old_price > 0);
                 let priceClass = hasDiscount ? "new-price promo-price" : "new-price";
                 let oldPriceHtml = hasDiscount ? `<span class="old-price">${item.old_price} €</span>` : `<span class="old-price"></span>`;
-                
                 let timerHtml = (item.timer_end && item.timer_end > 0) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
                 let isFavClass = favorites[id] ? "active" : "";
 
@@ -547,15 +521,11 @@
             document.getElementById('cartScreen').style.display = 'flex'; currentStep = 2; tg.BackButton.show(); renderCartScreen(); updateMainButton();
         }
 
-        document.getElementById('favTopBtn').addEventListener('click', () => {
-            selectCategory('favorites', document.querySelector('.cat-btn-all')); 
-            document.getElementById('categoryFilterBtn').innerText = 'Избранное';
-        });
-
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-            document.getElementById('profileScreen').style.display = 'block'; currentStep = 5; 
-            document.getElementById('profileNameBig').innerText = globalUserName; document.getElementById('profilePointsBig').innerText = realPoints;
+            // Включаем флекс центрирование для профиля
+            document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
+            document.getElementById('profileNameBig').innerText = globalUserName;
             if (tg.initDataUnsafe?.user?.photo_url) document.getElementById('profileAvatarBig').src = tg.initDataUnsafe.user.photo_url;
             tg.BackButton.show(); tg.MainButton.hide();
         });
@@ -589,7 +559,7 @@
 
         window.goBackToCatalog = function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.fullscreen-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
             
             document.getElementById('catalogScreen').style.display = 'block';
             document.getElementById('topNav').style.display = 'flex';
