@@ -486,7 +486,6 @@
         
         let favorites = JSON.parse(localStorage.getItem('glow_favs')) || {};
 
-        // Иконка шопера на карточке товара (ТОТ САМЫЙ ШОПЕР, цвет темный #121212)
         const cartIconSvg = `<svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:#121212;"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>`;        
         
         try {    
@@ -635,9 +634,6 @@
         };
         window.closeProductModal = function() { document.getElementById('productModal').classList.remove('active'); updateMainButton(); };
 
-        // ИСПРАВЛЕНИЕ: Кнопка Telegram скрыта в каталоге
-        
-        // ИСПРАВЛЕНИЕ: Логика уведомлений Toast
         let toastTimer;
         function showCartToast() {
             const toast = document.getElementById('cartToast');
@@ -670,8 +666,8 @@
             }
             updateMainButton();
         };
-        
-        // ОБНОВЛЕННАЯ: Прячем кнопку Telegram в корзине, так как там есть своя кнопка
+
+        // Прячем кнопку Telegram, если у нас есть свои
         function updateMainButton() {
             cartTotal = 0; let totalItems = 0;
             for (let id in cart) { cartTotal += cart[id].price * cart[id].count; totalItems += cart[id].count; }
@@ -690,7 +686,6 @@
             else if (currentStep === 2) { goToDelivery(); } 
             else if (currentStep === 4) {
                 let ptsSpent = parseInt(document.getElementById('pointsInput').value) || 0; 
-                // Берем тот самый красиво собранный адрес из шага 4
                 let address = window.checkoutFinalAddress || 'Не указан'; 
                 
                 if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
@@ -702,13 +697,11 @@
             }
         });
 
-        // ОБНОВЛЕННАЯ: Рисуем карточки с баком и кнопками
         function renderCartScreen() {
             const list = document.getElementById('cartItemsList'); list.innerHTML = '';
             for(let id in cart) {
                 let item = cart[id]; let itemData = menuData[id];
                 
-                // Иконка мусорного бака
                 let trashSvg = `<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
                 
                 let html = `
@@ -734,12 +727,11 @@
             }
             
             document.getElementById('cartTotalUiDisplay').innerText = cartTotal;
-            // Считаем баллы (5% от суммы)
-            let earnedPoints = Math.floor(cartTotal * 0.05);
+            // ИСПРАВЛЕНИЕ: Баллы ровно 10% от суммы
+            let earnedPoints = Math.floor(cartTotal * 0.10);
             document.getElementById('cartPointsEarned').innerText = '+' + earnedPoints;
         }
 
-        // НОВЫЕ ФУНКЦИИ ДЛЯ КОРЗИНЫ:
         window.changeCartCount = function(id, delta) {
             let newCount = cart[id].count + delta;
             if (newCount <= 0) {
@@ -748,6 +740,8 @@
                 cart[id].count = newCount;
                 updateMainButton();
                 renderCartScreen();
+                // ИСПРАВЛЕНИЕ: Синхронизируем главный экран
+                renderCatalog(); 
             }
         };
 
@@ -755,19 +749,17 @@
             delete cart[id];
             updateMainButton();
             renderCartScreen();
-            if (cartTotal === 0) { goBackToCatalog(); } // Возвращаем в каталог, если корзина пустая
+            // ИСПРАВЛЕНИЕ: Синхронизируем главный экран
+            renderCatalog(); 
+            if (cartTotal === 0) { goBackToCatalog(); } 
         };
 
-        // ОБНОВЛЕННАЯ: Открытие корзины с кастомной модалкой
         function openCartScreen() {
             document.getElementById('cartToast').classList.remove('active');
-            
-            // Запускаем кастомную модалку пустой корзины
             if (cartTotal === 0) {
                 document.getElementById('emptyCartAlert').classList.add('active');
                 return;
             }
-            
             document.getElementById('catalogScreen').style.display = 'none'; 
             document.getElementById('topNav').style.display = 'none';
             document.getElementById('cartScreen').style.display = 'flex'; 
@@ -777,7 +769,6 @@
             updateMainButton();
         }
 
-        // ЛОГИКА ОФОРМЛЕНИЯ ЗАКАЗА
         let currentDelivery = 'pickup';
         let currentPayment = 'cash';
         
@@ -811,19 +802,15 @@
             document.getElementById('mapScreen').style.display = 'block';
             currentStep = 3; 
             
-            // Заполняем суммы в красивом чеке
             document.getElementById('receiptItems').innerText = cartTotal + ' €';
             document.getElementById('receiptTotal').innerText = cartTotal + ' €';
-            
             updateMainButton();
         };
 
-        // Обработка нашей HTML-кнопки "Далее" под чеком
         window.submitCheckoutForm = function() {
             let city = document.getElementById('citySelect').value;
             let details = document.getElementById('customAddressInput').value;
             
-            // Собираем красивую строку со всей информацией для бота
             let finalAddress = "";
             if (currentDelivery === 'pickup') {
                 finalAddress = `🤝 Самовывоз (${city}) | Адрес: ${details || 'Без уточнений'}`;
@@ -833,10 +820,8 @@
             }
             finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
 
-            // Сохраняем это в память приложения, чтобы бот потом это прочитал
             window.checkoutFinalAddress = finalAddress;
 
-            // Перекидываем человека на экран баллов
             document.getElementById('mapScreen').style.display = 'none'; 
             document.getElementById('pointsScreen').style.display = 'block';
             document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; 
@@ -861,25 +846,6 @@
 
         document.getElementById('cartTopBtn').addEventListener('click', openCartScreen);
 
-        tg.onEvent('mainButtonClicked', () => {
-            if (currentStep === 1) { openCartScreen(); } 
-            else if (currentStep === 2) {
-                document.getElementById('cartScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block';
-                currentStep = 3; updateMainButton();
-            } else if (currentStep === 3) {
-                let address = document.getElementById('addressInput').value;
-                if (address.trim() === '') { alert("Пожалуйста, впишите адрес доставки!"); return; }
-                document.getElementById('mapScreen').style.display = 'none'; document.getElementById('pointsScreen').style.display = 'block';
-                document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; currentStep = 4; updateMainButton();
-            } else if (currentStep === 4) {
-                let ptsSpent = parseInt(document.getElementById('pointsInput').value) || 0; let address = document.getElementById('addressInput').value;
-                if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
-                if (ptsSpent > realPoints) { alert("У вас недостаточно баллов!"); return; }
-                if (ptsSpent > cartTotal) { alert("Нельзя списать баллов больше, чем сумма заказа!"); return; }
-                tg.sendData(JSON.stringify({ cart: cart, address: address, points: ptsSpent, total: cartTotal })); tg.close();
-            }
-        });
-
         window.goBackToCatalog = function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
@@ -889,6 +855,9 @@
             
             currentStep = 1;
             tg.BackButton.hide();
+            
+            // ИСПРАВЛЕНИЕ: Тотальный сброс каталога при возврате
+            renderCatalog(); 
             updateMainButton();
         };
 
@@ -904,7 +873,6 @@
             }
         });
 
-        // Загружаем аватарку пользователя сразу при запуске приложения
         if (tg.initDataUnsafe?.user?.photo_url) {
             document.addEventListener("DOMContentLoaded", () => {
                 const avatarImg = document.getElementById('profileAvatarBig');
