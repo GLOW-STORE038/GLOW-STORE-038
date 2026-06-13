@@ -208,13 +208,31 @@
         .stat-glow-label { font-size: 13px; color: #888; font-weight: 600; text-transform: lowercase; }
 
         /* =====================================================================
-           ОФОРМЛЕНИЕ И КАРТА
+           ОФОРМЛЕНИЕ И ЧЕК
            ===================================================================== */
         .screen-title { font-size: 22px; font-weight: 800; margin-bottom: 15px; margin-top: 40px; display: flex; align-items: center; gap: 8px;}
         .input-field { width: 100%; padding: 14px; background: #121212; color: white; border: 1px solid #333; border-radius: 10px; margin-top: 10px; font-size: 14px; outline: none; }
-        .map-container { width: 100%; height: 60vh; min-height: 350px; max-height: 550px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; -webkit-overflow-scrolling: touch; }
         .points-box { background: #1a1a1a; padding: 15px; border-radius: 14px; border: 1px dashed #444; margin-bottom: 20px; }
         .loader { text-align: center; padding: 50px 0; color: #888; font-size: 14px; }
+
+        /* Новые элементы оформления */
+        .checkout-section-title { font-size: 14px; font-weight: 800; color: #888; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .toggle-btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .toggle-btn { flex: 1; background: #1a1a1a; border: 2px solid #333; border-radius: 14px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #aaa; font-weight: 700; font-size: 14px; }
+        .toggle-btn.active { background: rgba(130, 204, 221, 0.1); border-color: #82ccdd; color: #fff; }
+        .toggle-btn-emoji { font-size: 24px; }
+        
+        .checkout-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .checkout-select { flex: 1; padding: 14px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; appearance: none; }
+        .checkout-input { flex: 2; padding: 14px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; }
+        
+        .receipt-box { background: #1a1a1a; border-radius: 16px; padding: 20px; margin-top: 25px; margin-bottom: 20px; border: 1px solid #333; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #aaa; font-weight: 600; }
+        .receipt-row.total { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444; color: #82ccdd; font-size: 18px; font-weight: 900; margin-bottom: 0; }
+        
+        .checkout-order-btn { width: 100%; padding: 16px; background: #82ccdd; border-radius: 16px; border: none; color: #121212; font-weight: 900; font-size: 16px; text-align: center; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); margin-bottom: 30px; }
+        .checkout-order-btn:active { transform: scale(0.98); }
+        .map-container-small { width: 100%; height: 150px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; }
 
         /* =====================================================================
            УВЕДОМЛЕНИЕ О ДОБАВЛЕНИИ В КОРЗИНУ (TOAST БЕЗ СВЕЧЕНИЯ)
@@ -380,13 +398,56 @@
         </div>
     </div>
 
-    <div id="mapScreen" class="screen">
-        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
-        <div class="screen-title">📍 Зоны доставки</div>
-        <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Ознакомьтесь с картой доставки.</p>
-        <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container" frameborder="0"></iframe>
-        <p style="color: #888; font-size: 13px; margin-bottom: 5px;">Впишите точку самовывоза ниже:</p>
-        <input type="text" id="addressInput" class="input-field" placeholder="Например: ройтлинген/Reutlingen...">
+    <div id="mapScreen" class="screen" style="display: none; padding-top: 10px;">
+        <div class="cart-header-row">
+            <div class="screen-title">Оформление</div>
+            <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
+        </div>
+        <hr class="cart-header-divider">
+        
+        <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container-small" frameborder="0" style="margin-top: 15px;"></iframe>
+        
+        <div class="checkout-section-title">Способ доставки</div>
+        <div class="toggle-btn-group">
+            <div class="toggle-btn active" id="btnPickup" onclick="setDeliveryMethod('pickup')">
+                <div class="toggle-btn-emoji">🤝</div>
+                Самовывоз
+            </div>
+            <div class="toggle-btn" id="btnDhl" onclick="setDeliveryMethod('dhl')">
+                <div class="toggle-btn-emoji">📦</div>
+                DHL
+            </div>
+        </div>
+        
+        <div class="checkout-input-group" id="pickupInputs">
+            <select id="citySelect" class="checkout-select">
+                <option value="Reutlingen">Reutlingen</option>
+                <option value="RT | Betzingen">RT | Betzingen</option>
+                <option value="Pfullingen">Pfullingen</option>
+                <option value="Eningen">Eningen</option>
+            </select>
+            <input type="text" id="customAddressInput" class="checkout-input" placeholder="Уточните адрес...">
+        </div>
+        
+        <div class="checkout-section-title">Способ оплаты</div>
+        <div class="toggle-btn-group">
+            <div class="toggle-btn active" id="btnCash" onclick="setPaymentMethod('cash')">
+                <div class="toggle-btn-emoji">💵</div>
+                Наличные
+            </div>
+            <div class="toggle-btn" id="btnCard" onclick="setPaymentMethod('card')">
+                <div class="toggle-btn-emoji">💳</div>
+                Картой
+            </div>
+        </div>
+        
+        <div class="receipt-box">
+            <div class="receipt-row"><span>Сумма товаров:</span><span id="receiptItems">0 €</span></div>
+            <div class="receipt-row"><span>Доставка:</span><span>Рассчитает менеджер</span></div>
+            <div class="receipt-row total"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
+        </div>
+        
+        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Далее</button>
     </div>
 
     <div id="pointsScreen" class="screen">
@@ -699,11 +760,70 @@
             updateMainButton();
         }
 
-        // НОВАЯ: Переход на экран доставки
+        // ЛОГИКА ОФОРМЛЕНИЯ ЗАКАЗА
+        let currentDelivery = 'pickup';
+        let currentPayment = 'cash';
+        
+        window.setDeliveryMethod = function(method) {
+            currentDelivery = method;
+            document.getElementById('btnPickup').classList.remove('active');
+            document.getElementById('btnDhl').classList.remove('active');
+            
+            if(method === 'pickup') {
+                document.getElementById('btnPickup').classList.add('active');
+                document.getElementById('citySelect').style.display = 'block';
+                document.getElementById('customAddressInput').placeholder = 'Уточните адрес...';
+            } else {
+                document.getElementById('btnDhl').classList.add('active');
+                document.getElementById('citySelect').style.display = 'none';
+                document.getElementById('customAddressInput').placeholder = 'Впишите полный адрес...';
+            }
+        };
+
+        window.setPaymentMethod = function(method) {
+            currentPayment = method;
+            document.getElementById('btnCash').classList.remove('active');
+            document.getElementById('btnCard').classList.remove('active');
+            
+            if(method === 'cash') document.getElementById('btnCash').classList.add('active');
+            else document.getElementById('btnCard').classList.add('active');
+        };
+
         window.goToDelivery = function() {
             document.getElementById('cartScreen').style.display = 'none'; 
             document.getElementById('mapScreen').style.display = 'block';
             currentStep = 3; 
+            
+            // Заполняем суммы в красивом чеке
+            document.getElementById('receiptItems').innerText = cartTotal + ' €';
+            document.getElementById('receiptTotal').innerText = cartTotal + ' €';
+            
+            updateMainButton();
+        };
+
+        // Обработка нашей HTML-кнопки "Далее" под чеком
+        window.submitCheckoutForm = function() {
+            let city = document.getElementById('citySelect').value;
+            let details = document.getElementById('customAddressInput').value;
+            
+            // Собираем красивую строку со всей информацией для бота
+            let finalAddress = "";
+            if (currentDelivery === 'pickup') {
+                finalAddress = `🤝 Самовывоз (${city}) | Адрес: ${details || 'Без уточнений'}`;
+            } else {
+                if (details.trim() === '') { alert("Пожалуйста, впишите полный адрес доставки для DHL!"); return; }
+                finalAddress = `📦 DHL | Адрес: ${details}`;
+            }
+            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
+
+            // Сохраняем это в память приложения, чтобы бот потом это прочитал
+            window.checkoutFinalAddress = finalAddress;
+
+            // Перекидываем человека на экран баллов
+            document.getElementById('mapScreen').style.display = 'none'; 
+            document.getElementById('pointsScreen').style.display = 'block';
+            document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; 
+            currentStep = 4; 
             updateMainButton();
         };
              
