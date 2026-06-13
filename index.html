@@ -108,8 +108,17 @@
         /* =====================================================================
            ОБНОВЛЕННАЯ КОРЗИНА (СТИЛЬ "СПИСОК" С КНОПКАМИ И БАЛЛАМИ)
            ===================================================================== */
-        #cartScreen { flex-direction: column; height: calc(100vh - 40px); padding-bottom: 160px; }
-        .cart-scroll-area { flex-grow: 1; overflow-y: auto; padding-right: 5px; margin-top: 50px; margin-bottom: 10px; }
+        /* Фиксируем корзину на весь экран, чтобы блокировать прокрутку фона */
+        #cartScreen { flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0d0d0d; z-index: 2500; padding: 15px; padding-bottom: 160px; box-sizing: border-box; }
+        
+        /* Выравниваем шапку и крестик на одной линии */
+        .cart-header-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0 5px; }
+        .cart-header-row .screen-title { margin-top: 0; margin-bottom: 0; }
+        .cart-close-btn { background: none; border: none; color: #ffffff; font-size: 36px; font-weight: 300; line-height: 0.5; cursor: pointer; padding: 10px; transition: transform 0.2s; }
+        .cart-close-btn:active { transform: scale(0.8); }
+        .cart-header-divider { border: 0; height: 1px; background: #333; margin: 15px 0 0 0; }
+        
+        .cart-scroll-area { flex-grow: 1; overflow-y: auto; padding-right: 5px; margin-top: 15px; margin-bottom: 10px; }
         
         /* Карточка товара в корзине без фона, с линией снизу */
         .cart-item-card { background: transparent; padding: 15px 0; display: flex; gap: 15px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -134,7 +143,7 @@
         .cart-total-label { font-size: 18px; font-weight: 900; }
         .cart-total-sum { font-size: 22px; font-weight: 900; color: #82ccdd; }
         .cart-points-label { font-size: 12px; color: #888; text-align: right; margin-bottom: 2px; }
-        .cart-points-val { font-size: 16px; font-weight: 900; color: #ff2a5f; text-align: right; }
+        .cart-points-val { font-size: 16px; font-weight: 900; color: #ffffff; text-align: right; }
         
         .cart-order-btn { width: 100%; padding: 16px; background: #82ccdd; border-radius: 16px; border: none; color: #121212; font-weight: 900; font-size: 16px; text-align: center; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); }
         .cart-order-btn:active { transform: scale(0.98); }
@@ -145,8 +154,8 @@
         .empty-cart-modal { background: rgba(18, 18, 18, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 30px 20px; text-align: center; width: 100%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .empty-cart-icon svg { width: 50px; height: 50px; fill: #ffffff; margin-bottom: 15px; }
         .empty-cart-text { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 25px; }
-        .empty-cart-close { background: transparent; border: 1px solid #82ccdd; color: #82ccdd; padding: 12px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2s; }
-        .empty-cart-close:active { background: rgba(130, 204, 221, 0.1); }
+        .empty-cart-close { background: #82ccdd; border: none; color: #121212; padding: 14px 30px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); text-transform: uppercase; }
+        .empty-cart-close:active { transform: scale(0.98); }
 
         /* =====================================================================
            МОДАЛЬНОЕ ОКНО ТОВАРА
