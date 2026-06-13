@@ -28,16 +28,14 @@
         @keyframes cartPulse { 0% { background: #ffffff; color: #82ccdd; } 50% { background: #82ccdd; color: #ffffff; } 100% { background: #ffffff; color: #82ccdd; } }
 
         /* =====================================================================
-           БОКОВОЕ МЕНЮ (Равномерное распределение и прозрачность)
+           БОКОВОЕ МЕНЮ 
            ===================================================================== */
-        .side-menu-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 2000; transform: translateX(100%); transition: transform 0.4s ease; display: flex; flex-direction: column; padding: 50px 20px 30px; }
+        .side-menu-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 2000; transform: translateX(100%); transition: transform 0.4s ease; display: flex; flex-direction: column; justify-content: center; padding: 20px; }
         .side-menu-fullscreen.active { transform: translateX(0); }
-        .side-menu-top-section { display: flex; flex-direction: column; justify-content: space-evenly; flex-grow: 1; margin-top: 20px; margin-bottom: 20px; }
-        .side-menu-bottom-section { flex-shrink: 0; }
-        .side-menu-item { font-size: 22px; font-weight: 800; text-align: center; color: #fff; padding: 10px 0; background: transparent; border: none; cursor: pointer; position: relative; }
+        .side-menu-item { font-size: 22px; font-weight: 800; text-align: center; color: #fff; padding: 25px 0; background: transparent; border: none; cursor: pointer; position: relative; }
         .side-menu-disabled { color: #666; }
-        .soon-text { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; opacity: 0.6; font-weight: 600; white-space: nowrap; margin-top: 5px; }
-        .glow-divider-short { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 40%; margin: 0 auto; border-radius: 10px; }
+        .soon-text { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; opacity: 0.6; font-weight: 600; white-space: nowrap; margin-top: -5px; }
+        .glow-divider-short { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 40%; margin: 10px auto; border-radius: 10px; }
         .glow-divider-full { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 100%; margin: 30px 0; border-radius: 10px; }
 
         /* =====================================================================
@@ -62,8 +60,8 @@
         .bw-map { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 95%; max-width: 320px; fill: none; stroke: #ffffff; stroke-width: 0.3px; filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)) drop-shadow(0 0 2px rgba(255,255,255,1)); z-index: 1; pointer-events: none; }
         .main-title { position: relative; z-index: 2; font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2.5px; background: #0d0d0d; padding: 10px 18px; text-shadow: 0 2px 10px rgba(255,255,255,0.1); color: #fff; }
         
-        /* Идеальный тонкий заголовок "Наш Ассортимент" */
-        .sub-title { font-size: 22px; color: #a3a3b5; font-weight: 300; letter-spacing: 0.5px; text-align: center; margin-top: -15px; margin-bottom: 25px; }
+        /* Возвращен старый заголовок "Ассортимент" */
+        .sub-title { font-size: 18px; color: #888; text-align: center; margin-top: -15px; margin-bottom: 25px; font-weight: 800; letter-spacing: 0.5px; }
 
         .filter-btn { width: 100%; padding: 13px; background: #161616; border-radius: 16px; border: 1px solid #333; color: #fff; font-weight: 800; font-size: 15px; text-align: center; margin-bottom: 40px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: background 0.2s; }
         .filter-btn:active { background: #222; }
@@ -130,11 +128,11 @@
         .modal-price { font-size: 32px; font-weight: 900; color: #fff; }
 
         /* =====================================================================
-           ПРОФИЛЬ (РОВНАЯ КАРТОЧКА ПО ЦЕНТРУ С ОТСТУПАМИ И СТРЕЛОЧКОЙ)
+           ПРОФИЛЬ (КАРТОЧКА ПОЧТИ НА ВЕСЬ ЭКРАН)
            ===================================================================== */
-        #profileScreen { display: none; flex-direction: column; justify-content: center; min-height: 100vh; padding: 20px; }
-        .profile-card { background: #121212; border-radius: 28px; padding: 40px 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8); width: 100%; margin: 0; }
-        .back-arrow-btn { position: absolute; top: 20px; left: 15px; background: none; border: none; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+        #profileScreen { display: none; padding: 10px; }
+        .profile-card { position: relative; background: #121212; border-radius: 28px; padding: 70px 20px 40px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.8); width: 100%; min-height: calc(100vh - 20px); margin: 0; }
+        .back-arrow-btn { position: absolute; top: 20px; left: 20px; background: none; border: none; cursor: pointer; z-index: 10; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .back-arrow-btn:active { transform: scale(0.8); }
         
         .profile-avatar-center { width: 110px; height: 110px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; margin: 0 auto 20px auto; display: block; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
@@ -190,37 +188,44 @@
         </div>
     </div>
 
+    <!-- БОКОВОЕ МЕНЮ (С раздвинутыми кнопками) -->
     <div class="side-menu-fullscreen" id="menuOverlay">
         <button class="unified-close-btn" onclick="document.getElementById('menuOverlay').classList.remove('active')">×</button>
-        <div class="side-menu-top-section">
-            <div class="side-menu-item">Общая информация</div>
-            <hr class="glow-divider-short">
-            <div class="side-menu-item side-menu-disabled">
-                Отзывы
-                <span class="soon-text">в скором будущем</span>
-            </div>
-            <hr class="glow-divider-short">
-            <div class="side-menu-item">Поддержка</div>
+        
+        <div class="side-menu-item">Общая информация</div>
+        <hr class="glow-divider-short">
+        
+        <div class="side-menu-item side-menu-disabled">
+            Отзывы
+            <span class="soon-text">в разработке...</span>
         </div>
-        <div class="side-menu-bottom-section">
-            <hr class="glow-divider-full">
-            <div class="side-menu-item" style="color: #ffffff;">
-                Реферальная программа
-                <span class="soon-text" style="color: #888;">в разработке</span>
-            </div>
+        <hr class="glow-divider-short">
+        
+        <div class="side-menu-item">Поддержка</div>
+        
+        <hr class="glow-divider-full">
+        <div class="side-menu-item" style="color: #ffffff;">
+            Реферальная программа
+            <span class="soon-text" style="color: #888;">в разработке...</span>
         </div>
     </div>
 
+    <!-- МЕНЮ КАТЕГОРИЙ (ПЛАВНАЯ ШТОРКА СНИЗУ) -->
     <div class="filter-overlay" id="filterOverlay">
         <div class="filter-panel" id="filterPanel">
             <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
             <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
+            
             <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">Все товары</div>
-            <div class="cat-btn" id="favFilterBtn" style="display: none; border-color: #ff4d94; color: #ff4d94;" onclick="selectCategory('favorites', this)">Избранное</div>
+            
             <div id="dynamicCategories" style="display: contents;"></div>
+            
+            <!-- Скрытая кнопка Избранного (Находится в самом низу) -->
+            <div class="cat-btn" id="favFilterBtn" style="display: none;" onclick="selectCategory('favorites', this)">Избранное</div>
         </div>
     </div>
 
+    <!-- КАТАЛОГ -->
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
             <svg class="bw-map" viewBox="0 0 100 110" preserveAspectRatio="xMidYMid meet">
@@ -229,7 +234,8 @@
             <div class="main-title">WÜRTEN STORE</div>
         </div>
         
-        <div class="sub-title">Наш Ассортимент</div>
+        <!-- Заголовок возвращен к оригиналу -->
+        <div class="sub-title">Ассортимент</div>
         <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
         
         <div class="grid" id="catalogGrid">
@@ -237,6 +243,7 @@
         </div>
     </div>
 
+    <!-- КОРЗИНА -->
     <div id="cartScreen" class="screen" style="display: none;">
         <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
         <div class="screen-title">🛒 Ваша корзина</div>
@@ -247,6 +254,7 @@
         </div>
     </div>
 
+    <!-- КАРТОЧКА ТОВАРА -->
     <div class="product-modal-overlay" id="productModal">
         <button class="unified-close-btn" onclick="closeProductModal()">×</button>
         <img id="modalImg" class="modal-image" src="" alt="">
@@ -257,14 +265,17 @@
         </div>
     </div>
 
+    <!-- ПРОФИЛЬ -->
     <div id="profileScreen" class="screen" style="display: none;">
-        <button class="back-arrow-btn" onclick="goBackToCatalog()">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-        </button>
-        
         <div class="profile-card">
+            
+            <!-- Стрелочка внутри карточки -->
+            <button class="back-arrow-btn" onclick="goBackToCatalog()">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="profile-avatar-center">
             <div class="profile-name-center" id="profileNameBig">Загрузка...</div>
             
@@ -290,6 +301,7 @@
         </div>
     </div>
 
+    <!-- КАРТА -->
     <div id="mapScreen" class="screen">
         <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
         <div class="screen-title">📍 Зоны доставки</div>
@@ -299,6 +311,7 @@
         <input type="text" id="addressInput" class="input-field" placeholder="Например: ройтлинген/Reutlingen...">
     </div>
 
+    <!-- СПИСАНИЕ БАЛЛОВ -->
     <div id="pointsScreen" class="screen">
         <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
         <div class="screen-title">🎁 Списание баллов</div>
@@ -391,7 +404,10 @@
             // Если выбрали НЕ избранное, прячем эту скрытую кнопку
             if (cat_id !== 'favorites') { document.getElementById('favFilterBtn').style.display = 'none'; }
             
-            document.getElementById('categoryFilterBtn').innerText = btnElement.innerText;
+            // ИСПРАВЛЕНИЕ: Берем чистый текст кнопки, чтобы кнопка не сужалась
+            let cleanName = btnElement.textContent.trim();
+            document.getElementById('categoryFilterBtn').innerText = cleanName;
+            
             document.getElementById('filterOverlay').classList.remove('active');
             renderCatalog();
         };
@@ -523,8 +539,7 @@
 
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
-            // Включаем флекс центрирование для профиля
-            document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
+            document.getElementById('profileScreen').style.display = 'block'; currentStep = 5; 
             document.getElementById('profileNameBig').innerText = globalUserName;
             if (tg.initDataUnsafe?.user?.photo_url) document.getElementById('profileAvatarBig').src = tg.initDataUnsafe.user.photo_url;
             tg.BackButton.show(); tg.MainButton.hide();
