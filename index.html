@@ -252,6 +252,29 @@
         .fullscreen-overlay .cat-btn, .fullscreen-overlay .menu-item { background: rgba(130, 204, 221, 0.05); border: 1px solid #82ccdd; color: #82ccdd; font-size: 16px; padding: 18px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; }
         .fullscreen-overlay .cat-btn.active { background: #82ccdd; color: #121212; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); }
         .fullscreen-overlay .filter-header { color: #82ccdd; opacity: 0.7; }
+    /* =====================================================================
+           ОБНОВЛЕННАЯ ПАНЕЛЬ И БОКОВОЕ МЕНЮ (БЕЛОЕ)
+           ===================================================================== */
+        /* Делаем панель светло-серой и центрируем элементы по вертикали */
+        .top-nav { align-items: center !important; background: rgba(80, 80, 80, 0.3) !important; border: 1px solid rgba(255,255,255,0.2) !important; }
+        
+        /* Боковое меню на весь экран */
+        .side-menu-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #0d0d0d; z-index: 2000; transform: translateX(100%); transition: transform 0.4s ease; display: flex; flex-direction: column; justify-content: center; padding: 20px; }
+        .side-menu-fullscreen.active { transform: translateX(0); }
+
+        /* Белые кнопки-текст */
+        .side-menu-item { font-size: 22px; font-weight: 800; text-align: center; color: #fff; padding: 15px 0; background: transparent; border: none; cursor: pointer; position: relative; }
+        .side-menu-disabled { color: #666; } /* Серый цвет для "Отзывов" */
+        
+        /* Текст "в скором будущем" (абсолютное позиционирование, чтобы не менять расстояние между кнопками) */
+        .soon-text { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; opacity: 0.6; font-weight: 600; white-space: nowrap; margin-top: -10px; }
+
+        /* Светящиеся линии */
+        .glow-divider-short { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 40%; margin: 0 auto; border-radius: 10px; }
+        .glow-divider-full { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 100%; margin: 30px 0; border-radius: 10px; }
+
+        /* Чтобы крестик ровно вставал во всех окнах */
+        .screen { position: relative; }
     </style>
 </head>
 <body>
@@ -267,21 +290,42 @@
         <div class="nav-btn" id="openProfileBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         </div>
+        <div class="nav-btn" id="favTopBtn">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+        
         <div class="nav-btn" id="cartTopBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
             <div class="cart-badge" id="cartBadge">0</div>
         </div>
+        
         <div class="nav-divider"></div>
+        
         <div class="nav-btn" id="openMenuBtn">
             <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </div>
     </div>
 
-    <div class="fullscreen-overlay" id="menuOverlay">
+    <div class="side-menu-fullscreen" id="menuOverlay">
         <button class="unified-close-btn" onclick="document.getElementById('menuOverlay').classList.remove('active')">×</button>
-        <div class="menu-item">Общая информация</div>
-        <div class="menu-item">Отзывы</div>
-        <div class="menu-item">Поддержка</div>
+        
+        <div class="side-menu-item">Общая информация</div>
+        <hr class="glow-divider-short">
+        
+        <div class="side-menu-item side-menu-disabled">
+            Отзывы
+            <span class="soon-text">(в скором будущем)</span>
+        </div>
+        <hr class="glow-divider-short">
+        
+        <div class="side-menu-item">Поддержка</div>
+        
+        <hr class="glow-divider-full">
+        
+        <div class="side-menu-item" style="color: #d6a2e8;">
+            Реферальная программа
+            <span class="soon-text" style="color: #888;">(в разработке)</span>
+        </div>
     </div>
 
     <div class="fullscreen-overlay" id="filterOverlay">
@@ -316,10 +360,9 @@
     </div>
 
     <div id="cartScreen" class="screen">
-        <div class="screen-title">
-            <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:white;"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>
-            Ваша корзина
-        </div>
+        <div id="cartScreen" class="screen">
+        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
+        <div class="screen-title">🛒 Ваша корзина</div>
         
         <div class="cart-scroll-area" id="cartItemsList"></div>
         
@@ -331,8 +374,7 @@
 
     <div class="product-modal-overlay" id="productModal">
         <button class="unified-close-btn" onclick="closeProductModal()">×</button>
-        <img id="modalImg" src="" class="modal-image">
-        <div class="modal-info">
+        <img id="modalImg" ...>
             <div id="modalTitle" class="modal-title">Название</div>
             <div id="modalDesc" class="modal-desc">Описание</div>
             <div class="modal-price" id="modalPrice">0 €</div>
@@ -340,9 +382,9 @@
     </div>
 
     <div id="profileScreen" class="screen">
+        <div id="profileScreen" class="screen">
+        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
         <div class="profile-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="profileAvatarBig" class="profile-avatar-center">
-            <div class="profile-name-center" id="profileNameBig">Загрузка...</div>
             
             <div class="history-title-main">Последние заказы</div>
             <div class="history-scroll-new" id="historyScroll">
@@ -369,6 +411,7 @@
     </div>
 
     <div id="mapScreen" class="screen">
+        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
         <div class="screen-title">📍 Зоны доставки</div>
         <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Ознакомьтесь с картой доставки.</p>
         <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container" frameborder="0"></iframe>
@@ -625,7 +668,21 @@
                 tg.sendData(JSON.stringify({ cart: cart, address: address, points: ptsSpent, total: cartTotal })); tg.close();
             }
         });
-
+// Единая функция закрытия любого окна по крестику
+        window.goBackToCatalog = function() {
+            // Прячем все экраны
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            // Убираем активные классы с менюшек
+            document.querySelectorAll('.fullscreen-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
+            
+            // Возвращаем каталог и меню
+            document.getElementById('catalogScreen').style.display = 'block';
+            document.getElementById('topNav').style.display = 'flex';
+            
+            currentStep = 1;
+            tg.BackButton.hide();
+            updateMainButton();
+        };
         tg.onEvent('backButtonClicked', () => {
             if (currentStep === 5 || currentStep === 2) { 
                 document.getElementById('profileScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'none';
