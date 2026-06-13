@@ -131,14 +131,15 @@
         .modal-price { font-size: 32px; font-weight: 900; color: #fff; }
 
         /* =====================================================================
-           ПРОФИЛЬ (ОГРОМНАЯ КАРТОЧКА НА 98% ЭКРАНА С ОТСТУПАМИ)
+           ПРОФИЛЬ (МАКСИМАЛЬНО НА ВЕСЬ ЭКРАН)
            ===================================================================== */
-        #profileScreen { display: none; padding: 1vh 2vw; height: 100vh; align-items: center; justify-content: center; box-sizing: border-box; }
-        .profile-card { position: relative; background: #121212; border-radius: 28px; padding: 40px 15px 30px; border: 1px solid rgba(255,255,255,0.05); text-align: center; width: 100%; height: 98vh; max-height: 98vh; margin: 0; display: flex; flex-direction: column; justify-content: space-evenly; box-shadow: 0 10px 40px rgba(0,0,0,0.8); box-sizing: border-box; }
+        #profileScreen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; padding: 4px; background: #0d0d0d; z-index: 1000; align-items: center; justify-content: center; box-sizing: border-box; }
+        .profile-card { position: relative; background: #121212; border-radius: 28px; padding: 45px 15px 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; width: 100%; height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: space-evenly; box-shadow: 0 10px 40px rgba(0,0,0,0.8); box-sizing: border-box; }
         .back-arrow-btn { position: absolute; top: 20px; left: 15px; background: none; border: none; cursor: pointer; z-index: 10; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .back-arrow-btn:active { transform: scale(0.8); }
         
-        .profile-avatar-center { width: 110px; height: 110px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; margin: 0 auto; display: block; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        /* Сделал аватарку чуть больше, так как окно теперь огромное */
+        .profile-avatar-center { width: 125px; height: 125px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; margin: 0 auto; display: block; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
         .profile-name-center { font-size: 32px; font-weight: 900; margin: 15px 0; text-shadow: 0 0 15px rgba(255,255,255,0.4); line-height: 1.1; }
         
         .history-title-main { text-align: left; font-size: 16px; font-weight: 800; margin-bottom: 15px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
@@ -153,7 +154,6 @@
         .stat-glow-box.bottom-point { grid-column: 1 / -1; }
         .stat-glow-num { font-size: 40px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
         
-        /* ДОБАВЛЕНЫ ДВА РАЗНЫХ ЦВЕТА С ПОДСВЕТКОЙ */
         .stat-glow-num.c-blue { color: #82ccdd; text-shadow: 0 0 15px rgba(130, 204, 221, 0.5); } 
         .stat-glow-num.c-ruby { color: #ff2a5f; text-shadow: 0 0 15px rgba(255, 42, 95, 0.5); } 
         
