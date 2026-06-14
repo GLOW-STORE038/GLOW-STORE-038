@@ -384,7 +384,7 @@
         <div class="toggle-btn-group">
             <div class="toggle-btn" id="btnPickup" onclick="clickPickupToggle()">
                 <div class="toggle-btn-emoji">
-                    <!-- Иконка профиля (Человечек) -->
+                    <!-- Иконка профиля (Человечек) как ты просил -->
                     <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 </div>
                 Самовывоз
@@ -398,13 +398,78 @@
             </div>
         </div>
 
-        <!-- Информация о выбранном способе (Строгий серый цвет) -->
-        <div id="checkoutSelectedInfo" style="display:none; text-align:center; color:#ccc; font-size:14px; font-weight:700; margin-bottom:15px; padding: 12px; background: #1a1a1a; border-radius: 12px; border: 1px solid #333;"></div>
+        <!-- Информация о выбранном способе (Стиль черный как у Toast) -->
+        <div id="checkoutSelectedInfo" style="display:none; align-items:center; justify-content:center; gap: 6px; color:#fff; font-size:14px; font-weight:700; margin-bottom:15px; padding: 16px; background: rgba(18, 18, 18, 0.95); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15);"></div>
         
-        <!-- Поля ввода удалены, осталась только инфо-плашка -->
-        <div id="deliveryDynamicInputs" style="display: none; margin-bottom: 15px;">
-            <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 5px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Адресс выдачи и время вы сможете согласовать с менеджером в чате</p>
+        <!-- Текст про менеджера для доставки (БЕЗ поля ввода) -->
+        <p id="deliveryManagerInfo" style="display:none; color: #aaa; font-size: 12px; text-align: center; margin-bottom: 15px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Точный адрес доставки и время вы сможете согласовать с менеджером в чате.</p>
+
+        <div class="checkout-section-title">Способ оплаты</div>
+        <div class="toggle-btn-group">
+            <div class="toggle-btn" id="btnCash" onclick="setPaymentMethod('cash')">
+                <div class="toggle-btn-emoji">💵</div>
+                Наличные
+            </div>
+            <div class="toggle-btn" id="btnCard" onclick="setPaymentMethod('card')">
+                <div class="toggle-btn-emoji">💳</div>
+                Картой
+            </div>
         </div>
+        
+        <!-- ЧЕК (ИТОГО) -->
+        <div class="receipt-box" style="margin-bottom: 15px;">
+            <div id="receiptItemsList" class="receipt-items-list"></div>
+            <div class="receipt-row total" style="border-top: none; padding-top: 0;"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
+        </div>
+
+        <!-- НОВЫЙ БЛОК БАЛЛОВ ПОД ЧЕКОМ -->
+        <div style="background: #1a1a1a; border-radius: 16px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span style="font-size: 14px; font-weight: 800; color: #fff;">Списать баллов:</span>
+                <span style="font-size: 12px; color: #888;">Ваш баланс: <b id="availPointsUi" style="color:#82ccdd;">0</b></span>
+            </div>
+            <div style="position: relative; width: 70px;">
+                <input type="number" id="pointsInputNew" value="4" style="width: 100%; background: #121212; border: 1px solid #333; color: white; padding: 10px; border-radius: 12px; text-align: center; font-size: 16px; font-weight: bold; outline: none;">
+                <div id="pointsOverlayNew" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;" onclick="showPointsErrorModal()"></div>
+            </div>
+        </div>
+
+        <!-- Окно ошибки валидации перед отправкой -->
+        <div id="checkoutError" style="display:none; color:#ff4d4d; font-size:13px; font-weight:800; text-align:center; margin-bottom:15px; padding:10px; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); border-radius:12px;"></div>
+        
+        <!-- ВОЗВРАЩЕННАЯ КНОПКА ОФОРМЛЕНИЯ -->
+        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Оформить заказ</button>
+    </div>
+
+    <!-- ФИРМЕННОЕ ОКНО ОШИБКИ БАЛЛОВ -->
+    <div id="mapScreen" class="screen" style="display: none; padding-top: 10px;">
+        <div class="cart-header-row">
+            <div class="screen-title">Оформление</div>
+            <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
+        </div>
+        <hr class="cart-header-divider">
+        
+        <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container-small" frameborder="0" style="margin-top: 15px;"></iframe>
+        
+        <div class="checkout-section-title">Способ получения</div>
+        <div class="toggle-btn-group">
+            <div class="toggle-btn" id="btnPickup" onclick="clickPickupToggle()">
+                <div class="toggle-btn-emoji">
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                Самовывоз
+            </div>
+            <div class="toggle-btn" id="btnDelivery" onclick="clickDeliveryToggle()">
+                <div class="toggle-btn-emoji">
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                </div>
+                Доставка
+            </div>
+        </div>
+
+        <div id="checkoutSelectedInfo" style="display:none; align-items:center; justify-content:center; gap: 6px; color:#fff; font-size:14px; font-weight:700; margin-bottom:15px; padding: 16px; background: rgba(18, 18, 18, 0.95); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15);"></div>
+        
+        <p id="deliveryManagerInfo" style="display:none; color: #aaa; font-size: 12px; text-align: center; margin-bottom: 15px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Точный адрес доставки и время вы сможете согласовать с менеджером в чате.</p>
 
         <div class="checkout-section-title">Способ оплаты</div>
         <div class="toggle-btn-group">
@@ -426,7 +491,7 @@
                 <div class="receipt-row" style="align-items: center; margin-bottom: 5px;">
                     <span>Списать баллов:</span>
                     <div style="position: relative; width: 80px;">
-                        <select id="pointsSelect" class="checkout-select" style="width: 100%; padding: 8px; text-align: center; appearance: auto; background: #121212; border-color: #333; font-weight: bold; font-size: 16px;">
+                        <select id="pointsSelect" class="checkout-select" style="width: 100%; padding: 8px; text-align: center; appearance: auto; background: #121212; border-color: #333; border-radius: 8px; font-weight: bold; font-size: 16px; color: #fff; outline: none;">
                             <option value="0">0</option>
                         </select>
                         <div id="pointsOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;"></div>
@@ -437,6 +502,11 @@
                 </div>
             </div>
         </div>
+
+        <div id="checkoutError" style="display:none; color:#ff4d4d; font-size:13px; font-weight:800; text-align:center; margin-bottom:15px; padding:10px; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); border-radius:12px;"></div>
+        
+        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Оформить заказ</button>
+    </div>
 
     <!-- TOAST -->
     <div id="cartToast" class="cart-toast" onclick="openCartScreen()">
@@ -789,24 +859,114 @@
             document.getElementById('btnCard').classList.toggle('active', currentPayment === 'card');
             
             const infoDiv = document.getElementById('checkoutSelectedInfo');
-            const deliveryInputs = document.getElementById('deliveryDynamicInputs');
-            
+            const deliveryManagerInfo = document.getElementById('deliveryManagerInfo');
             document.getElementById('checkoutError').style.display = 'none';
 
             if (currentDelivery === 'pickup' && currentCity) {
                 let typeName = currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный';
-                infoDiv.innerHTML = `Самовывоз (${typeName}): ${currentCity}`;
-                infoDiv.style.display = 'block';
-                deliveryInputs.style.display = 'none';
+                infoDiv.innerHTML = `📍 Самовывоз (${typeName}): ${currentCity}`;
+                infoDiv.style.display = 'flex';
+                deliveryManagerInfo.style.display = 'none';
             } else if (currentDelivery === 'delivery' && currentCity) {
                 let displayCity = currentCity === 'other' ? 'Другой город' : currentCity;
-                infoDiv.innerHTML = `Доставка: ${displayCity}`;
-                infoDiv.style.display = 'block';
-                deliveryInputs.style.display = 'block'; // Показываем текст про менеджера
+                infoDiv.innerHTML = `📍 Доставка: ${displayCity}`;
+                infoDiv.style.display = 'flex';
+                deliveryManagerInfo.style.display = 'block'; // Показываем текст про менеджера
             } else {
                 infoDiv.style.display = 'none';
-                deliveryInputs.style.display = 'none';
+                deliveryManagerInfo.style.display = 'none';
             }
+        };
+
+        window.goToDelivery = function() {
+            document.getElementById('cartScreen').style.display = 'none'; 
+            document.getElementById('mapScreen').style.display = 'block'; 
+            currentStep = 3; 
+            
+            let itemsTextHTML = "";
+            for (let id in cart) { itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`; }
+            document.getElementById('receiptItemsList').innerHTML = itemsTextHTML; 
+            document.getElementById('receiptTotal').innerText = cartTotal + ' €';
+            
+            currentDelivery = null; currentPickupType = null; currentCity = null; currentPayment = null;
+            document.getElementById('btnPickup').classList.remove('active');
+            document.getElementById('btnDelivery').classList.remove('active');
+            document.getElementById('btnCash').classList.remove('active');
+            document.getElementById('btnCard').classList.remove('active');
+            
+            // ЛОГИКА БАЛЛОВ (Теперь в нашем новом блоке)
+            let pInput = document.getElementById('pointsInputNew');
+            let pOverlay = document.getElementById('pointsOverlayNew');
+            document.getElementById('availPointsUi').innerText = realPoints;
+
+            if (realPoints < 4) {
+                pInput.value = '';
+                pInput.disabled = true;
+                pInput.style.color = '#666';
+                pOverlay.style.display = 'block';
+            } else {
+                pInput.value = '4';
+                pInput.disabled = false;
+                pInput.style.color = 'white';
+                pOverlay.style.display = 'none';
+            }
+
+            updateCheckoutUI();
+            updateMainButton();
+        };
+
+        // Открытие нашего фирменного окна ошибки баллов
+        window.showPointsErrorModal = function() {
+            document.getElementById('pointsErrorAlert').classList.add('active');
+        };
+
+        window.submitCheckoutForm = function() {
+            const errorDiv = document.getElementById('checkoutError');
+            errorDiv.style.display = 'none';
+
+            if (!currentDelivery || !currentCity) {
+                errorDiv.innerText = "❌ Выберите способ получения!";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (!currentPayment) {
+                errorDiv.innerText = "❌ Выберите способ оплаты!";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
+            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
+            
+            if (ptsSpent > 0 && ptsSpent < 4) { 
+                errorDiv.innerText = "❌ Минимальное списание от 4 баллов!";
+                errorDiv.style.display = 'block';
+                return; 
+            }
+            if (ptsSpent > realPoints) { 
+                errorDiv.innerText = "❌ У вас недостаточно баллов!";
+                errorDiv.style.display = 'block';
+                return; 
+            }
+            if (ptsSpent > cartTotal) { 
+                errorDiv.innerText = "❌ Нельзя списать баллов больше, чем сумма заказа!";
+                errorDiv.style.display = 'block';
+                return; 
+            }
+
+            let finalAddress = "";
+            if (currentDelivery === 'pickup') {
+                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
+            } else {
+                let actualCity = currentCity === 'other' ? 'Другой город' : currentCity;
+                finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
+            }
+            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
+            
+            // Отправляем заказ в ТГ и закрываем окно!
+            tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: cartTotal })); 
+            tg.close();
         };
 
         window.goToDelivery = function() {
