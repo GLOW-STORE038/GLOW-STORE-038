@@ -487,13 +487,12 @@
             <div id="receiptItemsList" class="receipt-items-list"></div>
             <div class="receipt-row total" style="border-top: none; padding-top: 0;"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
             
-            <div style="border-top: 1px dashed #444; margin-top: 15px; padding-top: 15px;">
+            <!-- Ручной ввод баллов внутри чека -->
+            <div style="border-top: 1px dashed #444; margin-top: 15px; padding-top: 10px;">
                 <div class="receipt-row" style="align-items: center; margin-bottom: 5px;">
                     <span>Списать баллов:</span>
                     <div style="position: relative; width: 80px;">
-                        <select id="pointsSelect" class="checkout-select" style="width: 100%; padding: 8px; text-align: center; appearance: auto; background: #121212; border-color: #333; border-radius: 8px; font-weight: bold; font-size: 16px; color: #fff; outline: none;">
-                            <option value="0">0</option>
-                        </select>
+                        <input type="number" id="pointsInputNew" value="0" style="width: 100%; padding: 4px; text-align: center; background: #121212; border: 1px solid #333; border-radius: 8px; font-weight: bold; font-size: 16px; color: #fff; outline: none;">
                         <div id="pointsOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;"></div>
                     </div>
                 </div>
@@ -982,32 +981,82 @@
             document.getElementById('btnCash').classList.remove('active');
             document.getElementById('btnCard').classList.remove('active');
             
-            // ЛОГИКА ВЫПАДАЮЩЕГО СПИСКА БАЛЛОВ
-            let pSelect = document.getElementById('pointsSelect');
+            // ЛОГИКА РУЧНОГО ВВОДА БАЛЛОВ
+            let pInput = document.getElementById('pointsInputNew');
             let pOverlay = document.getElementById('pointsOverlay');
             document.getElementById('availPointsUi').innerText = realPoints;
 
-            pSelect.innerHTML = '<option value="0">0</option>'; // Всегда можно не списывать
-            
-            let maxPoints = Math.min(realPoints, cartTotal); // Нельзя списать больше, чем стоит заказ
+            pInput.value = '0'; // По умолчанию баллов стоит 0
 
             if (realPoints < 4) {
-                pSelect.disabled = true; pSelect.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => tg.showAlert('У вас недостаточно баллов! Минимальное списание от 4 баллов.');
+                pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
+                pOverlay.onclick = () => showPointsErrorModal('У вас недостаточно баллов! На балансе должно быть минимум 4 балла.');
             } else if (cartTotal < 4) {
-                pSelect.disabled = true; pSelect.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => tg.showAlert('Сумма заказа слишком мала для списания баллов (минимум 4€)!');
+                pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
+                pOverlay.onclick = () => showPointsErrorModal('Сумма заказа слишком мала для списания баллов (минимум 4€)!');
             } else {
-                for (let i = 4; i <= maxPoints; i++) {
-                    pSelect.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`);
-                }
-                pSelect.disabled = false; pSelect.style.color = '#fff'; pOverlay.style.display = 'none';
-                pSelect.value = '4'; // По умолчанию ставим 4 балла
+                pInput.disabled = false; pInput.style.color = '#fff'; pOverlay.style.display = 'none';
             }
 
+            updateCheckoutUI();
             updateMainButton();
         };
+
+        // Открытие нашего фирменного окна ошибки баллов с динамическим текстом
+        window.showPointsErrorModal = function(msg) {
+            if (msg) document.getElementById('pointsErrorText').innerText = msg;
+            document.getElementById('pointsErrorAlert').classList.add('active');
+        };
+
         window.submitCheckoutForm = function() {
+            const errorDiv = document.getElementById('checkoutError');
+            errorDiv.style.display = 'none';
+
+            // Проверка: Выбран ли город
+            if (!currentDelivery || !currentCity) {
+                errorDiv.innerText = "❌ Пожалуйста, выберите способ получения (Самовывоз или Доставка)!";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Проверка: Выбрана ли оплата
+            if (!currentPayment) {
+                errorDiv.innerText = "❌ Пожалуйста, выберите способ оплаты (Наличные или Карта)!";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // ПРОВЕРКА БАЛЛОВ (ручной ввод)
+            let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
+            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
+            
+            if (ptsSpent > 0 && ptsSpent < 4) { 
+                showPointsErrorModal('Вы не можете списать меньше 4 баллов!');
+                return; 
+            }
+            if (ptsSpent > realPoints) { 
+                showPointsErrorModal('У вас недостаточно баллов на балансе!');
+                return; 
+            }
+            if (ptsSpent > cartTotal) { 
+                showPointsErrorModal('Нельзя списать баллов больше, чем сумма заказа!');
+                return; 
+            }
+
+            // Собираем адрес
+            let finalAddress = "";
+            if (currentDelivery === 'pickup') {
+                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
+            } else {
+                let actualCity = currentCity === 'other' ? 'Другой город' : currentCity;
+                finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
+            }
+            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
+            
+            // ОТПРАВКА СРАЗУ В ТГ И ЗАКРЫТИЕ ОКНА
+            tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: cartTotal })); 
+            tg.close();
+        };        window.submitCheckoutForm = function() {
             const errorDiv = document.getElementById('checkoutError');
             errorDiv.style.display = 'none';
 
