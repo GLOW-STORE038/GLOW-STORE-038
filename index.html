@@ -41,7 +41,7 @@
         .glow-divider-full { border: 0; height: 1px; background: rgba(255,255,255,0.4); box-shadow: 0 0 8px rgba(255,255,255,0.8); width: 100%; margin: 20px 0; border-radius: 10px; }
 
         /* =====================================================================
-           ЕДИНЫЙ КРЕСТИК И ФИЛЬТР (ШТОРКА СНИЗУ)
+           ЕДИНЫЙ КРЕСТИК И ФИЛЬТР
            ===================================================================== */
         .unified-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #ffffff; font-size: 36px; font-weight: 300; line-height: 0.5; cursor: pointer; z-index: 9999; padding: 10px; transition: transform 0.2s; }
         .unified-close-btn:active { transform: scale(0.8); }
@@ -127,7 +127,7 @@
         .cart-order-btn { width: 100%; padding: 16px; background: #82ccdd; border-radius: 16px; border: none; color: #121212; font-weight: 900; font-size: 16px; text-align: center; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); margin-bottom: 30px; }
         .cart-order-btn:active { transform: scale(0.98); }
 
-        /* Всплывашка пустой корзины и ошибок */
+        /* Всплывашки пустой корзины и ошибок */
         .empty-cart-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 4000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; padding: 20px; }
         .empty-cart-modal-overlay.active { opacity: 1; visibility: visible; }
         .empty-cart-modal { background: rgba(18, 18, 18, 0.95); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 30px 20px; text-align: center; width: 100%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -373,7 +373,7 @@
             </div>
             <div class="toggle-btn" id="btnDelivery" onclick="clickDeliveryToggle()">
                 <div class="toggle-btn-emoji">
-                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 </div>
                 Доставка
             </div>
@@ -395,14 +395,14 @@
             </div>
         </div>
         
-        <div style="background: #1a1a1a; border-radius: 16px; padding: 20px; margin-top: 25px; margin-bottom: 20px; border: 1px solid #333;">
-            <div id="receiptItemsList" style="font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444;"></div>
+        <div class="receipt-box" style="margin-bottom: 15px;">
+            <div id="receiptItemsList" class="receipt-items-list"></div>
             
-            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #ff4d4d; font-weight: 600;">
+            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #ff4d4d; font-weight: 600; border-top: 1px dashed #444; padding-top: 15px;">
                 <span>Скидка (баллы):</span><span id="receiptDiscountVal">-0 €</span>
             </div>
             
-            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #aaa; font-weight: 600; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444; color: #82ccdd; font-size: 18px; font-weight: 900;">
+            <div class="receipt-row total" style="border-top: 1px dashed #444; padding-top: 15px; margin-top: 15px;">
                 <span>ИТОГО:</span><span id="receiptTotal">0 €</span>
             </div>
         </div>
@@ -805,28 +805,6 @@
             }
         };
 
-        // Живой пересчет чека
-        window.updateReceiptTotal = function() {
-            let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
-            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal);
-            if (ptsSpent < 0) ptsSpent = 0;
-
-            let discountRow = document.getElementById('receiptDiscountRow');
-            let discountVal = document.getElementById('receiptDiscountVal');
-            let totalSpan = document.getElementById('receiptTotal');
-
-            if (ptsSpent > 0) {
-                discountRow.style.display = 'flex';
-                discountVal.innerText = '-' + ptsSpent + ' €';
-                let finalPrice = cartTotal - ptsSpent;
-                if (finalPrice < 0) finalPrice = 0;
-                totalSpan.innerText = finalPrice + ' €';
-            } else {
-                discountRow.style.display = 'none';
-                totalSpan.innerText = cartTotal + ' €';
-            }
-        };
-
         // Живой пересчет чека (Показывает скидку, только если она валидна)
         window.updateReceiptTotal = function() {
             let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
@@ -837,15 +815,17 @@
             let discountVal = document.getElementById('receiptDiscountVal');
             let totalSpan = document.getElementById('receiptTotal');
 
-            // Показываем строку скидки ТОЛЬКО если введено 4+ баллов и хватает баланса
+            // Показываем скидку ТОЛЬКО если введено >= 4 баллов И хватает баланса И сумма заказа позволяет
             if (ptsSpent >= 4 && ptsSpent <= realPoints && ptsSpent <= cartTotal) {
                 discountRow.style.display = 'flex';
                 discountVal.innerText = '-' + ptsSpent + ' €';
+                
                 let finalPrice = cartTotal - ptsSpent;
                 if (finalPrice < 0) finalPrice = 0;
                 totalSpan.innerText = finalPrice + ' €';
             } else {
-                discountRow.style.display = 'none'; // Убираем место под скидку
+                // Если баллов меньше 4 или их нет — полностью прячем строку скидки
+                discountRow.style.display = 'none';
                 totalSpan.innerText = cartTotal + ' €';
             }
         };
@@ -865,7 +845,7 @@
             
             // ЛОГИКА РУЧНОГО ВВОДА БАЛЛОВ
             let pInput = document.getElementById('pointsInputNew');
-            let pOverlay = document.getElementById('pointsOverlayNew');
+            let pOverlay = document.getElementById('pointsOverlay');
             document.getElementById('availPointsUi').innerText = realPoints;
 
             pInput.value = '0'; // По умолчанию 0
@@ -873,10 +853,10 @@
             // Если баллов меньше 4 или сумма заказа меньше 4 — блокируем поле и делаем серым
             if (realPoints < 4) {
                 pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => { document.getElementById('pointsErrorAlert').classList.add('active'); };
+                pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'У вас недостаточно баллов! На балансе должно быть минимум 4 балла.'); };
             } else if (cartTotal < 4) {
                 pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => { document.getElementById('pointsErrorAlert').classList.add('active'); };
+                pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'Сумма заказа слишком мала для списания баллов (минимум 4€)!'); };
             } else {
                 pInput.disabled = false; pInput.style.color = '#fff'; pOverlay.style.display = 'none';
             }
@@ -884,57 +864,6 @@
             updateCheckoutUI();
             updateReceiptTotal(); // Обязательно вызываем, чтобы не было "0 €" при старте!
             updateMainButton();
-        };
-
-        window.submitCheckoutForm = function() {
-            const errorDiv = document.getElementById('checkoutError');
-            errorDiv.style.display = 'none';
-
-            if (!currentDelivery || !currentCity) {
-                errorDiv.innerText = "❌ Пожалуйста, выберите способ получения (Самовывоз или Доставка)!";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            if (!currentPayment) {
-                errorDiv.innerText = "❌ Пожалуйста, выберите способ оплаты (Наличные или Карта)!";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            // ПРОВЕРКА БАЛЛОВ (ручной ввод)
-            let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
-            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
-            
-            if (ptsSpent > 0 && ptsSpent < 4) { 
-                document.getElementById('pointsErrorAlert').classList.add('active');
-                return; 
-            }
-            if (ptsSpent > realPoints) { 
-                document.getElementById('pointsErrorAlert').classList.add('active');
-                return; 
-            }
-            if (ptsSpent > cartTotal) { 
-                document.getElementById('pointsErrorAlert').classList.add('active');
-                return; 
-            }
-
-            // Собираем адрес
-            let finalAddress = "";
-            if (currentDelivery === 'pickup') {
-                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
-            } else {
-                let actualCity = currentCity === 'other' ? 'Другой город' : currentCity;
-                finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
-            }
-            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
-            
-            let finalPriceToPay = cartTotal - ptsSpent;
-            if (finalPriceToPay < 0) finalPriceToPay = 0;
-
-            // ОТПРАВКА СРАЗУ В ТГ И ЗАКРЫТИЕ ОКНА
-            tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: finalPriceToPay })); 
-            tg.close();
         };
 
         window.submitCheckoutForm = function() {
@@ -953,7 +882,7 @@
                 return;
             }
 
-            // Валидация баллов
+            // ПРОВЕРКА БАЛЛОВ (ручной ввод)
             let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
             let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
             
@@ -970,7 +899,7 @@
                 return; 
             }
 
-            // Адрес
+            // Собираем адрес
             let finalAddress = "";
             if (currentDelivery === 'pickup') {
                 finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
@@ -982,7 +911,8 @@
             
             let finalPriceToPay = cartTotal - ptsSpent;
             if (finalPriceToPay < 0) finalPriceToPay = 0;
-            
+
+            // ОТПРАВКА СРАЗУ В ТГ И ЗАКРЫТИЕ ОКНА
             tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: finalPriceToPay })); 
             tg.close();
         };
