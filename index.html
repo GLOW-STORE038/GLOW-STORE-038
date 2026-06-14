@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GLOW STORE</title>
+    <title>WÜRTEN STORE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* =====================================================================
@@ -48,11 +48,12 @@
 
         .filter-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0); z-index: 2000; visibility: hidden; transition: background 0.4s ease, visibility 0.4s; display: flex; flex-direction: column; justify-content: flex-end; }
         .filter-overlay.active { visibility: visible; background: rgba(0,0,0,0.5); }
-        .filter-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 28px 28px 0 0; padding: 30px 20px 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); position: relative; }
+        .filter-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 28px 28px 0 0; padding: 30px 20px 50px; border-top: 1px solid rgba(255, 255, 255, 0.1); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; flex-direction: column; max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); position: relative; }
         .filter-overlay.active .filter-panel { transform: translateY(0); }
-        .filter-panel .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; }
+        
+        .filter-panel .cat-btn { background: #1a1a1a; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 15px; border: 1px solid #333; cursor: pointer; color: white; transition: all 0.2s; margin-bottom: 10px;}
         .filter-panel .cat-btn.active { background: #fff; color: #000; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border-color: #fff; }
-        .filter-panel .filter-header { text-align: center; color: #888; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .filter-panel .filter-header { text-align: center; color: #888; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px; }
 
         /* =====================================================================
            ДИЗАЙН КАРТЫ И ЗАГОЛОВКА
@@ -95,7 +96,7 @@
         .fav-btn.active .fav-icon { fill: url(#pinkGradient); stroke: none; transform: scale(1.1); }
 
         /* =====================================================================
-           ОБНОВЛЕННАЯ КОРЗИНА (ИДЕАЛЬНЫЙ ВИЗУАЛ)
+           ОБНОВЛЕННАЯ КОРЗИНА
            ===================================================================== */
         #cartScreen { display: none; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0d0d0d; z-index: 2500; padding: 15px; padding-bottom: 160px; box-sizing: border-box; }
         .cart-header-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 0 5px; }
@@ -135,6 +136,9 @@
         .empty-cart-close { background: #82ccdd; border: none; color: #121212; padding: 14px 30px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); text-transform: uppercase; } 
         .empty-cart-close:active { transform: scale(0.98); }
 
+        /* =====================================================================
+           МОДАЛЬНОЕ ОКНО ТОВАРА
+           ===================================================================== */
         .product-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d0d; z-index: 2000; visibility: hidden; opacity: 0; transition: opacity 0.3s ease; overflow-y: auto; padding-bottom: 50px; }
         .product-modal-overlay.active { visibility: visible; opacity: 1; }
         .modal-image { width: 100%; height: auto; max-height: 65vh; aspect-ratio: 3/4; object-fit: cover; background: #1a1a1a; border-bottom: 1px solid #333; padding: 0; border-radius: 0 0 24px 24px; }
@@ -143,6 +147,9 @@
         .modal-desc { font-size: 15px; color: #aaa; line-height: 1.5; margin-bottom: 20px; }
         .modal-price { font-size: 32px; font-weight: 900; color: #fff; }
 
+        /* =====================================================================
+           ПРОФИЛЬ
+           ===================================================================== */
         #profileScreen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; padding: 12px 10px; background: rgba(13, 13, 13, 0.95); z-index: 1000; align-items: center; justify-content: center; box-sizing: border-box; }
         .profile-card { position: relative; background: #121212; border-radius: 28px; padding: 45px 15px 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; width: 100%; height: 100%; margin: 0; display: flex; flex-direction: column; justify-content: space-evenly; box-shadow: 0 15px 40px rgba(0,0,0,0.9); box-sizing: border-box; }
         .back-arrow-btn { position: absolute; top: 20px; left: 15px; background: none; border: none; cursor: pointer; z-index: 10; padding: 10px; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -175,15 +182,10 @@
         .toggle-btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
         .toggle-btn { flex: 1; background: #1a1a1a; border: 2px solid #333; border-radius: 14px; padding: 15px 10px; text-align: center; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #aaa; font-weight: 700; font-size: 14px; }
         
-        /* ИЗМЕНЕНО: Активные кнопки теперь как кнопка Оформить */
         .toggle-btn.active { background: #82ccdd; border-color: #82ccdd; color: #121212; font-weight: 900; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); }
         .toggle-btn svg { fill: #ffffff; transition: fill 0.2s; }
         .toggle-btn.active svg { fill: #121212 !important; }
-        
         .toggle-btn-emoji { display: flex; justify-content: center; align-items: center; height: 30px; font-size: 24px;}
-        
-        .checkout-input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .checkout-input { padding: 14px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; }
         
         .receipt-items-list { font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444; }
         .receipt-box { background: #1a1a1a; border-radius: 16px; padding: 20px; margin-top: 25px; margin-bottom: 20px; border: 1px solid #333; }
@@ -382,29 +384,28 @@
         <div class="toggle-btn-group">
             <div class="toggle-btn" id="btnPickup" onclick="clickPickupToggle()">
                 <div class="toggle-btn-emoji">
-                    <!-- Дизайнерское рукопожатие -->
-                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M21.71 11.29l-3-3a1 1 0 0 0-1.42 1.42L18.59 11H16V9a1 1 0 0 0-1-1H11V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h3v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2h2v2a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.59A1 1 0 0 0 21.71 11.29zM10 16H8v-2h2zm0-4H4V7h6zm4 1h-2v-2h2zm4 2h-2v-2h2z"/></svg>
+                    <!-- Иконка профиля (Человечек) -->
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 </div>
                 Самовывоз
             </div>
             <div class="toggle-btn" id="btnDelivery" onclick="clickDeliveryToggle()">
                 <div class="toggle-btn-emoji">
-                    <!-- Классическая метка на карте с дыркой -->
+                    <!-- Классическая метка на карте -->
                     <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 </div>
                 Доставка
             </div>
         </div>
 
-        <!-- Информация о выбранном способе (Нейтральные цвета) -->
+        <!-- Информация о выбранном способе (Строгий серый цвет) -->
         <div id="checkoutSelectedInfo" style="display:none; text-align:center; color:#ccc; font-size:14px; font-weight:700; margin-bottom:15px; padding: 12px; background: #1a1a1a; border-radius: 12px; border: 1px solid #333;"></div>
-
-        <!-- Поля ввода (появляются только при доставке: поле адреса УБРАНО) -->
-        <div id="deliveryDynamicInputs" class="checkout-input-group" style="display: none;">
-            <input type="text" id="deliveryOtherCityInput" class="checkout-input" placeholder="Впишите ваш город..." style="display: none;">
-            <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 5px;">Точный адрес доставки и время вы сможете согласовать с менеджером в чате.</p>
-        </div>
         
+        <!-- Поля ввода удалены, осталась только инфо-плашка -->
+        <div id="deliveryDynamicInputs" style="display: none; margin-bottom: 15px;">
+            <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 5px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Точный адрес доставки и время вы сможете согласовать с менеджером в чате.</p>
+        </div>
+
         <div class="checkout-section-title">Способ оплаты</div>
         <div class="toggle-btn-group">
             <div class="toggle-btn" id="btnCash" onclick="setPaymentMethod('cash')">
@@ -417,30 +418,27 @@
             </div>
         </div>
         
-        <div class="receipt-box">
+        <div class="receipt-box" style="margin-bottom: 15px;">
             <div id="receiptItemsList" class="receipt-items-list"></div>
             <div class="receipt-row total" style="border-top: none; padding-top: 0;"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
+        </div>
+
+        <!-- НОВЫЙ БЛОК СПИСАНИЯ БАЛЛОВ ПРЯМО В ЧЕКЕ -->
+        <div class="points-box" style="margin-top: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 14px; font-weight: 800; color: #ccc;">Списание баллов</span>
+                <span style="font-size: 12px; color: #888;">Доступно: <b id="availPointsUi" style="color:#fff;">0</b></span>
+            </div>
+            <div style="position: relative;">
+                <input type="number" id="pointsInput" class="checkout-input" value="4" style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; background: #121212;">
+                <div id="pointsOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;" onclick="tg.showAlert('Минимальное списание от 4 баллов!')"></div>
+            </div>
         </div>
 
         <!-- Окно ошибки -->
         <div id="checkoutError" style="display:none; color:#ff4d4d; font-size:13px; font-weight:800; text-align:center; margin-bottom:15px; padding:10px; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); border-radius:12px;"></div>
         
-        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Оформить</button>
-    </div>
-
-    <!-- СПИСАНИЕ БАЛЛОВ -->
-    <div id="pointsScreen" class="screen">
-        <button class="unified-close-btn" onclick="goBackToCatalog()">×</button>
-        <div class="screen-title">🎁 Списание баллов</div>
-        <div class="points-box">
-            <p style="margin-bottom: 5px;">Сумма заказа: <b id="finalTotalUi" style="font-size: 18px;">0 €</b></p>
-            <p style="color: #888; font-size: 13px;">У вас накоплено: <b id="availPointsUi" style="color:#ff4d4d;">0</b> баллов</p>
-        </div>
-        <p style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Сколько баллов списать?</p>
-        <div style="position: relative;">
-            <input type="number" id="pointsInput" class="input-field" value="4">
-            <div id="pointsOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;" onclick="tg.showAlert('Минимальное списание от 4 баллов!')"></div>
-        </div>
+        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Оформить заказ</button>
     </div>
 
     <!-- TOAST -->
@@ -659,25 +657,12 @@
             const badge = document.getElementById('cartBadge');
             if (totalItems > 0) { badge.style.display = 'flex'; badge.innerText = totalItems; } else { badge.style.display = 'none'; }
             
-            if (currentStep === 1 || currentStep === 2 || currentStep === 3) {
-                tg.MainButton.hide(); 
-            } else if (currentStep === 4) { tg.MainButton.setText(`ОТПРАВИТЬ ЗАКАЗ`); tg.MainButton.show(); }
+            tg.MainButton.hide(); // Синяя кнопка ТГ больше не нужна, всё делаем своими кнопками
         }
 
         tg.onEvent('mainButtonClicked', () => {
             if (currentStep === 1) { openCartScreen(); } 
             else if (currentStep === 2) { goToDelivery(); } 
-            else if (currentStep === 4) {
-                let ptsInputVal = document.getElementById('pointsInput').value.trim();
-			let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
-                
-                if (ptsSpent > 0 && ptsSpent < 4) { alert("Списать можно минимум 4 балла!"); return; }
-                if (ptsSpent > realPoints) { alert("У вас недостаточно баллов!"); return; }
-                if (ptsSpent > cartTotal) { alert("Нельзя списать баллов больше, чем сумма заказа!"); return; }
-                
-                tg.sendData(JSON.stringify({ cart: cart, address: address, points: ptsSpent, total: cartTotal })); 
-                tg.close();
-            }
         });
 
         function renderCartScreen() {
@@ -743,7 +728,7 @@
             panel.innerHTML = `
                 <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="closeCheckoutSheet()">×</button>
                 <div class="filter-header">ТИП САМОВЫВОЗА</div>
-                <div class="cat-btn" onclick="openCitySheet('perm')">Постоянный</div>
+                <div class="cat-btn" style="margin-bottom:10px;" onclick="openCitySheet('perm')">Постоянный</div>
                 <div class="cat-btn" onclick="openCitySheet('temp')">Непостоянный</div>
             `;
             sheet.classList.add('active');
@@ -769,7 +754,7 @@
             `;
             
             cities.forEach(c => {
-                html += `<div class="cat-btn" onclick="selectCity('${c}')">${c}</div>`;
+                html += `<div class="cat-btn" style="margin-bottom:10px;" onclick="selectCity('${c}')">${c}</div>`;
             });
             
             if (type === 'delivery') {
@@ -808,36 +793,6 @@
             
             const infoDiv = document.getElementById('checkoutSelectedInfo');
             const deliveryInputs = document.getElementById('deliveryDynamicInputs');
-            const otherCityInput = document.getElementById('deliveryOtherCityInput');
-            
-            document.getElementById('checkoutError').style.display = 'none';
-
-            if (currentDelivery === 'pickup' && currentCity) {
-                let typeName = currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный';
-                infoDiv.innerHTML = `📍 <b>Самовывоз (${typeName}):</b> ${currentCity}`;
-                infoDiv.style.display = 'block';
-                deliveryInputs.style.display = 'none';
-            } else if (currentDelivery === 'delivery' && currentCity) {
-                let displayCity = currentCity === 'other' ? 'Другой город' : currentCity;
-                infoDiv.innerHTML = `📍 <b>Доставка:</b> ${displayCity}`;
-                infoDiv.style.display = 'block';
-                deliveryInputs.style.display = 'flex';
-                otherCityInput.style.display = (currentCity === 'other') ? 'block' : 'none';
-            } else {
-                infoDiv.style.display = 'none';
-                deliveryInputs.style.display = 'none';
-            }
-        };
-
-        window.updateCheckoutUI = function() {
-            document.getElementById('btnPickup').classList.toggle('active', currentDelivery === 'pickup');
-            document.getElementById('btnDelivery').classList.toggle('active', currentDelivery === 'delivery');
-            document.getElementById('btnCash').classList.toggle('active', currentPayment === 'cash');
-            document.getElementById('btnCard').classList.toggle('active', currentPayment === 'card');
-            
-            const infoDiv = document.getElementById('checkoutSelectedInfo');
-            const deliveryInputs = document.getElementById('deliveryDynamicInputs');
-            const otherCityInput = document.getElementById('deliveryOtherCityInput');
             
             document.getElementById('checkoutError').style.display = 'none';
 
@@ -850,8 +805,7 @@
                 let displayCity = currentCity === 'other' ? 'Другой город' : currentCity;
                 infoDiv.innerHTML = `Доставка: ${displayCity}`;
                 infoDiv.style.display = 'block';
-                deliveryInputs.style.display = 'flex';
-                otherCityInput.style.display = (currentCity === 'other') ? 'block' : 'none';
+                deliveryInputs.style.display = 'block'; // Показываем текст про менеджера
             } else {
                 infoDiv.style.display = 'none';
                 deliveryInputs.style.display = 'none';
@@ -864,12 +818,14 @@
             for (let id in cart) { itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`; }
             document.getElementById('receiptItemsList').innerHTML = itemsTextHTML; document.getElementById('receiptTotal').innerText = cartTotal + ' €';
             
+            // Сброс оформления
             currentDelivery = null; currentPickupType = null; currentCity = null; currentPayment = null;
-            document.getElementById('deliveryOtherCityInput').value = '';
             
-            // ЛОГИКА БАЛЛОВ
+            // ЛОГИКА БАЛЛОВ (Прямо в чеке)
             let pInput = document.getElementById('pointsInput');
             let pOverlay = document.getElementById('pointsOverlay');
+            document.getElementById('availPointsUi').innerText = realPoints;
+
             if (realPoints < 4) {
                 pInput.value = '';
                 pInput.disabled = true;
@@ -888,97 +844,58 @@
             updateMainButton();
         };
 
-        window.checkDeliveryCity = function() {
-            let select = document.getElementById('deliveryCitySelect'); let otherInput = document.getElementById('deliveryOtherCityInput');
-            if (select.value === 'other') { otherInput.style.display = 'block'; } else { otherInput.style.display = 'none'; }
-        };
-
         window.submitCheckoutForm = function() {
             const errorDiv = document.getElementById('checkoutError');
             errorDiv.style.display = 'none';
 
+            // Проверка: Выбран ли город
             if (!currentDelivery || !currentCity) {
                 errorDiv.innerText = "❌ Пожалуйста, выберите способ получения (Самовывоз или Доставка)!";
                 errorDiv.style.display = 'block';
                 return;
             }
 
-            if (currentDelivery === 'delivery' && currentCity === 'other') {
-                let oc = document.getElementById('deliveryOtherCityInput').value.trim();
-                if (!oc) {
-                    errorDiv.innerText = "❌ Пожалуйста, впишите название вашего города!";
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-            }
-
+            // Проверка: Выбрана ли оплата
             if (!currentPayment) {
                 errorDiv.innerText = "❌ Пожалуйста, выберите способ оплаты (Наличные или Карта)!";
                 errorDiv.style.display = 'block';
                 return;
             }
 
+            // ПРОВЕРКА БАЛЛОВ
+            let ptsInputVal = document.getElementById('pointsInput').value.trim();
+            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
+            
+            if (ptsSpent > 0 && ptsSpent < 4) { 
+                errorDiv.innerText = "❌ Минимальное списание от 4 баллов!";
+                errorDiv.style.display = 'block';
+                return; 
+            }
+            if (ptsSpent > realPoints) { 
+                errorDiv.innerText = "❌ У вас недостаточно баллов!";
+                errorDiv.style.display = 'block';
+                return; 
+            }
+            if (ptsSpent > cartTotal) { 
+                errorDiv.innerText = "❌ Нельзя списать баллов больше, чем сумма заказа!";
+                errorDiv.style.display = 'block';
+                return; 
+            }
+
+            // Собираем адрес
             let finalAddress = "";
             if (currentDelivery === 'pickup') {
                 finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
             } else {
-                let actualCity = currentCity === 'other' ? document.getElementById('deliveryOtherCityInput').value.trim() : currentCity;
+                let actualCity = currentCity === 'other' ? 'Другой город' : currentCity;
                 finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
             }
             finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
-            window.checkoutFinalAddress = finalAddress;
-
-            document.getElementById('mapScreen').style.display = 'none'; document.getElementById('pointsScreen').style.display = 'block';
-            document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; currentStep = 4; updateMainButton();
-        };
-        window.submitCheckoutForm = function() {
-            const errorDiv = document.getElementById('checkoutError');
-            errorDiv.style.display = 'none';
-
-            if (!currentDelivery || !currentCity) {
-                errorDiv.innerText = "❌ Пожалуйста, выберите способ получения (Самовывоз или Доставка)!";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            if (currentDelivery === 'delivery') {
-                if (currentCity === 'other') {
-                    let oc = document.getElementById('deliveryOtherCityInput').value.trim();
-                    if (!oc) {
-                        errorDiv.innerText = "❌ Пожалуйста, впишите название вашего города!";
-                        errorDiv.style.display = 'block';
-                        return;
-                    }
-                }
-                let details = document.getElementById('deliveryAddressInput').value.trim();
-                if (!details) {
-                    errorDiv.innerText = "❌ Пожалуйста, впишите улицу и дом для доставки!";
-                    errorDiv.style.display = 'block';
-                    return;
-                }
-            }
-
-            if (!currentPayment) {
-                errorDiv.innerText = "❌ Пожалуйста, выберите способ оплаты (Наличные или Карта)!";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            let finalAddress = "";
-            if (currentDelivery === 'pickup') {
-                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
-            } else {
-                let actualCity = currentCity === 'other' ? document.getElementById('deliveryOtherCityInput').value.trim() : currentCity;
-                let details = document.getElementById('deliveryAddressInput').value.trim();
-                finalAddress = `🚚 Доставка | Город: ${actualCity} | Адрес: ${details}`;
-            }
-            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
-            window.checkoutFinalAddress = finalAddress;
-
-            document.getElementById('mapScreen').style.display = 'none'; document.getElementById('pointsScreen').style.display = 'block';
-            document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; currentStep = 4; updateMainButton();
-        };
-             
+            
+            // ОТПРАВКА СРАЗУ В ТГ, 4 экран удален!
+            tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: cartTotal })); 
+            tg.close();
+        };             
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
