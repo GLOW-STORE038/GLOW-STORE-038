@@ -905,7 +905,7 @@
                 otherInput.style.display = 'none';
             }
         };
-
+        
         window.submitCheckoutForm = function() {
             let finalAddress = "";
             
@@ -941,6 +941,7 @@
             currentStep = 4; 
             updateMainButton();
         };
+        
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
