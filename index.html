@@ -222,17 +222,28 @@
         .toggle-btn.active { background: rgba(130, 204, 221, 0.1); border-color: #82ccdd; color: #fff; }
         .toggle-btn-emoji { font-size: 24px; }
         
-        .checkout-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        /* ИЗМЕНЕНО: теперь списки и поля идут друг под другом (column) */
+        .checkout-input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .checkout-select { flex: 1; padding: 14px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; appearance: none; }
         .checkout-input { flex: 2; padding: 14px; background: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; }
         
+        /* ДОБАВЛЕНО: Стили для вложенных кнопок (Постоянный / Непостоянный) */
+        .sub-toggle-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        .sub-toggle-btn { flex: 1; background: #1a1a1a; border: 1px solid #333; padding: 12px 5px; border-radius: 10px; text-align: center; color: #888; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .sub-toggle-btn.active { background: rgba(130, 204, 221, 0.1); border-color: #82ccdd; color: #fff; }
+        
+        /* ДОБАВЛЕНО: Стили для списка товаров в чеке */
+        .receipt-items-list { font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444; }
+
         .receipt-box { background: #1a1a1a; border-radius: 16px; padding: 20px; margin-top: 25px; margin-bottom: 20px; border: 1px solid #333; }
         .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #aaa; font-weight: 600; }
         .receipt-row.total { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444; color: #82ccdd; font-size: 18px; font-weight: 900; margin-bottom: 0; }
         
         .checkout-order-btn { width: 100%; padding: 16px; background: #82ccdd; border-radius: 16px; border: none; color: #121212; font-weight: 900; font-size: 16px; text-align: center; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); margin-bottom: 30px; }
         .checkout-order-btn:active { transform: scale(0.98); }
-        .map-container-small { width: 100%; height: 150px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; }
+        
+        /* ИЗМЕНЕНО: высота карты теперь 280px вместо 150px */
+        .map-container-small { width: 100%; height: 280px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; }
 
         /* =====================================================================
            УВЕДОМЛЕНИЕ О ДОБАВЛЕНИИ В КОРЗИНУ (TOAST БЕЗ СВЕЧЕНИЯ)
@@ -407,26 +418,47 @@
         
         <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container-small" frameborder="0" style="margin-top: 15px;"></iframe>
         
-        <div class="checkout-section-title">Способ доставки</div>
+        <div class="checkout-section-title">Способ получения</div>
         <div class="toggle-btn-group">
             <div class="toggle-btn active" id="btnPickup" onclick="setDeliveryMethod('pickup')">
-                <div class="toggle-btn-emoji">🤝</div>
+                <div class="toggle-btn-emoji">🏪</div>
                 Самовывоз
             </div>
-            <div class="toggle-btn" id="btnDhl" onclick="setDeliveryMethod('dhl')">
-                <div class="toggle-btn-emoji">📦</div>
-                DHL
+            <div class="toggle-btn" id="btnDelivery" onclick="setDeliveryMethod('delivery')">
+                <div class="toggle-btn-emoji">🚚</div>
+                Доставка
             </div>
         </div>
         
-        <div class="checkout-input-group" id="pickupInputs">
-            <select id="citySelect" class="checkout-select">
+        <div id="pickupOptions" class="checkout-input-group">
+            <div class="sub-toggle-group">
+                <div class="sub-toggle-btn" id="btnPickupPerm" onclick="setPickupType('perm')">Постоянный</div>
+                <div class="sub-toggle-btn" id="btnPickupTemp" onclick="setPickupType('temp')">Непостоянный</div>
+            </div>
+            
+            <select id="permCitySelect" class="checkout-select" style="display:none; width: 100%;">
+                <option value="" disabled selected>Выберите город...</option>
                 <option value="Reutlingen">Reutlingen</option>
                 <option value="RT | Betzingen">RT | Betzingen</option>
                 <option value="Pfullingen">Pfullingen</option>
                 <option value="Eningen">Eningen</option>
             </select>
-            <input type="text" id="customAddressInput" class="checkout-input" placeholder="Уточните адрес...">
+            
+            <select id="tempCitySelect" class="checkout-select" style="display:none; width: 100%;">
+                <option value="" disabled selected>Выберите город...</option>
+                <option value="Metzingen">Metzingen</option>
+                <option value="Dettingen">Dettingen</option>
+                <option value="Lichtenstein">Lichtenstein</option>
+            </select>
+        </div>
+
+        <div id="deliveryOptions" class="checkout-input-group" style="display: none;">
+            <select id="deliveryCitySelect" class="checkout-select" style="width: 100%;">
+                <option value="" disabled selected>Выберите город доставки...</option>
+                <option value="Tübingen">Tübingen</option>
+                <option value="Nürtingen">Nürtingen</option>
+            </select>
+            <input type="text" id="deliveryAddressInput" class="checkout-input" placeholder="Улица, дом, квартира...">
         </div>
         
         <div class="checkout-section-title">Способ оплаты</div>
@@ -442,12 +474,12 @@
         </div>
         
         <div class="receipt-box">
-            <div class="receipt-row"><span>Сумма товаров:</span><span id="receiptItems">0 €</span></div>
-            <div class="receipt-row"><span>Доставка:</span><span>Рассчитает менеджер</span></div>
-            <div class="receipt-row total"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
+            <div id="receiptItemsList" class="receipt-items-list"></div>
+            
+            <div class="receipt-row total" style="border-top: none; padding-top: 0;"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
         </div>
         
-        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Далее</button>
+        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Оформить</button>
     </div>
 
     <div id="pointsScreen" class="screen">
@@ -770,21 +802,39 @@
         }
 
         let currentDelivery = 'pickup';
+        let currentPickupType = ''; // 'perm' или 'temp'
         let currentPayment = 'cash';
         
         window.setDeliveryMethod = function(method) {
             currentDelivery = method;
             document.getElementById('btnPickup').classList.remove('active');
-            document.getElementById('btnDhl').classList.remove('active');
+            document.getElementById('btnDelivery').classList.remove('active');
             
             if(method === 'pickup') {
                 document.getElementById('btnPickup').classList.add('active');
-                document.getElementById('citySelect').style.display = 'block';
-                document.getElementById('customAddressInput').placeholder = 'Уточните адрес...';
+                document.getElementById('pickupOptions').style.display = 'flex';
+                document.getElementById('deliveryOptions').style.display = 'none';
             } else {
-                document.getElementById('btnDhl').classList.add('active');
-                document.getElementById('citySelect').style.display = 'none';
-                document.getElementById('customAddressInput').placeholder = 'Впишите полный адрес...';
+                document.getElementById('btnDelivery').classList.add('active');
+                document.getElementById('pickupOptions').style.display = 'none';
+                document.getElementById('deliveryOptions').style.display = 'flex';
+            }
+        };
+
+        window.setPickupType = function(type) {
+            currentPickupType = type;
+            document.getElementById('btnPickupPerm').classList.remove('active');
+            document.getElementById('btnPickupTemp').classList.remove('active');
+            
+            document.getElementById('permCitySelect').style.display = 'none';
+            document.getElementById('tempCitySelect').style.display = 'none';
+
+            if(type === 'perm') {
+                document.getElementById('btnPickupPerm').classList.add('active');
+                document.getElementById('permCitySelect').style.display = 'block';
+            } else {
+                document.getElementById('btnPickupTemp').classList.add('active');
+                document.getElementById('tempCitySelect').style.display = 'block';
             }
         };
 
@@ -802,11 +852,49 @@
             document.getElementById('mapScreen').style.display = 'block';
             currentStep = 3; 
             
-            document.getElementById('receiptItems').innerText = cartTotal + ' €';
+            // Генерируем красивый список товаров текстом для чека
+            let itemsTextHTML = "";
+            for (let id in cart) {
+                itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`;
+            }
+            document.getElementById('receiptItemsList').innerHTML = itemsTextHTML;
             document.getElementById('receiptTotal').innerText = cartTotal + ' €';
+            
             updateMainButton();
         };
 
+        window.submitCheckoutForm = function() {
+            let finalAddress = "";
+            
+            if (currentDelivery === 'pickup') {
+                // Проверки для самовывоза
+                if (currentPickupType === '') { alert("Пожалуйста, выберите тип самовывоза (Постоянный или Непостоянный)!"); return; }
+                
+                let city = (currentPickupType === 'perm') ? document.getElementById('permCitySelect').value : document.getElementById('tempCitySelect').value;
+                if (!city || city === "") { alert("Пожалуйста, выберите город для самовывоза!"); return; }
+                
+                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${city}`;
+            } else {
+                // Проверки для доставки
+                let city = document.getElementById('deliveryCitySelect').value;
+                let details = document.getElementById('deliveryAddressInput').value;
+                
+                if (!city || city === "") { alert("Пожалуйста, выберите город для доставки!"); return; }
+                if (details.trim() === '') { alert("Пожалуйста, впишите полный адрес доставки!"); return; }
+                
+                finalAddress = `🚚 Доставка | Город: ${city} | Адрес: ${details}`;
+            }
+            
+            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
+
+            window.checkoutFinalAddress = finalAddress;
+
+            document.getElementById('mapScreen').style.display = 'none'; 
+            document.getElementById('pointsScreen').style.display = 'block';
+            document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; 
+            currentStep = 4; 
+            updateMainButton();
+        };
         window.submitCheckoutForm = function() {
             let city = document.getElementById('citySelect').value;
             let details = document.getElementById('customAddressInput').value;
