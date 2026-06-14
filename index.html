@@ -403,7 +403,7 @@
         
         <!-- Поля ввода удалены, осталась только инфо-плашка -->
         <div id="deliveryDynamicInputs" style="display: none; margin-bottom: 15px;">
-            <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 5px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Точный адрес доставки и время вы сможете согласовать с менеджером в чате.</p>
+            <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 5px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Адресс выдачи и время вы сможете согласовать с менеджером в чате</p>
         </div>
 
         <div class="checkout-section-title">Способ оплаты</div>
@@ -421,25 +421,22 @@
         <div class="receipt-box" style="margin-bottom: 15px;">
             <div id="receiptItemsList" class="receipt-items-list"></div>
             <div class="receipt-row total" style="border-top: none; padding-top: 0;"><span>ИТОГО:</span><span id="receiptTotal">0 €</span></div>
-        </div>
-
-        <!-- НОВЫЙ БЛОК СПИСАНИЯ БАЛЛОВ ПРЯМО В ЧЕКЕ -->
-        <div class="points-box" style="margin-top: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <span style="font-size: 14px; font-weight: 800; color: #ccc;">Списание баллов</span>
-                <span style="font-size: 12px; color: #888;">Доступно: <b id="availPointsUi" style="color:#fff;">0</b></span>
+            
+            <div style="border-top: 1px dashed #444; margin-top: 15px; padding-top: 15px;">
+                <div class="receipt-row" style="align-items: center; margin-bottom: 5px;">
+                    <span>Списать баллов:</span>
+                    <div style="position: relative; width: 80px;">
+                        <select id="pointsSelect" class="checkout-select" style="width: 100%; padding: 8px; text-align: center; appearance: auto; background: #121212; border-color: #333; font-weight: bold; font-size: 16px;">
+                            <option value="0">0</option>
+                        </select>
+                        <div id="pointsOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;"></div>
+                    </div>
+                </div>
+                <div style="text-align: right; font-size: 11px; color: #888;">
+                    Ваши баллы: <b id="availPointsUi" style="color:#fff;">0</b>
+                </div>
             </div>
-            <div style="position: relative;">
-                <input type="number" id="pointsInput" class="checkout-input" value="4" style="width: 100%; text-align: center; font-size: 16px; font-weight: bold; background: #121212;">
-                <div id="pointsOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;" onclick="tg.showAlert('Минимальное списание от 4 баллов!')"></div>
-            </div>
         </div>
-
-        <!-- Окно ошибки -->
-        <div id="checkoutError" style="display:none; color:#ff4d4d; font-size:13px; font-weight:800; text-align:center; margin-bottom:15px; padding:10px; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); border-radius:12px;"></div>
-        
-        <button class="checkout-order-btn" onclick="submitCheckoutForm()">Оформить заказ</button>
-    </div>
 
     <!-- TOAST -->
     <div id="cartToast" class="cart-toast" onclick="openCartScreen()">
@@ -820,30 +817,36 @@
             
             // Сброс оформления
             currentDelivery = null; currentPickupType = null; currentCity = null; currentPayment = null;
+            document.getElementById('btnPickup').classList.remove('active');
+            document.getElementById('btnDelivery').classList.remove('active');
+            document.getElementById('btnCash').classList.remove('active');
+            document.getElementById('btnCard').classList.remove('active');
             
-            // ЛОГИКА БАЛЛОВ (Прямо в чеке)
-            let pInput = document.getElementById('pointsInput');
+            // ЛОГИКА ВЫПАДАЮЩЕГО СПИСКА БАЛЛОВ
+            let pSelect = document.getElementById('pointsSelect');
             let pOverlay = document.getElementById('pointsOverlay');
             document.getElementById('availPointsUi').innerText = realPoints;
 
+            pSelect.innerHTML = '<option value="0">0</option>'; // Всегда можно не списывать
+            
+            let maxPoints = Math.min(realPoints, cartTotal); // Нельзя списать больше, чем стоит заказ
+
             if (realPoints < 4) {
-                pInput.value = '';
-                pInput.disabled = true;
-                pInput.style.background = '#1a1a1a';
-                pInput.style.color = '#666';
-                pOverlay.style.display = 'block';
+                pSelect.disabled = true; pSelect.style.color = '#666'; pOverlay.style.display = 'block';
+                pOverlay.onclick = () => tg.showAlert('У вас недостаточно баллов! Минимальное списание от 4 баллов.');
+            } else if (cartTotal < 4) {
+                pSelect.disabled = true; pSelect.style.color = '#666'; pOverlay.style.display = 'block';
+                pOverlay.onclick = () => tg.showAlert('Сумма заказа слишком мала для списания баллов (минимум 4€)!');
             } else {
-                pInput.value = '4';
-                pInput.disabled = false;
-                pInput.style.background = '#121212';
-                pInput.style.color = 'white';
-                pOverlay.style.display = 'none';
+                for (let i = 4; i <= maxPoints; i++) {
+                    pSelect.insertAdjacentHTML('beforeend', `<option value="${i}">${i}</option>`);
+                }
+                pSelect.disabled = false; pSelect.style.color = '#fff'; pOverlay.style.display = 'none';
+                pSelect.value = '4'; // По умолчанию ставим 4 балла
             }
 
-            updateCheckoutUI();
             updateMainButton();
         };
-
         window.submitCheckoutForm = function() {
             const errorDiv = document.getElementById('checkoutError');
             errorDiv.style.display = 'none';
@@ -863,8 +866,7 @@
             }
 
             // ПРОВЕРКА БАЛЛОВ
-            let ptsInputVal = document.getElementById('pointsInput').value.trim();
-            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
+            let ptsSpent = parseInt(document.getElementById('pointsSelect').value) || 0; 
             
             if (ptsSpent > 0 && ptsSpent < 4) { 
                 errorDiv.innerText = "❌ Минимальное списание от 4 баллов!";
