@@ -414,7 +414,23 @@
             </div>
             <div style="position: relative; width: 70px;">
                 <input type="number" id="pointsInputNew" value="0" oninput="updateReceiptTotal()" style="width: 100%; background: #121212; border: 1px solid #333; color: #ffffff; padding: 6px; border-radius: 10px; text-align: center; font-size: 16px; font-weight: bold; outline: none;">
-                <div id="pointsOverlayNew" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;"></div>
+                <div id="pointsOverlayNew" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; cursor:pointer;" onclick="showPointsErrorModal()"></div>
+            </div>
+        </div>
+
+        <p style="color: #aaa; font-size: 12px; text-align: left; margin-top: 8px; margin-bottom: 20px; padding-left: 10px;">
+            (Списание возможно только с 4 баллов и более)
+        </p>
+
+        <div style="background: #1a1a1a; border-radius: 16px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #333;">
+            <div id="deliveryProgressText" style="text-align: center; font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px;">
+                Осталось 70 € до бесплатной доставки!
+            </div>
+            <div style="width: 100%; background: #121212; border: 1px solid #333; border-radius: 10px; height: 12px; overflow: hidden; margin-bottom: 10px;">
+                <div id="deliveryProgressBar" style="width: 0%; background: #82ccdd; height: 100%; transition: width 0.4s ease; box-shadow: 0 0 10px rgba(130, 204, 221, 0.5);"></div>
+            </div>
+            <div style="color: #888; font-size: 11px; text-align: center; line-height: 1.4;">
+                Бесплатная доставка осуществляется только в город с фиолетовым маркером
             </div>
         </div>
 
@@ -809,7 +825,7 @@
             }
         };
 
-        // Живой пересчет чека
+        // Единый живой пересчет чека и прогресс-бара доставки
         window.updateReceiptTotal = function() {
             let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
             let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal);
@@ -818,17 +834,35 @@
             let discountRow = document.getElementById('receiptDiscountRow');
             let discountVal = document.getElementById('receiptDiscountVal');
             let totalSpan = document.getElementById('receiptTotal');
+            let currentFinalPrice = cartTotal;
 
-            // Показываем скидку ТОЛЬКО если введено 4+ баллов и хватает баланса
+            // Считаем чек
             if (ptsSpent >= 4 && ptsSpent <= realPoints && ptsSpent <= cartTotal) {
                 discountRow.style.display = 'flex';
                 discountVal.innerText = '-' + ptsSpent + ' €';
-                
-                let finalPrice = cartTotal - ptsSpent;
-                totalSpan.innerText = finalPrice + ' €';
+                currentFinalPrice = cartTotal - ptsSpent;
+                if (currentFinalPrice < 0) currentFinalPrice = 0;
+                totalSpan.innerText = currentFinalPrice + ' €';
             } else {
-                discountRow.style.display = 'none'; 
+                discountRow.style.display = 'none';
                 totalSpan.innerText = cartTotal + ' €';
+            }
+
+            // Оживляем полоску доставки (Порог 70 евро)
+            const threshold = 70;
+            const progressText = document.getElementById('deliveryProgressText');
+            const progressBar = document.getElementById('deliveryProgressBar');
+            
+            if (progressText && progressBar) {
+                if (currentFinalPrice >= threshold) {
+                    progressBar.style.width = '100%';
+                    progressText.innerHTML = '🎉 Вам доступна <span style="color:#82ccdd;">бесплатная доставка!</span>';
+                } else {
+                    let left = threshold - currentFinalPrice;
+                    let percent = Math.round((currentFinalPrice / threshold) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressText.innerHTML = `Осталось <span style="color:#ff4d4d;">${left} €</span> до бесплатной доставки!`;
+                }
             }
         };
 
