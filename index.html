@@ -896,38 +896,6 @@
             updateMainButton();
         };
 
-        window.submitCheckoutForm = function() {
-            let finalAddress = "";
-            
-            if (currentDelivery === 'pickup') {
-                // Проверки для самовывоза
-                if (currentPickupType === '') { alert("Пожалуйста, выберите тип самовывоза (Постоянный или Непостоянный)!"); return; }
-                
-                let city = (currentPickupType === 'perm') ? document.getElementById('permCitySelect').value : document.getElementById('tempCitySelect').value;
-                if (!city || city === "") { alert("Пожалуйста, выберите город для самовывоза!"); return; }
-                
-                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${city}`;
-            } else {
-                // Проверки для доставки
-                let city = document.getElementById('deliveryCitySelect').value;
-                let details = document.getElementById('deliveryAddressInput').value;
-                
-                if (!city || city === "") { alert("Пожалуйста, выберите город для доставки!"); return; }
-                if (details.trim() === '') { alert("Пожалуйста, впишите полный адрес доставки!"); return; }
-                
-                finalAddress = `🚚 Доставка | Город: ${city} | Адрес: ${details}`;
-            }
-            
-            finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
-
-            window.checkoutFinalAddress = finalAddress;
-
-            document.getElementById('mapScreen').style.display = 'none'; 
-            document.getElementById('pointsScreen').style.display = 'block';
-            document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; 
-            currentStep = 4; 
-            updateMainButton();
-        };
         window.checkDeliveryCity = function() {
             let select = document.getElementById('deliveryCitySelect');
             let otherInput = document.getElementById('deliveryOtherCityInput');
@@ -952,7 +920,6 @@
                 let city = document.getElementById('deliveryCitySelect').value;
                 if (!city || city === "") { alert("Пожалуйста, выберите город для доставки!"); return; }
                 
-                // Если выбран "Другие города...", забираем название из текстового поля
                 if (city === 'other') {
                     city = document.getElementById('deliveryOtherCityInput').value;
                     if (city.trim() === '') { alert("Пожалуйста, впишите название вашего города!"); return; }
@@ -973,7 +940,7 @@
             document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; 
             currentStep = 4; 
             updateMainButton();
-        };             
+        };
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
