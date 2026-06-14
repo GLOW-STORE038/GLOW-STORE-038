@@ -405,11 +405,15 @@
         <div class="checkout-section-title">Способ получения</div>
         <div class="toggle-btn-group">
             <div class="toggle-btn active" id="btnPickup" onclick="setDeliveryMethod('pickup')">
-                <div class="toggle-btn-emoji">🏪</div>
+                <div class="toggle-btn-emoji">
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:#ffffff;"><path d="M11.83,9L15,12.16L15.9,11.27C16.29,10.88 16.29,10.25 15.9,9.86L13.04,7C12.65,6.61 12.02,6.61 11.63,7L11.13,7.5L11.83,9M19.79,15.15C19.79,15.15 19.34,14.65 18.79,14.05C18.25,13.46 17.58,12.72 17.58,12.72L14.73,15.57L18.06,18.91C18.45,19.3 19.08,19.3 19.47,18.91L20.86,17.5C21.25,17.13 21.25,16.5 20.86,16.11L19.79,15.15M8.5,12.5C8.5,12.5 7.15,11.15 6.2,10.2L5.86,10.54C5.47,10.93 5.47,11.56 5.86,11.95L7.04,13.13C7.04,13.13 7.82,13.91 8.5,14.6L11.8,11.3L10.36,9.86C9.97,9.47 9.34,9.47 8.95,9.86L8.5,10.3C8.5,10.3 9.43,11.23 8.5,12.5M10.12,18.59L11.54,20H13.54L15.35,18.23L12.5,15.38L10.12,18.59Z"/></svg>
+                </div>
                 Самовывоз
             </div>
             <div class="toggle-btn" id="btnDelivery" onclick="setDeliveryMethod('delivery')">
-                <div class="toggle-btn-emoji">🚚</div>
+                <div class="toggle-btn-emoji">
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:#ffffff;"><path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>
+                </div>
                 Доставка
             </div>
         </div>
@@ -422,29 +426,21 @@
             
             <select id="permCitySelect" class="checkout-select" style="display:none; width: 100%;">
                 <option value="" disabled selected>Выберите город...</option>
-                <option value="Reutlingen">Reutlingen</option>
-                <option value="RT | Betzingen">RT | Betzingen</option>
-                <option value="Pfullingen">Pfullingen</option>
-                <option value="Eningen">Eningen</option>
-            </select>
+                </select>
             
             <select id="tempCitySelect" class="checkout-select" style="display:none; width: 100%;">
                 <option value="" disabled selected>Выберите город...</option>
-                <option value="Metzingen">Metzingen</option>
-                <option value="Dettingen">Dettingen</option>
-                <option value="Lichtenstein">Lichtenstein</option>
-            </select>
+                </select>
         </div>
 
         <div id="deliveryOptions" class="checkout-input-group" style="display: none;">
-            <select id="deliveryCitySelect" class="checkout-select" style="width: 100%;">
+            <select id="deliveryCitySelect" class="checkout-select" style="width: 100%;" onchange="checkDeliveryCity()">
                 <option value="" disabled selected>Выберите город доставки...</option>
-                <option value="Tübingen">Tübingen</option>
-                <option value="Nürtingen">Nürtingen</option>
-            </select>
+                </select>
+            <input type="text" id="deliveryOtherCityInput" class="checkout-input" placeholder="Впишите ваш город..." style="display: none;">
+            
             <input type="text" id="deliveryAddressInput" class="checkout-input" placeholder="Улица, дом, квартира...">
-        </div>
-        
+        </div>        
         <div class="checkout-section-title">Способ оплаты</div>
         <div class="toggle-btn-group">
             <div class="toggle-btn active" id="btnCash" onclick="setPaymentMethod('cash')">
@@ -498,7 +494,7 @@
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
 
         let cart = {}; let currentStep = 1; let realPoints = 0; let cartTotal = 0; let globalUserName = 'Гость';
-        let menuData = {}; let categoriesData = {}; let currentCategory = 'all'; 
+        let menuData = {}; let categoriesData = {}; let currentCategory = 'all'; let citiesData = {};
         
         let favorites = JSON.parse(localStorage.getItem('glow_favs')) || {};
 
@@ -534,15 +530,68 @@
             }
         } catch (e) {}
 
+        let citiesData = { perm: [], temp: [], delivery: [] }; // Добавили переменную
+
         async function loadMenu() {
             try {
                 const response = await fetch(JSONBIN_URL, { headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" } });
                 const json = await response.json();
                 let rawData = json.record || json; 
-                if (rawData.items) { menuData = rawData.items; categoriesData = rawData.categories || {}; } 
-                else { menuData = rawData; }
-                renderCategories(); renderCatalog();
+                if (rawData.items) { 
+                    menuData = rawData.items; 
+                    categoriesData = rawData.categories || {}; 
+                    citiesData = rawData.cities || { perm: [], temp: [], delivery: [] };
+                } else { menuData = rawData; }
+                
+                renderCategories(); 
+                renderCatalog();
+                renderCities(); 
             } catch (e) { document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка загрузки</div>'; }
+        }
+
+        // ЭТА ФУНКЦИЯ ЗАПОЛНЯЕТ ВЫПАДАЮЩИЕ СПИСКИ ИЗ БАЗЫ БОТА
+        function renderCities() {
+            const permSelect = document.getElementById('permCitySelect');
+            const tempSelect = document.getElementById('tempCitySelect');
+            const devSelect = document.getElementById('deliveryCitySelect');
+
+            permSelect.innerHTML = '<option value="" disabled selected>Выберите город...</option>';
+            tempSelect.innerHTML = '<option value="" disabled selected>Выберите город...</option>';
+            devSelect.innerHTML = '<option value="" disabled selected>Выберите город доставки...</option>';
+
+            (citiesData.perm || []).forEach(city => {
+                permSelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
+            });
+            (citiesData.temp || []).forEach(city => {
+                tempSelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
+            });
+            (citiesData.delivery || []).forEach(city => {
+                devSelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
+            });
+            
+            // В самом конце списка доставки прикрепляем пункт "Другие города"
+            devSelect.insertAdjacentHTML('beforeend', `<option value="other">Другие города...</option>`);
+        }
+
+        // НОВАЯ ФУНКЦИЯ ДЛЯ ГЕНЕРАЦИИ ГОРОДОВ ИЗ АДМИНКИ
+        function renderCities() {
+            const permSelect = document.getElementById('permCitySelect');
+            const tempSelect = document.getElementById('tempCitySelect');
+            const devSelect = document.getElementById('deliveryCitySelect');
+
+            permSelect.innerHTML = '<option value="" disabled selected>Выберите город...</option>';
+            tempSelect.innerHTML = '<option value="" disabled selected>Выберите город...</option>';
+            devSelect.innerHTML = '<option value="" disabled selected>Выберите город доставки...</option>';
+
+            (citiesData.perm || []).forEach(city => {
+                permSelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
+            });
+            (citiesData.temp || []).forEach(city => {
+                tempSelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
+            });
+            (citiesData.delivery || []).forEach(city => {
+                devSelect.insertAdjacentHTML('beforeend', `<option value="${city}">${city}</option>`);
+            });
         }
 
         function renderCategories() {
@@ -879,17 +928,42 @@
             currentStep = 4; 
             updateMainButton();
         };
-        window.submitCheckoutForm = function() {
-            let city = document.getElementById('citySelect').value;
-            let details = document.getElementById('customAddressInput').value;
-            
-            let finalAddress = "";
-            if (currentDelivery === 'pickup') {
-                finalAddress = `🤝 Самовывоз (${city}) | Адрес: ${details || 'Без уточнений'}`;
+        window.checkDeliveryCity = function() {
+            let select = document.getElementById('deliveryCitySelect');
+            let otherInput = document.getElementById('deliveryOtherCityInput');
+            if (select.value === 'other') {
+                otherInput.style.display = 'block';
             } else {
-                if (details.trim() === '') { alert("Пожалуйста, впишите полный адрес доставки для DHL!"); return; }
-                finalAddress = `📦 DHL | Адрес: ${details}`;
+                otherInput.style.display = 'none';
             }
+        };
+
+        window.submitCheckoutForm = function() {
+            let finalAddress = "";
+            
+            if (currentDelivery === 'pickup') {
+                if (currentPickupType === '') { alert("Пожалуйста, выберите тип самовывоза (Постоянный или Непостоянный)!"); return; }
+                
+                let city = (currentPickupType === 'perm') ? document.getElementById('permCitySelect').value : document.getElementById('tempCitySelect').value;
+                if (!city || city === "") { alert("Пожалуйста, выберите город для самовывоза!"); return; }
+                
+                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${city}`;
+            } else {
+                let city = document.getElementById('deliveryCitySelect').value;
+                if (!city || city === "") { alert("Пожалуйста, выберите город для доставки!"); return; }
+                
+                // Если выбран "Другие города...", забираем название из текстового поля
+                if (city === 'other') {
+                    city = document.getElementById('deliveryOtherCityInput').value;
+                    if (city.trim() === '') { alert("Пожалуйста, впишите название вашего города!"); return; }
+                }
+
+                let details = document.getElementById('deliveryAddressInput').value;
+                if (details.trim() === '') { alert("Пожалуйста, впишите улицу и дом для доставки!"); return; }
+                
+                finalAddress = `🚚 Доставка | Город: ${city} | Адрес: ${details}`;
+            }
+            
             finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
 
             window.checkoutFinalAddress = finalAddress;
@@ -899,8 +973,7 @@
             document.getElementById('finalTotalUi').innerText = cartTotal + ' €'; 
             currentStep = 4; 
             updateMainButton();
-        };
-             
+        };             
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
