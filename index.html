@@ -223,6 +223,7 @@
         </div>
     </div>
 
+    <!-- МЕНЮ И ШТОРКА КАТЕГОРИЙ -->
     <div class="side-menu-fullscreen" id="menuOverlay">
         <button class="unified-close-btn" onclick="document.getElementById('menuOverlay').classList.remove('active')">×</button>
         <div class="side-menu-top-section">
@@ -254,11 +255,14 @@
         </div>
     </div>
 
+    <!-- НОВАЯ ШТОРКА ДЛЯ ВЫБОРА ДОСТАВКИ/САМОВЫВОЗА -->
     <div class="filter-overlay" id="checkoutSheetOverlay">
         <div class="filter-panel" id="checkoutSheetPanel">
-            </div>
+            <!-- Сюда JS вставит кнопки -->
+        </div>
     </div>
 
+    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div id="catalogScreen" class="screen">
         <div class="store-title-container">
             <svg class="bw-map" viewBox="0 0 100 110" preserveAspectRatio="xMidYMid meet">
@@ -275,6 +279,7 @@
         </div>
     </div>
 
+    <!-- КОРЗИНА -->
     <div id="cartScreen" class="screen" style="display: none;">
         <div class="cart-header-row">
             <div class="screen-title">Корзина</div>
@@ -299,6 +304,7 @@
         </div>
     </div>
 
+    <!-- ПУСТАЯ КОРЗИНА И ОШИБКИ БАЛЛОВ -->
     <div class="empty-cart-modal-overlay" id="emptyCartAlert">
         <div class="empty-cart-modal">
             <div class="empty-cart-icon">
@@ -310,6 +316,7 @@
         </div>
     </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО ТОВАРА -->
     <div class="product-modal-overlay" id="productModal">
         <button class="unified-close-btn" onclick="closeProductModal()">×</button>
         <img id="modalImg" class="modal-image" src="" alt="">
@@ -320,6 +327,7 @@
         </div>
     </div>
 
+    <!-- ПРОФИЛЬ -->
     <div id="profileScreen" class="screen" style="display: none;">
         <div class="profile-card">
             <button class="back-arrow-btn" onclick="goBackToCatalog()">
@@ -354,6 +362,7 @@
         </div>
     </div>
 
+    <!-- ОФОРМЛЕНИЕ -->
     <div id="mapScreen" class="screen" style="display: none; padding-top: 10px;">
         <div class="cart-header-row">
             <div class="screen-title">Оформление</div>
@@ -395,10 +404,11 @@
             </div>
         </div>
         
+        <!-- ЧЕК (ИТОГО + СКИДКА БЕЛЫМ ЦВЕТОМ) -->
         <div class="receipt-box" style="margin-bottom: 15px;">
             <div id="receiptItemsList" class="receipt-items-list"></div>
             
-            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #fff; font-weight: 600; border-top: 1px dashed #444; padding-top: 15px;">
+            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #ffffff; font-weight: 600; border-top: 1px dashed #444; padding-top: 15px;">
                 <span>Скидка (баллы):</span><span id="receiptDiscountVal">-0 €</span>
             </div>
             
@@ -407,6 +417,7 @@
             </div>
         </div>
 
+        <!-- НОВЫЙ БЛОК БАЛЛОВ ПОД ЧЕКОМ -->
         <div style="background: #1a1a1a; border-radius: 16px; padding: 12px 20px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; flex-direction: column; gap: 4px;">
                 <span style="font-size: 14px; font-weight: 800; color: #fff;">Списать баллов:</span>
@@ -422,6 +433,7 @@
             (Списание возможно только с 4 баллов и более)
         </p>
 
+        <!-- ПРОГРЕСС-БАР ДОСТАВКИ -->
         <div style="background: #1a1a1a; border-radius: 16px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #333;">
             <div id="deliveryProgressText" style="text-align: center; font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px;">
                 Осталось 70 € до бесплатной доставки!
@@ -439,6 +451,7 @@
         <button class="cart-order-btn" onclick="submitCheckoutForm()" style="margin-bottom: 30px;">Оформить заказ</button>
     </div>
 
+    <!-- TOAST -->
     <div id="cartToast" class="cart-toast" onclick="openCartScreen()">
         <span class="toast-text">Ваш товар добавлен в корзину</span>
         <div class="toast-icon-wrap">
@@ -821,7 +834,7 @@
             }
         };
 
-        // Единый живой пересчет чека и прогресс-бара доставки
+        // Живой пересчет чека и независимого прогресс-бара доставки
         window.updateReceiptTotal = function() {
             let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
             let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal);
@@ -830,27 +843,25 @@
             let discountRow = document.getElementById('receiptDiscountRow');
             let discountVal = document.getElementById('receiptDiscountVal');
             let totalSpan = document.getElementById('receiptTotal');
-            let currentFinalPrice = cartTotal;
 
-            // Считаем чек
+            // 1. Считаем чек (Скидка белым цветом)
             if (ptsSpent >= 4 && ptsSpent <= realPoints && ptsSpent <= cartTotal) {
                 discountRow.style.display = 'flex';
                 discountVal.innerText = '-' + ptsSpent + ' €';
-                currentFinalPrice = cartTotal - ptsSpent;
-                if (currentFinalPrice < 0) currentFinalPrice = 0;
-                totalSpan.innerText = currentFinalPrice + ' €';
+                let finalPrice = cartTotal - ptsSpent;
+                if (finalPrice < 0) finalPrice = 0;
+                totalSpan.innerText = finalPrice + ' €';
             } else {
                 discountRow.style.display = 'none';
                 totalSpan.innerText = cartTotal + ' €';
             }
 
-            // Оживляем полоску доставки (Порог 70 евро)
+            // 2. Считаем полоску доставки (СТРОГО от начальной суммы cartTotal)
             const threshold = 70;
             const progressText = document.getElementById('deliveryProgressText');
             const progressBar = document.getElementById('deliveryProgressBar');
-            
+
             if (progressText && progressBar) {
-                // Полоска считается от изначальной суммы корзины (cartTotal), а не от цены со скидкой
                 if (cartTotal >= threshold) {
                     progressBar.style.width = '100%';
                     progressText.innerHTML = '🎉 Вам доступна <span style="color:#82ccdd;">бесплатная доставка!</span>';
@@ -864,17 +875,20 @@
         };
 
         window.goToDelivery = function() {
-            document.getElementById('cartScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block'; currentStep = 3; 
+            document.getElementById('cartScreen').style.display = 'none'; 
+            document.getElementById('mapScreen').style.display = 'block'; 
+            currentStep = 3; 
+
             let itemsTextHTML = "";
             for (let id in cart) { itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`; }
             document.getElementById('receiptItemsList').innerHTML = itemsTextHTML; 
-            
+
             currentDelivery = null; currentPickupType = null; currentCity = null; currentPayment = null;
             document.getElementById('btnPickup').classList.remove('active');
             document.getElementById('btnDelivery').classList.remove('active');
             document.getElementById('btnCash').classList.remove('active');
             document.getElementById('btnCard').classList.remove('active');
-            
+
             // ЛОГИКА РУЧНОГО ВВОДА БАЛЛОВ
             let pInput = document.getElementById('pointsInputNew');
             let pOverlay = document.getElementById('pointsOverlayNew');
@@ -885,7 +899,7 @@
             // Блокировка если нет баллов
             if (realPoints < 4) {
                 pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'У вас недостаточно баллов! (Минимум 4)'); };
+                pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'У вас недостаточно баллов! (Минимум 4 балла)'); };
             } else if (cartTotal < 4) {
                 pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
                 pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'Сумма заказа слишком мала (Минимум 4€)'); };
@@ -916,7 +930,7 @@
             // Валидация баллов
             let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
             let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
-            
+
             if (ptsSpent > 0 && ptsSpent < 4) { 
                 showCustomModal('Ошибка списания', 'Вы не можете списать меньше 4 баллов!');
                 return; 
@@ -938,10 +952,10 @@
                 finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
             }
             finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
-            
+
             let finalPriceToPay = cartTotal - ptsSpent;
             if (finalPriceToPay < 0) finalPriceToPay = 0;
-            
+
             tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: finalPriceToPay })); 
             tg.close();
         };
