@@ -493,9 +493,11 @@
             if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
             
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0];
-            document.getElementById('statItems').innerText = statsData[0] + '+'; 
+            
+            // Убрали плюсик у товаров и жестко поставили 0 в рефералку
+            document.getElementById('statItems').innerText = statsData[0]; 
             document.getElementById('statSpent').innerText = statsData[1];
-            document.getElementById('statEarned').innerText = statsData[2];
+            document.getElementById('statEarned').innerText = '0';
 
             let historyData = urlParams.get('h') ? JSON.parse(decodeURIComponent(urlParams.get('h'))) : [];
             const hScroll = document.getElementById('historyScroll');
