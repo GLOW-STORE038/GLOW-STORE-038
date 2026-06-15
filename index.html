@@ -470,10 +470,14 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); 
-        
-        tg.MainButton.color = "#82ccdd"; 
-        tg.MainButton.textColor = "#121212";
+        try {
+            tg.ready(); 
+            tg.expand(); 
+            tg.MainButton.color = "#82ccdd"; 
+            tg.MainButton.textColor = "#121212";
+        } catch (e) {
+            console.log("Сайт открыт не в Telegram, часть функций отключена.");
+        }
 
         const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6a26b5f6f5f4af5e29cb37ba"; 
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
