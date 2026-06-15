@@ -272,9 +272,12 @@
         </div>
         
         <div class="sub-title">Бери больше, кайфуй дольше</div>
-        <div id="favNotificationToggle" style="display: none; background: #1a1a1a; border-radius: 16px; padding: 12px 20px; margin-bottom: 20px; border: 1px solid #333; align-items: center; justify-content: space-between;">
-            <span style="font-size: 13px; color: #ccc; font-weight: 600; width: 85%; line-height: 1.4;">Присылать уведомления, когда ваш любимый товар появится</span>
-            <input type="checkbox" id="favNotifyCheck" onchange="saveFavNotify()" style="width: 20px; height: 20px; accent-color: #82ccdd;">
+        
+        <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
+        
+        <div id="favNotificationToggle" style="display: none; margin-bottom: 25px; align-items: center; gap: 10px; padding: 0 5px;">
+            <input type="checkbox" id="favNotifyCheck" onchange="saveFavNotify()" style="width: 18px; height: 18px; accent-color: #82ccdd; flex-shrink: 0;">
+            <span style="font-size: 13px; color: #aaa; font-weight: 500; line-height: 1.4;">Присылать уведомления, когда ваш любимый товар появится</span>
         </div>
         
         <div class="grid" id="catalogGrid">
