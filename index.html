@@ -701,9 +701,12 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; // true п�
 
         setInterval(() => {
             let needsRender = false;
+            let needsCartUpdate = false;
+            let now = Math.floor(Date.now() / 1000); 
+
+            // 1. Проверяем и обновляем визуальные таймеры на витрине
             document.querySelectorAll('.timer-badge').forEach(badge => {
                 let end = parseInt(badge.getAttribute('data-end')); 
-                let now = Math.floor(Date.now() / 1000); 
                 if (end > now) {
                     let diff = end - now; 
                     let h = Math.floor(diff / 3600); 
@@ -712,10 +715,47 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; // true п�
                     badge.innerText = `⏳ ${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
                 } else { 
                     badge.style.display = 'none'; 
-                    needsRender = true; // Таймер истек, нужен ререндер для мгновенной смены цены
+                    needsRender = true; 
                 }
             });
+
+            // 2. УМНАЯ ПРОВЕРКА КОРЗИНЫ: Меняем цену, если акция закончилась!
+            for (let id in cart) {
+                let item = menuData[id];
+                if (!item) continue;
+                
+                let actualPrice = item.price;
+                let isPromo = item.old_price && item.old_price > 0;
+                let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
+                let isOut = item.stock <= 0;
+
+                // Если акция закончилась (время вышло или товар кончился), цена становится регулярной
+                if (isPromo && (isOut || isExpired)) {
+                    actualPrice = item.old_price; 
+                }
+
+                // Если цена в корзине устарела - обновляем её
+                if (cart[id].price !== actualPrice) {
+                    cart[id].price = actualPrice;
+                    needsCartUpdate = true;
+                }
+            }
+
+            // 3. Если нужно, перерисовываем экраны
             if (needsRender) renderCatalog();
+            if (needsCartUpdate) {
+                updateMainButton(); // Пересчитывает кнопку и корзину
+                if (currentStep === 2) {
+                    renderCartScreen(); // Обновляет цены на экране корзины
+                } else if (currentStep === 3) {
+                    // Обновляет текст чека и итог на экране оформления
+                    let itemsTextHTML = "";
+                    for (let id in cart) { itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`; }
+                    let listEl = document.getElementById('receiptItemsList');
+                    if(listEl) listEl.innerHTML = itemsTextHTML; 
+                    updateReceiptTotal();
+                }
+            }
         }, 1000);
 
         window.openProductModal = function(id) {
