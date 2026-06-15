@@ -255,7 +255,7 @@
         </div>
     </div>
 
-    <!-- НОВАЯ ШТОРКА ДЛЯ ВЫБОРА ДОСТАВКИ/САМОВЫВОЗА -->
+    <!-- ШТОРКА ДЛЯ ВЫБОРА ДОСТАВКИ/САМОВЫВОЗА -->
     <div class="filter-overlay" id="checkoutSheetOverlay">
         <div class="filter-panel" id="checkoutSheetPanel">
             <!-- Сюда JS вставит кнопки -->
@@ -382,7 +382,7 @@
             </div>
             <div class="toggle-btn" id="btnDelivery" onclick="clickDeliveryToggle()">
                 <div class="toggle-btn-emoji">
-                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 </div>
                 Доставка
             </div>
@@ -404,20 +404,23 @@
             </div>
         </div>
         
-        <!-- ЧЕК (ИТОГО + СКИДКА БЕЛЫМ ЦВЕТОМ) -->
-        <div class="receipt-box" style="margin-bottom: 15px;">
-            <div id="receiptItemsList" class="receipt-items-list"></div>
+        <!-- КРАСИВЫЙ ЧЕК С ФОНОМ (Как на скрине) -->
+        <div style="background: #1a1a1a; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #333;">
+            <!-- Список товаров с пунктиром внизу -->
+            <div id="receiptItemsList" style="font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444;"></div>
             
-            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #ffffff; font-weight: 600; border-top: 1px dashed #444; padding-top: 15px;">
+            <!-- Строка скидки (БЕЛЫЙ ЦВЕТ) -->
+            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #ffffff; font-weight: 600;">
                 <span>Скидка (баллы):</span><span id="receiptDiscountVal">-0 €</span>
             </div>
             
-            <div class="receipt-row total" style="border-top: 1px dashed #444; padding-top: 15px; margin-top: 15px;">
+            <!-- ИТОГО -->
+            <div style="display: flex; justify-content: space-between; align-items: center; color: #82ccdd; font-size: 18px; font-weight: 900;">
                 <span>ИТОГО:</span><span id="receiptTotal">0 €</span>
             </div>
         </div>
 
-        <!-- НОВЫЙ БЛОК БАЛЛОВ ПОД ЧЕКОМ -->
+        <!-- ОТДЕЛЬНЫЙ БЛОК БАЛЛОВ -->
         <div style="background: #1a1a1a; border-radius: 16px; padding: 12px 20px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; flex-direction: column; gap: 4px;">
                 <span style="font-size: 14px; font-weight: 800; color: #fff;">Списать баллов:</span>
@@ -429,8 +432,9 @@
             </div>
         </div>
 
+        <!-- ТЕКСТ ПОД БАЛЛАМИ -->
         <p style="color: #aaa; font-size: 12px; text-align: left; margin-top: 8px; margin-bottom: 20px; padding-left: 10px;">
-            (Списание возможно только с 4 баллов и более)
+            Списание возможно только с 4 баллов и более
         </p>
 
         <!-- ПРОГРЕСС-БАР ДОСТАВКИ -->
@@ -834,7 +838,7 @@
             }
         };
 
-        // Живой пересчет чека и независимого прогресс-бара доставки
+        // Живой пересчет чека и прогресс-бара
         window.updateReceiptTotal = function() {
             let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
             let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal);
@@ -1000,5 +1004,4 @@
         }
         loadMenu();
     </script>
-</body>
 </html>
