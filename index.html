@@ -382,7 +382,7 @@
             </div>
             <div class="toggle-btn" id="btnDelivery" onclick="clickDeliveryToggle()">
                 <div class="toggle-btn-emoji">
-                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:currentColor;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 </div>
                 Доставка
             </div>
@@ -392,35 +392,21 @@
         
         <p id="deliveryManagerInfo" style="display:none; color: #aaa; font-size: 12px; text-align: center; margin-bottom: 15px; background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333;">Точный адрес доставки и время вы сможете согласовать с менеджером в чате.</p>
 
-        <div class="checkout-section-title">Способ оплаты</div>
-        <div class="toggle-btn-group">
-            <div class="toggle-btn" id="btnCash" onclick="setPaymentMethod('cash')">
-                <div class="toggle-btn-emoji">💵</div>
-                Наличные
-            </div>
-            <div class="toggle-btn" id="btnCard" onclick="setPaymentMethod('card')">
-                <div class="toggle-btn-emoji">💳</div>
-                Картой
-            </div>
-        </div>
-        
-        <!-- КРАСИВЫЙ ЧЕК С ФОНОМ (Как на скрине) -->
-        <div style="background: #1a1a1a; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #333;">
-            <!-- Список товаров с пунктиром внизу -->
-            <div id="receiptItemsList" style="font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #444;"></div>
+        <!-- 1. ЧЕК (ИТОГО + СКИДКА БЕЛЫМ ЦВЕТОМ) -->
+        <div class="receipt-box" style="margin-bottom: 15px;">
+            <div id="receiptItemsList" class="receipt-items-list"></div>
             
-            <!-- Строка скидки (БЕЛЫЙ ЦВЕТ) -->
-            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #ffffff; font-weight: 600;">
+            <!-- Скрытая строка для скидки -->
+            <div id="receiptDiscountRow" style="display:none; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #ffffff; font-weight: 600; border-top: 1px dashed #444; padding-top: 15px;">
                 <span>Скидка (баллы):</span><span id="receiptDiscountVal">-0 €</span>
             </div>
             
-            <!-- ИТОГО -->
-            <div style="display: flex; justify-content: space-between; align-items: center; color: #82ccdd; font-size: 18px; font-weight: 900;">
+            <div class="receipt-row total" style="border-top: 1px dashed #444; padding-top: 15px; margin-top: 15px;">
                 <span>ИТОГО:</span><span id="receiptTotal">0 €</span>
             </div>
         </div>
 
-        <!-- ОТДЕЛЬНЫЙ БЛОК БАЛЛОВ -->
+        <!-- 2. БЛОК БАЛЛОВ ПОД ЧЕКОМ -->
         <div style="background: #1a1a1a; border-radius: 16px; padding: 12px 20px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; flex-direction: column; gap: 4px;">
                 <span style="font-size: 14px; font-weight: 800; color: #fff;">Списать баллов:</span>
@@ -432,12 +418,12 @@
             </div>
         </div>
 
-        <!-- ТЕКСТ ПОД БАЛЛАМИ -->
+        <!-- 3. ТЕКСТ ПОД БАЛЛАМИ -->
         <p style="color: #aaa; font-size: 12px; text-align: left; margin-top: 8px; margin-bottom: 20px; padding-left: 10px;">
             Списание возможно только с 4 баллов и более
         </p>
 
-        <!-- ПРОГРЕСС-БАР ДОСТАВКИ -->
+        <!-- 4. ПРОГРЕСС-БАР ДОСТАВКИ -->
         <div style="background: #1a1a1a; border-radius: 16px; padding: 15px 20px; margin-bottom: 20px; border: 1px solid #333;">
             <div id="deliveryProgressText" style="text-align: center; font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px;">
                 Осталось 70 € до бесплатной доставки!
