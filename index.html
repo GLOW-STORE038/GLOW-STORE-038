@@ -272,7 +272,10 @@
         </div>
         
         <div class="sub-title">Бери больше, кайфуй дольше</div>
-        <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
+        <div id="favNotificationToggle" style="display: none; background: #1a1a1a; border-radius: 16px; padding: 12px 20px; margin-bottom: 20px; border: 1px solid #333; align-items: center; justify-content: space-between;">
+            <span style="font-size: 13px; color: #ccc; font-weight: 600; width: 85%; line-height: 1.4;">Присылать уведомления, когда ваш любимый товар появится</span>
+            <input type="checkbox" id="favNotifyCheck" onchange="saveFavNotify()" style="width: 20px; height: 20px; accent-color: #82ccdd;">
+        </div>
         
         <div class="grid" id="catalogGrid">
             <div class="loader">⏳ Загрузка витрины...</div>
@@ -387,7 +390,6 @@
                 </div>
                 Доставка
             </div>
-        </div>
 
         <div id="checkoutSelectedInfo" style="display:none; align-items:center; justify-content:center; gap: 6px; color:#fff; font-size:14px; font-weight:700; margin-bottom:15px; padding: 16px; background: rgba(18, 18, 18, 0.95); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.15);"></div>
         
@@ -548,26 +550,6 @@
             selectCategory('favorites', favBtn);
         });
 
-        window.selectCategory = function(cat_id, btnElement) {
-            currentCategory = cat_id;
-            document.querySelectorAll('.filter-panel .cat-btn, .filter-panel .cat-btn-all').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            if (cat_id !== 'favorites') { document.getElementById('favFilterBtn').style.display = 'none'; }
-            let cleanName = btnElement.textContent.trim();
-            document.getElementById('categoryFilterBtn').innerText = cleanName;
-            document.getElementById('filterOverlay').classList.remove('active');
-            renderCatalog();
-        };
-
-        window.toggleFav = function(id, btn) {
-            if (favorites[id]) {
-                delete favorites[id]; btn.classList.remove('active');
-            } else {
-                favorites[id] = true; btn.classList.add('active');
-            }
-            localStorage.setItem('glow_favs', JSON.stringify(favorites));
-        };
-
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
             for (let id in menuData) {
@@ -612,14 +594,122 @@
             if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
         }
 
+let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; // true по умолчанию
+        document.addEventListener("DOMContentLoaded", () => {
+            let chk = document.getElementById('favNotifyCheck');
+            if (chk) chk.checked = favNotify;
+        });
+
+        window.saveFavNotify = function() {
+            let chk = document.getElementById('favNotifyCheck');
+            favNotify = chk.checked;
+            localStorage.setItem('glow_fav_notify', favNotify);
+        };
+
+        window.selectCategory = function(cat_id, btnElement) {
+            currentCategory = cat_id;
+            document.querySelectorAll('.filter-panel .cat-btn, .filter-panel .cat-btn-all').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            if (cat_id !== 'favorites') { 
+                document.getElementById('favFilterBtn').style.display = 'none'; 
+                document.getElementById('favNotificationToggle').style.display = 'none';
+            } else {
+                document.getElementById('favNotificationToggle').style.display = 'flex';
+            }
+            
+            let cleanName = btnElement.textContent.trim();
+            document.getElementById('categoryFilterBtn').innerText = cleanName;
+            document.getElementById('filterOverlay').classList.remove('active');
+            renderCatalog();
+        };
+
+        window.toggleFav = function(id, btn) {
+            if (favorites[id]) {
+                delete favorites[id]; btn.classList.remove('active');
+            } else {
+                favorites[id] = true; btn.classList.add('active');
+            }
+            localStorage.setItem('glow_favs', JSON.stringify(favorites));
+        };
+
+        function renderCatalog() {
+            const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
+            for (let id in menuData) {
+                let item = menuData[id];
+                if (currentCategory === 'favorites' && !favorites[id]) continue;
+                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
+
+                let isOut = item.stock <= 0; 
+                let cardClass = isOut ? "card disabled" : "card";
+                let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
+                
+                // УМНАЯ ЛОГИКА ЦЕН И ТАЙМЕРА
+                let displayPrice = item.price;
+                let displayOldPrice = item.old_price;
+                let isPromo = displayOldPrice && displayOldPrice > 0;
+                let now = Math.floor(Date.now() / 1000);
+                let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
+
+                // Если товар закончился ИЛИ таймер истек -> отменяем акцию
+                if (isPromo && (isOut || isExpired)) {
+                    displayPrice = item.old_price; // Возвращаем старую (большую) цену как основную
+                    displayOldPrice = 0; // Убираем перечеркнутую цену
+                    isPromo = false; // Убираем красный цвет
+                }
+
+                let priceClass = isPromo ? "new-price promo-price" : "new-price";
+                let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
+                let timerHtml = (isPromo && item.timer_end && item.timer_end > now && !isOut) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
+                
+                let isFavClass = favorites[id] ? "active" : "";
+
+                let cardHtml = `
+                    <div class="${cardClass}" data-id="${id}">
+                        <button class="fav-btn ${isFavClass}" onclick="toggleFav('${id}', this)">
+                            <svg class="fav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </button>
+                        <img src="${item.photo}" class="product-image" alt="Товар" onclick="openProductModal('${id}')">
+                        <div class="card-body">
+                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
+                            ${timerHtml}
+                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
+                            ${stockHtml}
+                            <div class="price-row">
+                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
+                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${displayPrice}, this)">${cartIconSvg}</button>
+                                <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
+                                    <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
+                                    <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
+                                    <button class="btn-plus" onclick="changeCount('${id}', 1, this)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+                if (cart[id]) grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
+            }
+            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
+        }
+
         setInterval(() => {
+            let needsRender = false;
             document.querySelectorAll('.timer-badge').forEach(badge => {
-                let end = parseInt(badge.getAttribute('data-end')); let now = Math.floor(Date.now() / 1000); 
+                let end = parseInt(badge.getAttribute('data-end')); 
+                let now = Math.floor(Date.now() / 1000); 
                 if (end > now) {
-                    let diff = end - now; let h = Math.floor(diff / 3600); let m = Math.floor((diff % 3600) / 60); let s = diff % 60;
+                    let diff = end - now; 
+                    let h = Math.floor(diff / 3600); 
+                    let m = Math.floor((diff % 3600) / 60); 
+                    let s = diff % 60;
                     badge.innerText = `⏳ ${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-                } else { badge.style.display = 'none'; }
+                } else { 
+                    badge.style.display = 'none'; 
+                    needsRender = true; // Таймер истек, нужен ререндер для мгновенной смены цены
+                }
             });
+            if (needsRender) renderCatalog();
         }, 1000);
 
         window.openProductModal = function(id) {
