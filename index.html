@@ -188,10 +188,11 @@
         .map-container-small { width: 100%; height: 280px; border-radius: 14px; overflow: hidden; margin-bottom: 15px; border: 1px solid #333; background: #1a1a1a; }
         
         /* =====================================================================
-           УВЕДОМЛЕНИЕ О ДОБАВЛЕНИИ В КОРЗИНУ (TOAST)
+           УВЕДОМЛЕНИЯ О ДОБАВЛЕНИИ В КОРЗИНУ И ИЗБРАННОЕ (TOAST)
            ===================================================================== */
-        .cart-toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 150%); width: 90%; max-width: 400px; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 3000; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
+        .cart-toast { position: fixed; bottom: 20px; left: 50%; transform: translate(-50%, 150%); width: 90%; max-width: 400px; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 3000; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), bottom 0.3s ease; cursor: pointer; }
         .cart-toast.active { transform: translate(-50%, 0); }
+        .cart-toast.shifted { bottom: 90px; } /* Сдвиг вверх */
         .toast-text { color: #fff; font-size: 14px; font-weight: 700; }
         .toast-icon-wrap { display: flex; align-items: center; gap: 6px; color: #ffffff; font-weight: 900; }
         .toast-icon-wrap svg { width: 22px; height: 22px; fill: #ffffff; }
@@ -471,6 +472,13 @@
         </div>
     </div>
 
+    <div id="favToast" class="cart-toast" onclick="sendFavsToBot()">
+        <span class="toast-text">Обновить список ожидаемых товаров</span>
+        <div class="toast-icon-wrap">
+            <span style="font-size: 18px; margin-right: 4px;">💾</span>
+        </div>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         try {
@@ -638,6 +646,23 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; // true п�
                 favorites[id] = true; btn.classList.add('active');
             }
             localStorage.setItem('glow_favs', JSON.stringify(favorites));
+
+            window.sendFavsToBot = function() {
+            let favKeys = Object.keys(favorites);
+            if (favKeys.length === 0) {
+                tg.showAlert('Сначала добавьте товары в избранное (нажмите на сердечко)!');
+                // Если пусто - прячем уведомления
+                document.getElementById('favToast').classList.remove('active');
+                document.getElementById('cartToast').classList.remove('shifted');
+                return;
+            }
+            // Отправляем боту специальный сигнал
+            tg.sendData(JSON.stringify({ 
+                action: 'save_settings',
+                favs: favKeys, 
+                fav_notify: favNotify 
+            })); 
+            tg.close();
         };
 
         function renderCatalog() {
