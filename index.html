@@ -72,7 +72,7 @@
         
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
         .card { background: linear-gradient(145deg, #161616, #121212); border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.15); display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 16px rgba(0,0,0,0.4); overflow: hidden; height: 100%; }
-        .card.disabled { opacity: 0.5; filter: grayscale(40%); pointer-events: none; order: 99; }
+        .card.disabled { opacity: 0.5; filter: grayscale(40%); order: 99; }
         .product-image { width: 100%; aspect-ratio: 3/4 !important; object-fit: cover; background-color: #1e1e1e; border-bottom: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; border-radius: 18px 18px 0 0; }
         .card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
         .title { font-size: 14px; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; word-wrap: break-word; overflow-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.2; height: 33px; cursor: pointer; }
@@ -377,7 +377,7 @@
         </div>
         <hr class="cart-header-divider">
         
-        <iframe src="https://www.google.com/maps/d/embed?mid=1sEHJSJew8W1dI5XTCljXgi1ctO-spXg&ehbc=2E312F" class="map-container-small" frameborder="0" style="margin-top: 15px;"></iframe>
+        <iframe src="<iframe src="https://www.google.com/maps/d/embed?mid=11lkTk8XnGwD1EymtlFOIVKXiJ8OnBAU&ehbc=2E312F" width="640" height="480"></iframe>
         
         <div class="checkout-section-title">Способ получения</div>
         <div class="toggle-btn-group">
@@ -1098,7 +1098,14 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; // true п�
             let finalPriceToPay = cartTotal - ptsSpent;
             if (finalPriceToPay < 0) finalPriceToPay = 0;
 
-            tg.sendData(JSON.stringify({ cart: cart, address: finalAddress, points: ptsSpent, total: finalPriceToPay })); 
+            tg.sendData(JSON.stringify({ 
+                cart: cart, 
+                address: finalAddress, 
+                points: ptsSpent, 
+                total: finalPriceToPay,
+                favs: Object.keys(favorites), 
+                fav_notify: favNotify 
+            })); 
             tg.close();
         };
              
