@@ -647,7 +647,13 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; // true п�
             }
             localStorage.setItem('glow_favs', JSON.stringify(favorites));
 
-            window.sendFavsToBot = function() {
+            // Показываем тост Избранного, он будет висеть пока на него не нажмут
+            document.getElementById('favToast').classList.add('active');
+            // Если вылезет Корзина, она сдвинется выше!
+            document.getElementById('cartToast').classList.add('shifted');
+        };
+
+        window.sendFavsToBot = function() {
             let favKeys = Object.keys(favorites);
             if (favKeys.length === 0) {
                 tg.showAlert('Сначала добавьте товары в избранное (нажмите на сердечко)!');
