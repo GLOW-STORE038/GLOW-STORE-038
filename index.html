@@ -321,13 +321,15 @@
     </div>
 
 <div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
-        <div class="cart-header-row">
-            <div class="screen-title" style="text-transform: uppercase;">Реферальная программа</div>
+        <div class="cart-header-row" style="justify-content: flex-end;">
             <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
         </div>
-        <hr class="cart-header-divider">
 
-        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-top: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: center;">
+        <div style="text-align: center; margin-top: 5px; margin-bottom: 25px;">
+            <div style="font-size: 26px; font-weight: 900; text-transform: uppercase; color: #ff2a5f; text-shadow: 0 0 15px rgba(255, 42, 95, 0.4); line-height: 1.2;">Реферальная<br>программа</div>
+        </div>
+
+        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: center;">
             <p style="font-size: 13px; color: #ccc; line-height: 1.5;">
                 Приглашайте друзей по своей ссылке. Когда ваш друг заказывает товар, вы продвигаетесь по шкале и получаете бонусные баллы на свой счет!
             </p>
@@ -361,7 +363,7 @@
 
             <div style="text-align: center; color: #aaa; font-size: 11px; margin-top: 20px; font-weight: 600; text-transform: uppercase;">
                 и так далее...<br><br>
-                <span style="color: #fff; font-size: 13px;">за одного друга вы получите 8 баллов</span>
+                <span style="color: #fff; font-size: 13px;">За одного друга вы получите до 25 баллов</span>
             </div>
         </div>
 
@@ -372,8 +374,11 @@
 
         <hr class="glow-divider-full" style="margin-bottom: 20px;">
         
+        <h3 style="color: #fff; font-size: 15px; margin-bottom: 15px; text-transform: uppercase; font-weight: 800; text-align: center;">Статистика по друзьям</h3>
+        
         <div id="refHistoryContainer" style="display: flex; flex-direction: column; gap: 10px; padding-bottom: 30px;">
-            <div style="text-align:center; color:#666; font-size:13px; padding:20px 0;">Тут пока пусто</div>
+            
+            <div style="text-align:center; color:#666; font-size:13px; padding:20px 0;">У вас пока нет приглашенных друзей</div>
         </div>
     </div>
 
