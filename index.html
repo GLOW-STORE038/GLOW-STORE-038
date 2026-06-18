@@ -252,7 +252,7 @@
                 <span class="soon-text">в разработке...</span>
             </div>
             <hr class="glow-divider-short">
-            <div class="side-menu-item">Поддержка</div>
+            <div class="side-menu-item" onclick="openSupportScreen()">Поддержка</div>
         </div>
         <div class="side-menu-bottom-section">
             <hr class="glow-divider-short">
@@ -333,8 +333,37 @@
             <p style="font-size: 12px; color: #aaa; line-height: 1.4; margin-bottom: 12px;">
                 Если вам что-то непонятно или у вас есть предложения по сервису — смело пишите нам!
             </p>
-            <button style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; color: #ffffff; border-radius: 16px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s;" onclick="tg.showAlert('Страница поддержки пока в разработке!')">
+            <button style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; color: #ffffff; border-radius: 16px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.2s;" onclick="openSupportScreen()">
                 👨‍💻 Написать в поддержку
+            </button>
+        </div>
+    </div>
+
+<div id="supportScreen" class="screen" style="display: none; padding-top: 10px;">
+        <div class="cart-header-row">
+            <div class="screen-title" style="text-transform: uppercase;">Поддержка</div>
+            <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
+        </div>
+        <hr class="cart-header-divider">
+
+        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-top: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: center;">
+            <p style="font-size: 13px; color: #ccc; line-height: 1.5;">
+                Здесь вы можете связаться с администрацией магазина. Задайте вопрос или опишите проблему, и мы постараемся помочь максимально быстро!
+            </p>
+        </div>
+
+        <div style="background: rgba(26, 26, 26, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1);">
+            
+            <p style="font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; margin-left: 5px;">Ваше сообщение <span style="color: #ff2a5f;">*</span></p>
+            
+            <textarea id="supportInput" placeholder="Расскажите о проблеме, пожеланиях или задайте вопрос..." style="width: 100%; height: 130px; background: #121212; border: 1px solid #333; border-radius: 16px; color: #fff; padding: 15px; font-size: 13px; resize: none; outline: none; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); font-family: inherit; margin-bottom: 15px;"></textarea>
+            
+            <p style="font-size: 12px; color: #aaa; line-height: 1.4; margin-bottom: 20px; text-align: center;">
+                Если у вас есть какие-то пожелания или замечания по сервису, готовы вам помочь
+            </p>
+
+            <button style="width: 100%; padding: 16px; background: #82ccdd; border: none; color: #121212; border-radius: 16px; font-weight: 900; font-size: 15px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4);" onclick="submitSupport()">
+                Отправить
             </button>
         </div>
     </div>
@@ -1367,12 +1396,39 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
         };
 
         tg.onEvent('backButtonClicked', () => {
-            if (currentStep === 5 || currentStep === 2 || currentStep === 6 || currentStep === 7) { goBackToCatalog(); } 
+            // Добавили currentStep === 8 для поддержки
+            if (currentStep === 5 || currentStep === 2 || currentStep === 6 || currentStep === 7 || currentStep === 8) { goBackToCatalog(); } 
             else if (currentStep === 3) {
                 document.getElementById('mapScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'flex';
                 currentStep = 2; updateMainButton();
             }
         });
+
+        // Функция открытия экрана поддержки
+        window.openSupportScreen = function() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
+            document.getElementById('topNav').style.display = 'none';
+            document.getElementById('supportScreen').style.display = 'block';
+            currentStep = 8; 
+            tg.BackButton.show(); tg.MainButton.hide();
+        };
+
+        // Функция отправки сообщения в поддержку
+        window.submitSupport = function() {
+            let text = document.getElementById('supportInput').value.trim();
+            if (!text) {
+                tg.showAlert('Пожалуйста, напишите ваше сообщение!');
+                return;
+            }
+            
+            // Отправляем данные в Питон (позже научим бота принимать это)
+            tg.sendData(JSON.stringify({ 
+                action: 'support', 
+                message: text 
+            }));
+            tg.close();
+        };
 
         // Открытие экрана рефералки
         window.openReferralScreen = function() {
