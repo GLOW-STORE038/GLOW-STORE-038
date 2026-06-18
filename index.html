@@ -528,8 +528,20 @@
     </div>
 
     <!-- ПРОФИЛЬ -->
-    <div id="profileScreen" class="screen" style="display: none;">
-        <div class="profile-card">
+    <div id="profileScreen" class="screen" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; padding: 12px 10px; background: #0d0d0d; z-index: 1000; align-items: center; justify-content: center; box-sizing: border-box; overflow: hidden;">
+        
+        <!-- ФОНОВЫЕ ПОЛОСКИ С ПРАВОЙ СТОРОНЫ -->
+        <svg style="position: absolute; top: 0; right: -5%; width: 50%; height: 100%; z-index: 0; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5)); opacity: 0.35; pointer-events: none;" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <!-- Толщина линий (stroke-width="8") подобрана под жирность имени -->
+            <g stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round">
+                <line x1="30" y1="10" x2="30" y2="90" />
+                <line x1="60" y1="10" x2="60" y2="90" />
+                <line x1="90" y1="10" x2="90" y2="90" />
+            </g>
+        </svg>
+
+        <!-- ПОЛУПРОЗРАЧНАЯ КАРТОЧКА ПРОФИЛЯ -->
+        <div class="profile-card" style="background: rgba(26, 26, 26, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: relative; z-index: 2; border: 1px solid rgba(255,255,255,0.1);">
             <button class="back-arrow-btn" onclick="goBackToCatalog()">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -543,7 +555,7 @@
                 <div class="history-scroll-new" id="historyScroll"></div>
             </div>
             
-            <hr class="glow-divider" style="margin: 25px 0;">
+            <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.2); box-shadow: 0 0 8px rgba(255,255,255,0.5); width: 100%; margin: 25px 0;">
             
             <div class="stats-triangle">
                 <div class="stat-glow-box">
