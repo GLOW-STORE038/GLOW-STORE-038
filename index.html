@@ -1451,7 +1451,11 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
 
             // ВАЖНО: Впиши ниже юзернейм своего бота без собачки @ !!!
             let botUsername = "Reutlingen_test_bot"; 
-            let myId = tg.initDataUnsafe?.user?.id || 'id_ошибка';
+            
+            // Берем гарантированный ID из ссылки Питона
+            let urlUid = new URLSearchParams(window.location.search).get('uid');
+            let myId = urlUid || tg.initDataUnsafe?.user?.id || 'id_ошибка';
+            
             let refLink = `https://t.me/${botUsername}?start=${myId}`;
             
             document.getElementById('refLinkText').innerText = refLink;
