@@ -717,12 +717,12 @@
             if (urlParams.get('name')) globalUserName = urlParams.get('name');
             if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
             
-            let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0];
+            // Теперь статистика состоит из 4 цифр: товары, потрачено, кэшбэк, кол-во друзей
+            let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0, 0];
             
-            // Берем статистику (товары, потрачено, количество рефералов)
             document.getElementById('statItems').innerText = statsData[0]; 
             document.getElementById('statSpent').innerText = statsData[1];
-            document.getElementById('statEarned').innerText = statsData[2] || 0;
+            document.getElementById('statEarned').innerText = statsData[3] || 0; // Индекс 3 - это реальные друзья!
 
             let historyData = urlParams.get('h') ? JSON.parse(decodeURIComponent(urlParams.get('h'))) : [];
             const hScroll = document.getElementById('historyScroll');
@@ -1441,6 +1441,7 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
         };
 
         // Открытие экрана рефералки
+        // Открытие экрана рефералки с логикой снятия баллов
         window.openReferralScreen = function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
@@ -1449,20 +1450,59 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             currentStep = 7; 
             tg.BackButton.show(); tg.MainButton.hide();
 
-            // ВАЖНО: Впиши ниже юзернейм своего бота без собачки @ !!!
             let botUsername = "Reutlingen_test_bot"; 
-            
-            // Берем гарантированный ID из ссылки Питона
             let urlUid = new URLSearchParams(window.location.search).get('uid');
             let myId = urlUid || tg.initDataUnsafe?.user?.id || 'id_ошибка';
-            
-            let refLink = `https://t.me/${botUsername}?start=${myId}`;
-            
-            document.getElementById('refLinkText').innerText = refLink;
+            document.getElementById('refLinkText').innerText = `https://t.me/${botUsername}?start=${myId}`;
 
-            let refsCount = statsData[2] || 0;
+            // ЧИТАЕМ СПИСОК ДРУЗЕЙ ИЗ ПИТОНА
+            let refsParam = new URLSearchParams(window.location.search).get('r');
+            let refsData = refsParam ? JSON.parse(decodeURIComponent(refsParam)) : [];
+            
+            let refsContainer = document.getElementById('refHistoryContainer');
+            refsContainer.innerHTML = '';
+            let totalEarnedFromRefs = 0;
+
+            if (refsData.length === 0) {
+                refsContainer.innerHTML = '<div style="text-align:center; color:#666; font-size:13px; padding:20px 0;">У вас пока нет приглашенных друзей</div>';
+            } else {
+                refsData.forEach(friend => {
+                    let earned = friend.o * 2; // заработано всего
+                    let withdrawn = friend.w; // уже снято
+                    let available = earned - withdrawn; // доступно к снятию
+                    totalEarnedFromRefs += withdrawn; // В статистику пишем только то, что реально сняли
+                    
+                    let canWithdraw = false;
+                    let minToWithdraw = (withdrawn === 0) ? 4 : 2; // Первый раз снимаем от 4, потом от 2
+                    if (available >= minToWithdraw) canWithdraw = true;
+                    
+                    let html = '';
+                    if (canWithdraw) {
+                        html = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 15px 20px; border-radius: 16px; border: 1px solid #333; box-shadow: 0 5px 20px rgba(0, 119, 255, 0.15); margin-bottom: 10px; position: relative; z-index: 1;">
+                            <div style="font-size: 15px; color: #fff; font-weight: 800; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friend.u}</div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <button style="background: rgba(0, 119, 255, 0.15); border: 1px solid #0077ff; color: #00bfff; border-radius: 10px; padding: 6px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);" onclick="tg.sendData(JSON.stringify({action: 'withdraw_ref', friend_id: '${friend.id}'})); tg.close();">Снять (${available} б.)</button>
+                                <div style="font-size: 12px; color: #ccc;">Снято: <b style="color:#0077ff; font-size:14px; text-shadow: 0 0 12px rgba(0, 119, 255, 0.8);">${withdrawn}</b></div>
+                            </div>
+                        </div>`;
+                    } else {
+                        html = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 15px 20px; border-radius: 16px; border: 1px solid #333; margin-bottom: 10px; position: relative; z-index: 1;">
+                            <div style="font-size: 15px; color: #fff; font-weight: 800; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friend.u}</div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <button style="background: #2a2a2a; border: 1px solid #444; color: #666; border-radius: 10px; padding: 6px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: not-allowed;">Снять (${available} б.)</button>
+                                <div style="font-size: 12px; color: #ccc;">Снято: <b style="color:#0077ff; font-size:14px; text-shadow: 0 0 12px rgba(0, 119, 255, 0.8);">${withdrawn}</b></div>
+                            </div>
+                        </div>`;
+                    }
+                    refsContainer.insertAdjacentHTML('beforeend', html);
+                });
+            }
+
+            let refsCount = statsData[3] || 0;
             document.getElementById('refCountUi').innerText = refsCount;
-            document.getElementById('refEarnedUi').innerText = refsCount * 8; 
+            document.getElementById('refEarnedUi').innerText = totalEarnedFromRefs; 
         };
 
         // Копирование ссылки с красивым уведомлением
