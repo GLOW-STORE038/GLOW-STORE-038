@@ -1467,7 +1467,14 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
                 refsContainer.innerHTML = '<div style="text-align:center; color:#666; font-size:13px; padding:20px 0;">У вас пока нет приглашенных друзей</div>';
             } else {
                 refsData.forEach(friend => {
-                    let earned = friend.o * 2; // заработано всего
+                    let total_items = friend.o;
+                    let earned = 0;
+                    
+                    if (total_items > 0) {
+                        earned = 2 + Math.floor(total_items / 4) * 2;
+                        if (earned > 24) earned = 24; // Лимит 24 балла (на 44-м товаре)
+                    }
+                    
                     let withdrawn = friend.w; // уже снято
                     let available = earned - withdrawn; // доступно к снятию
                     totalEarnedFromRefs += withdrawn; // В статистику пишем только то, что реально сняли
