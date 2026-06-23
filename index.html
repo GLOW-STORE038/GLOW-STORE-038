@@ -1486,20 +1486,38 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
                     let html = '';
                     if (canWithdraw) {
                         html = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 15px 20px; border-radius: 16px; border: 1px solid #333; box-shadow: 0 5px 20px rgba(0, 119, 255, 0.15); margin-bottom: 10px; position: relative; z-index: 1;">
-                            <div style="font-size: 15px; color: #fff; font-weight: 800; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friend.u}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 15px; border-radius: 16px; border: 1px solid #333; box-shadow: 0 5px 20px rgba(0, 119, 255, 0.15); margin-bottom: 10px; position: relative; z-index: 1;">
+                            <div style="display: flex; align-items: center; gap: 12px; max-width: 50%;">
+                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #444;">
+                                <div style="display: flex; flex-direction: column; overflow: hidden;">
+                                    <div style="font-size: 14px; color: #fff; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.u}</div>
+                                    <div style="font-size: 11px; color: #666; margin-top: 2px;">Добавить имя...</div>
+                                </div>
+                            </div>
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <button style="background: rgba(0, 119, 255, 0.15); border: 1px solid #0077ff; color: #00bfff; border-radius: 10px; padding: 6px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);" onclick="tg.sendData(JSON.stringify({action: 'withdraw_ref', friend_id: '${friend.id}'})); tg.close();">Снять (${available} б.)</button>
-                                <div style="font-size: 12px; color: #ccc;">Снято: <b style="color:#0077ff; font-size:14px; text-shadow: 0 0 12px rgba(0, 119, 255, 0.8);">${withdrawn}</b></div>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <div style="font-size: 10px; color: #888; text-transform: uppercase;">Снято всего</div>
+                                    <b style="color:#ffffff; font-size:15px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);">${withdrawn}</b>
+                                </div>
+                                <button style="background: rgba(0, 119, 255, 0.15); border: 1px solid #0077ff; color: #00bfff; border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);" onclick="tg.sendData(JSON.stringify({action: 'withdraw_ref', friend_id: '${friend.id}'})); tg.close();">${available} б.</button>
                             </div>
                         </div>`;
                     } else {
                         html = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 15px 20px; border-radius: 16px; border: 1px solid #333; margin-bottom: 10px; position: relative; z-index: 1;">
-                            <div style="font-size: 15px; color: #fff; font-weight: 800; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friend.u}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 15px; border-radius: 16px; border: 1px solid #333; margin-bottom: 10px; position: relative; z-index: 1;">
+                            <div style="display: flex; align-items: center; gap: 12px; max-width: 50%;">
+                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #444;">
+                                <div style="display: flex; flex-direction: column; overflow: hidden;">
+                                    <div style="font-size: 14px; color: #fff; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.u}</div>
+                                    <div style="font-size: 11px; color: #666; margin-top: 2px;">Добавить имя...</div>
+                                </div>
+                            </div>
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <button style="background: #2a2a2a; border: 1px solid #444; color: #666; border-radius: 10px; padding: 6px 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: not-allowed;">Снять (${available} б.)</button>
-                                <div style="font-size: 12px; color: #ccc;">Снято: <b style="color:#0077ff; font-size:14px; text-shadow: 0 0 12px rgba(0, 119, 255, 0.8);">${withdrawn}</b></div>
+                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                    <div style="font-size: 10px; color: #888; text-transform: uppercase;">Снято всего</div>
+                                    <b style="color:#ffffff; font-size:15px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);">${withdrawn}</b>
+                                </div>
+                                <button style="background: #2a2a2a; border: 1px solid #444; color: #666; border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: not-allowed;">${available} б.</button>
                             </div>
                         </div>`;
                     }
