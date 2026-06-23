@@ -425,12 +425,14 @@
                     <button style="background: #2a2a2a; border: none; color: #fff; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="changeBet(1)">+</button>
                 </div>
             </div>
-            <button style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; text-transform: uppercase; margin-top: 15px; transition: transform 0.2s;" onclick="saveCasinoAndExit()">
-            Вывести баллы и выйти
-        </button>
-    </div>
+            
+            <button id="spinBtn" style="width: 100%; padding: 16px; background: #f1c40f; border: none; color: #121212; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); transition: transform 0.2s;" onclick="spinRoulette()">Крутить рулетку</button>
 
-<div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
+            <button style="width: 100%; padding: 16px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; text-transform: uppercase; margin-top: 15px; transition: transform 0.2s;" onclick="saveCasinoAndExit()">
+                Вывести баллы и выйти
+            </button>
+        </div>
+    </div> <div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
         <div class="cart-header-row" style="justify-content: flex-end;">
             <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
         </div>
