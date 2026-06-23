@@ -1499,7 +1499,7 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
                                     <div style="font-size: 10px; color: #888; text-transform: uppercase;">Снято всего</div>
                                     <b style="color:#ffffff; font-size:15px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);">${withdrawn}</b>
                                 </div>
-                                <button style="background: rgba(0, 119, 255, 0.15); border: 1px solid #0077ff; color: #00bfff; border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 0 10px rgba(0, 119, 255, 0.3);" onclick="tg.sendData(JSON.stringify({action: 'withdraw_ref', friend_id: '${friend.id}'})); tg.close();">${available} б.</button>
+                                <button style="background: rgba(130, 204, 221, 0.15); border: 1px solid #82ccdd; color: #82ccdd; border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 0 10px rgba(130, 204, 221, 0.4);" onclick="tg.sendData(JSON.stringify({action: 'withdraw_ref', friend_id: '${friend.id}'})); tg.close();">${available} б.</button>
                             </div>
                         </div>`;
                     } else {
