@@ -778,10 +778,11 @@
         
         try {    
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('name')) globalUserName = urlParams.get('name');
-            if (urlParams.get('cp')) myCasinoPoints = parseInt(urlParams.get('cp'));
-            
-            // Теперь статистика состоит из 4 цифр: товары, потрачено, кэшбэк, кол-во друзей
+        if (urlParams.get('name')) globalUserName = urlParams.get('name');
+        if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
+        if (urlParams.get('cp')) myCasinoPoints = parseInt(urlParams.get('cp'));
+        
+        // Теперь статистика состоит из 4 цифр: товары, потрачено, кэшбэк, кол-во друзей
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0, 0];
             
             document.getElementById('statItems').innerText = statsData[0]; 
