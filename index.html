@@ -1427,6 +1427,7 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             if (finalPriceToPay < 0) finalPriceToPay = 0;
 
             tg.sendData(JSON.stringify({ 
+                action: 'order', // ДОБАВЬ ЭТУ СТРОЧКУ!
                 cart: cart, 
                 address: finalAddress, 
                 points: ptsSpent, 
