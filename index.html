@@ -227,6 +227,19 @@
         .roulette-pointer { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: #ff2a5f; z-index: 10; box-shadow: 0 0 15px #ff2a5f; border-radius: 2px; }
         .roulette-shadow { position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: inset 50px 0 30px -30px #121212, inset -50px 0 30px -30px #121212; pointer-events: none; z-index: 5; }
 
+/* КАЗИНО МИНИ-ДИЗАЙН */
+        .casino-title-box { display: inline-block; border-left: 4px solid #f1c40f; border-right: 4px solid #f1c40f; padding: 0 20px; font-size: 48px; font-weight: 900; color: #f1c40f; letter-spacing: 5px; text-shadow: 0 0 15px rgba(241, 196, 15, 0.6); cursor: pointer; border-radius: 10px; transition: 0.1s; }
+        .casino-title-box:active { transform: scale(0.9); }
+        .casino-roulette-mini { width: 100%; height: 60px; background: #121212; border: 2px solid #333; border-radius: 12px; overflow: hidden; position: relative; margin: 20px 0; display: flex; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); }
+        .casino-track-mini { display: flex; height: 100%; animation: slowScroll 15s linear infinite; }
+        .c-item { min-width: 60px; height: 100%; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 14px; border-right: 1px solid rgba(255,255,255,0.05); }
+        .c-grey { background: linear-gradient(135deg, #3a3a3a, #1a1a1a); color: #888; }
+        .c-blue { background: linear-gradient(135deg, #2980b9, #2c3e50); color: #fff; }
+        .c-purple { background: linear-gradient(135deg, #9b59b6, #5e35b1); color: #fff; }
+        .c-gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #121212; }
+        .r-pointer-mini { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 3px; height: 100%; background: #ff2a5f; z-index: 10; box-shadow: 0 0 10px #ff2a5f; }
+        @keyframes slowScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-600px); } }
+
     </style>
 </head>
 <body>
@@ -263,10 +276,7 @@
         <div class="side-menu-top-section">
             <div class="side-menu-item" onclick="openInfoScreen()">Общая информация</div>
             <hr class="glow-divider-short">
-            <div class="side-menu-item side-menu-disabled">
-    ???
-    <span class="soon-text">в разработке...</span>
-</div>
+            <div class="side-menu-item" onclick="openCasinoScreen()">777</div>
             <hr class="glow-divider-short">
             <div class="side-menu-item" onclick="openSupportScreen()">Поддержка</div>
         </div>
@@ -353,6 +363,39 @@
                 👨‍💻 Написать в поддержку
             </button>
         </div>
+    </div>
+
+<div id="casinoScreen" class="screen" style="display: none; padding-top: 10px; padding-bottom: 40px; text-align: center;">
+        <div class="cart-header-row" style="justify-content: flex-end;">
+            <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
+        </div>
+        
+        <div style="margin-top: 20px; margin-bottom: 30px;">
+            <div class="casino-title-box" id="casinoNumbers" onclick="shuffleCasinoNumbers()">777</div>
+        </div>
+
+        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
+            <h3 style="color: #f1c40f; margin-bottom: 10px; text-transform: uppercase; font-size: 16px; text-align: center;">Испытай удачу в WÜRTEN 777!</h3>
+            <p style="font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 10px;">
+                Умножь свои баллы всего за пару кликов! Правила просты: минимальная ставка 2 фишки, принимаются только четные ставки (2, 4, 6, 8, 10).
+            </p>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">⚪️ Серая ячейка (x0) — 46%</div>
+            <div style="font-size: 12px; color: #3498db; margin-bottom: 5px;">🔵 Синяя ячейка (x1.5) — 34%</div>
+            <div style="font-size: 12px; color: #9b59b6; margin-bottom: 5px;">🟣 Фиолетовая (x2.0) — 15%</div>
+            <div style="font-size: 12px; color: #f1c40f; font-weight: bold;">🟡 Золотая ячейка (x3.0) — 5%</div>
+        </div>
+
+        <div class="casino-roulette-mini">
+            <div class="r-pointer-mini"></div>
+            <div class="casino-track-mini">
+                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div><div class="c-item c-purple">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div>
+                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div><div class="c-item c-purple">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div>
+            </div>
+        </div>
+
+        <button style="width: 100%; padding: 16px; background: #f1c40f; border: none; color: #121212; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); margin-top: 10px;" onclick="goToBotCasino()">
+            ИГРАТЬ В БОТЕ
+        </button>
     </div>
 
 <div id="supportScreen" class="screen" style="display: none; padding-top: 10px;">
@@ -788,7 +831,7 @@
             
             document.getElementById('statItems').innerText = statsData[0]; 
             document.getElementById('statSpent').innerText = statsData[1];
-            document.getElementById('statEarned').innerText = statsData[3] || 0; // Индекс 3 - это реальные друзья!
+            document.getElementById('statEarned').innerText = statsData[3] || 0;
 
             let historyData = urlParams.get('h') ? JSON.parse(decodeURIComponent(urlParams.get('h'))) : [];
             const hScroll = document.getElementById('historyScroll');
@@ -1771,5 +1814,39 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             });
         }
         loadMenu();
+
+window.openCasinoScreen = function() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
+            document.getElementById('topNav').style.display = 'none';
+            document.getElementById('casinoScreen').style.display = 'block';
+            currentStep = 9; 
+            tg.BackButton.show(); tg.MainButton.hide();
+        };
+
+        let isShuffling = false;
+        window.shuffleCasinoNumbers = function() {
+            if (isShuffling) return;
+            isShuffling = true;
+            let el = document.getElementById('casinoNumbers');
+            let count = 0;
+            let interval = setInterval(() => {
+                let n1 = Math.floor(Math.random() * 8);
+                let n2 = Math.floor(Math.random() * 8);
+                let n3 = Math.floor(Math.random() * 8);
+                el.innerText = `${n1}${n2}${n3}`;
+                count++;
+                if (count > 20) {
+                    clearInterval(interval);
+                    isShuffling = false;
+                }
+            }, 50);
+        };
+
+        window.goToBotCasino = function() {
+            tg.sendData(JSON.stringify({ action: 'start_casino' }));
+            tg.close();
+        };
+
     </script>
 </html>
