@@ -228,23 +228,46 @@
         .roulette-shadow { position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: inset 50px 0 30px -30px #121212, inset -50px 0 30px -30px #121212; pointer-events: none; z-index: 5; }
 
 /* =====================================================================
-           КАЗИНО 777: КРУГ И АНИМАЦИИ
+           КАЗИНО 777: ПРЯМОУГОЛЬНИК И АНИМАЦИИ
            ===================================================================== */
         .casino-wrapper { display: flex; align-items: center; justify-content: center; margin: 20px 0 30px; }
-        .casino-title-box { position: relative; width: 140px; height: 140px; font-size: 45px; font-weight: 900; color: #f1c40f; letter-spacing: 2px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: inset 0 0 20px #000, 0 0 30px rgba(241, 196, 15, 0.15); cursor: pointer; transition: transform 0.2s; }
+        .casino-title-box { position: relative; width: 180px; height: 100px; font-size: 55px; font-weight: 900; color: #f1c40f; letter-spacing: 4px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 20px #000, 0 0 30px rgba(241, 196, 15, 0.1); cursor: pointer; transition: transform 0.2s; }
         .casino-title-box:active { transform: scale(0.95); }
         
-        /* Разорванный круг (SVG контур) */
-        .casino-circle-border { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        /* Разорванный прямоугольник (SVG контур по твоему рисунку) */
+        .casino-rect-border { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         
-        /* Анимация подпрыгивания всех трех цифр (каждые 2 сек) */
-        @keyframes jumpNum { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(-12px); color: #fff; text-shadow: 0 0 30px #fff; } 30% { transform: translateY(0); } }
-        .slot-num { display: inline-block; width: 35px; text-align: center; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
-        .slot-num:nth-child(1) { animation: jumpNum 2s infinite 0s; }
-        .slot-num:nth-child(2) { animation: jumpNum 2s infinite 0.15s; }
-        .slot-num:nth-child(3) { animation: jumpNum 2s infinite 0.3s; }
+        /* 1. Анимация простоя (прыжки с паузой 2.5 секунды) */
+        @keyframes jumpNum { 
+            0%, 20%, 100% { transform: translateY(0); color: #f1c40f; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); } 
+            10% { transform: translateY(-15px); color: #fff; text-shadow: 0 0 30px #fff; } 
+        }
+        
+        /* 2. Анимация прокрутки (быстрый блюр, имитация слотов) */
+        @keyframes rollSlot {
+            0% { transform: translateY(-25px); filter: blur(2px); opacity: 0; }
+            50% { transform: translateY(0); filter: blur(0); opacity: 1; }
+            100% { transform: translateY(25px); filter: blur(2px); opacity: 0; }
+        }
+        
+        /* 3. Анимация резкой остановки (отскок) */
+        @keyframes stopSlot {
+            0% { transform: translateY(-20px); opacity: 0; }
+            50% { transform: translateY(5px); opacity: 1; }
+            100% { transform: translateY(0); }
+        }
 
-        /* Бесконечный жирный барабан и новые цвета */
+        .slot-num { display: inline-block; width: 40px; text-align: center; }
+        
+        /* Классы для JS */
+        .slot-num.idle:nth-child(1) { animation: jumpNum 3s infinite 0s; }
+        .slot-num.idle:nth-child(2) { animation: jumpNum 3s infinite 0.15s; }
+        .slot-num.idle:nth-child(3) { animation: jumpNum 3s infinite 0.3s; }
+        
+        .slot-num.rolling { animation: rollSlot 0.1s infinite linear; color: #fff; text-shadow: 0 0 10px #fff; }
+        .slot-num.stopped { animation: stopSlot 0.3s ease-out forwards; color: #f1c40f; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
+
+        /* Бесконечный жирный барабан */
         .casino-roulette-mini { width: 100%; height: 120px; background: #0a0a0a; border: 3px solid #222; border-radius: 20px; overflow: hidden; position: relative; margin: 25px 0; display: flex; align-items: center; box-shadow: inset 0 0 40px rgba(0,0,0,1); }
         .casino-track-mini { display: flex; height: 100%; width: max-content; animation: infiniteScroll 8s linear infinite; }
         .c-item { width: 110px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; font-size: 26px; border-right: 1px solid rgba(255,255,255,0.05); }
@@ -417,13 +440,13 @@
         
         <div class="casino-wrapper" style="margin-top: 60px; margin-bottom: 50px;">
             <div class="casino-title-box" onclick="spinCasinoNumbers()">
-                <svg class="casino-circle-border" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                    <path d="M 15 30 A 45 45 0 0 1 85 30" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
-                    <path d="M 15 70 A 45 45 0 0 0 85 70" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
+                <svg class="casino-rect-border" viewBox="0 0 200 100" preserveAspectRatio="none">
+                    <path d="M 70 5 L 10 5 L 10 95 L 70 95" stroke="#f1c40f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(241,196,15,0.8));" />
+                    <path d="M 130 5 L 190 5 L 190 95 L 130 95" stroke="#f1c40f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(241,196,15,0.8));" />
                 </svg>
-                <span class="slot-num" id="slot1">7</span>
-                <span class="slot-num" id="slot2">7</span>
-                <span class="slot-num" id="slot3">7</span>
+                <span class="slot-num idle" id="slot1">7</span>
+                <span class="slot-num idle" id="slot2">7</span>
+                <span class="slot-num idle" id="slot3">7</span>
             </div>
         </div>
 
@@ -1811,35 +1834,38 @@ window.openCasinoScreen = function() {
             if (isSpinningCasino) return;
             isSpinningCasino = true;
             
-            const slot1 = document.getElementById('slot1');
-            const slot2 = document.getElementById('slot2');
-            const slot3 = document.getElementById('slot3');
+            const slots = [document.getElementById('slot1'), document.getElementById('slot2'), document.getElementById('slot3')];
             
-            // Начинаем крутить все три цифры очень быстро (каждые 30мс)
-            let int1 = setInterval(() => slot1.innerText = Math.floor(Math.random() * 8), 30);
-            let int2 = setInterval(() => slot2.innerText = Math.floor(Math.random() * 8), 30);
-            let int3 = setInterval(() => slot3.innerText = Math.floor(Math.random() * 8), 30);
+            // Запускаем эффект крутящихся слотов
+            slots.forEach(slot => {
+                slot.classList.remove('idle', 'stopped');
+                slot.classList.add('rolling');
+            });
 
-            // Через 0.8 секунды останавливаем первую цифру
-            setTimeout(() => {
-                clearInterval(int1);
-                slot1.innerText = Math.floor(Math.random() * 8);
+            // Каждые 50мс меняем цифру под эффектом размытия
+            let ints = slots.map(slot => setInterval(() => slot.innerText = Math.floor(Math.random() * 8), 50));
 
-                // Через 1.6 секунды останавливаем вторую
+            // Поочередно резко останавливаем с крутым эффектом
+            slots.forEach((slot, index) => {
                 setTimeout(() => {
-                    clearInterval(int2);
-                    slot2.innerText = Math.floor(Math.random() * 8);
+                    clearInterval(ints[index]);
+                    slot.classList.remove('rolling');
+                    slot.classList.add('stopped'); // Добавляет CSS отскок и делает цвет золотым
+                    slot.innerText = Math.floor(Math.random() * 8);
 
-                    // Через 2.4 секунды останавливаем третью
-                    setTimeout(() => {
-                        clearInterval(int3);
-                        slot3.innerText = Math.floor(Math.random() * 8);
-                        
-                        // Снимаем блокировку
-                        setTimeout(() => { isSpinningCasino = false; }, 300);
-                    }, 800);
-                }, 800);
-            }, 800);
+                    // Когда остановилась последняя цифра (третья)
+                    if (index === 2) {
+                        setTimeout(() => {
+                            // Возвращаем обычные синхронные прыжки
+                            slots.forEach(s => {
+                                s.classList.remove('stopped');
+                                s.classList.add('idle');
+                            });
+                            isSpinningCasino = false; // Разрешаем крутить снова
+                        }, 600); // Пауза после полной остановки, чтобы игрок успел увидеть цифры
+                    }
+                }, 800 + (index * 800)); // Первая останавливается через 800мс, вторая 1600мс, третья 2400мс
+            });
         };
 
         window.goToBotCasino = function() {
