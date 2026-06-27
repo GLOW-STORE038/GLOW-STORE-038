@@ -228,33 +228,31 @@
         .roulette-shadow { position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: inset 50px 0 30px -30px #121212, inset -50px 0 30px -30px #121212; pointer-events: none; z-index: 5; }
 
 /* =====================================================================
-           КАЗИНО 777: ДИЗАЙН, СКОБКИ И РЫЧАГ
+           КАЗИНО 777: КРУГ И АНИМАЦИИ
            ===================================================================== */
-        .casino-wrapper { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 30px 0; }
-        .casino-title-box { position: relative; padding: 20px 40px; font-size: 60px; font-weight: 900; color: #f1c40f; letter-spacing: 10px; background: transparent; display: flex; justify-content: center; align-items: center; }
+        .casino-wrapper { display: flex; align-items: center; justify-content: center; margin: 20px 0 30px; }
+        .casino-title-box { position: relative; width: 140px; height: 140px; font-size: 45px; font-weight: 900; color: #f1c40f; letter-spacing: 2px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: inset 0 0 20px #000, 0 0 30px rgba(241, 196, 15, 0.15); cursor: pointer; transition: transform 0.2s; }
+        .casino-title-box:active { transform: scale(0.95); }
         
-        /* Скобки сверху и снизу (как на скрине) */
-        .casino-title-box::before, .casino-title-box::after { content: ''; position: absolute; left: 0; width: 100%; height: 25px; border: 4px solid #fff; filter: drop-shadow(0 0 5px #fff); border-radius: 6px; }
-        .casino-title-box::before { top: 0; border-bottom: none; }
-        .casino-title-box::after { bottom: 0; border-top: none; }
+        /* Разорванный круг (SVG контур) */
+        .casino-circle-border { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         
-        /* Цифры слотов (чтобы крутились по отдельности) */
-        .slot-num { display: inline-block; width: 45px; text-align: center; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
+        /* Анимация подпрыгивания цифр с задержками */
+        @keyframes jumpNum { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(-12px); color: #fff; text-shadow: 0 0 30px #fff; } 30% { transform: translateY(0); } }
+        .slot-num { display: inline-block; width: 35px; text-align: center; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
+        .slot-num:nth-child(1) { animation: jumpNum 3s infinite 0s; }
+        .slot-num:nth-child(2) { animation: jumpNum 3s infinite 1s; }
+        .slot-num:nth-child(3) { animation: jumpNum 3s infinite 2s; }
 
-        /* Золотой Рычаг */
-        .lever-base { width: 30px; height: 80px; background: linear-gradient(180deg, #333, #111); border-radius: 10px; border: 2px solid #444; position: relative; box-shadow: inset 0 5px 15px rgba(0,0,0,0.9); }
-        .lever-arm { position: absolute; bottom: 40px; left: 50%; width: 10px; height: 70px; background: linear-gradient(90deg, #f1c40f, #b7950b); transform-origin: bottom center; transform: translateX(-50%) rotate(15deg); transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 2; }
-        .lever-arm.pulled { transform: translateX(-50%) rotate(160deg); }
-        .lever-ball { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 30px; background: radial-gradient(circle at 30% 30%, #f1c40f, #e67e22, #b30000); border-radius: 50%; box-shadow: 0 0 10px #f1c40f; }
-
-        /* Бесконечный жирный барабан */
-        .casino-roulette-mini { width: 100%; height: 140px; background: #0a0a0a; border: 3px solid #222; border-radius: 20px; overflow: hidden; position: relative; margin: 25px 0; display: flex; align-items: center; box-shadow: inset 0 0 40px rgba(0,0,0,1); }
+        /* Бесконечный жирный барабан и новые цвета */
+        .casino-roulette-mini { width: 100%; height: 120px; background: #0a0a0a; border: 3px solid #222; border-radius: 20px; overflow: hidden; position: relative; margin: 25px 0; display: flex; align-items: center; box-shadow: inset 0 0 40px rgba(0,0,0,1); }
         .casino-track-mini { display: flex; height: 100%; width: max-content; animation: infiniteScroll 8s linear infinite; }
-        .c-item { width: 110px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; font-size: 28px; border-right: 1px solid rgba(255,255,255,0.05); }
+        .c-item { width: 110px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; font-size: 26px; border-right: 1px solid rgba(255,255,255,0.05); }
         .c-grey { background: linear-gradient(135deg, #2a2a2a, #111); color: #888; }
         .c-blue { background: linear-gradient(135deg, #1f618d, #154360); color: #fff; }
-        .c-purple { background: linear-gradient(135deg, #76448a, #4a235a); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .c-gold { background: linear-gradient(135deg, #f1c40f, #b7950b); color: #121212; text-shadow: 0 0 5px rgba(255,255,255,0.8); box-shadow: inset 0 0 30px rgba(241, 196, 15, 0.4); }
+        .c-green { background: linear-gradient(135deg, #27ae60, #1e8449); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .c-orange { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .c-pink { background: linear-gradient(135deg, #ff4d94, #ff0055); color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.8); box-shadow: inset 0 0 20px rgba(255, 77, 148, 0.4); }
         .r-pointer-mini { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: #ff2a5f; z-index: 10; box-shadow: 0 0 20px #ff2a5f; border-radius: 2px;}
         .r-shadow-mini { position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: inset 60px 0 40px -30px #0a0a0a, inset -60px 0 40px -30px #0a0a0a; pointer-events: none; z-index: 5; }
         @keyframes infiniteScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -417,30 +415,22 @@
             <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
         </div>
         
+        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 10px; border: 1px solid #333; text-align: left;">
+            <h3 style="color: #f1c40f; margin-bottom: 10px; text-transform: uppercase; font-size: 16px; text-align: center;">WÜRTEN 777</h3>
+            <p style="font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 0;">
+                Забирай баллы всего за пару кликов!<br><br>В нашем Казино можно ставить только четные числа от 2 до 10, с такими ставками у вас есть крупный шанс приумножить свои баллы и покупать дешевле. Нажми на круг 777, чтобы испытать демо-прокрут!
+            </p>
+        </div>
+
         <div class="casino-wrapper">
-            <div class="casino-title-box">
+            <div class="casino-title-box" onclick="spinCasinoNumbers()">
+                <svg class="casino-circle-border" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                    <path d="M 15 30 A 45 45 0 0 1 85 30" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
+                    <path d="M 15 70 A 45 45 0 0 0 85 70" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
+                </svg>
                 <span class="slot-num" id="slot1">7</span>
                 <span class="slot-num" id="slot2">7</span>
                 <span class="slot-num" id="slot3">7</span>
-            </div>
-            
-            <div class="lever-base" onclick="pullLeverAndSpin()">
-                <div class="lever-arm" id="casinoLeverArm">
-                    <div class="lever-ball"></div>
-                </div>
-            </div>
-        </div>
-
-        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
-            <h3 style="color: #f1c40f; margin-bottom: 10px; text-transform: uppercase; font-size: 16px; text-align: center;">Испытай удачу в WÜRTEN 777!</h3>
-            <p style="font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 15px;">
-                Умножь свои баллы всего за пару кликов! Правила просты: минимальная ставка 2 фишки, принимаются только четные ставки (2, 4, 6, 8, 10). Дерни за рычаг, чтобы покрутить барабаны!
-            </p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="font-size: 11px; color: #aaa; background: #222; padding: 8px; border-radius: 8px;">⚪️ Серый (x0)<br><b style="font-size:13px;">51%</b></div>
-                <div style="font-size: 11px; color: #3498db; background: rgba(52, 152, 219, 0.1); padding: 8px; border-radius: 8px;">🔵 Синий (x1.5)<br><b style="font-size:13px;">36%</b></div>
-                <div style="font-size: 11px; color: #9b59b6; background: rgba(155, 89, 182, 0.1); padding: 8px; border-radius: 8px;">🟣 Фиол. (x2.0)<br><b style="font-size:13px;">10%</b></div>
-                <div style="font-size: 11px; color: #f1c40f; background: rgba(241, 196, 15, 0.1); padding: 8px; border-radius: 8px;">🟡 Золото (x3.0)<br><b style="font-size:13px;">3%</b></div>
             </div>
         </div>
 
@@ -448,8 +438,18 @@
             <div class="r-pointer-mini"></div>
             <div class="r-shadow-mini"></div>
             <div class="casino-track-mini">
-                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div><div class="c-item c-purple">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div>
-                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div><div class="c-item c-purple">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.5</div><div class="c-item c-grey">x0</div>
+                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-orange">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-pink">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-blue">x1.0</div>
+                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-orange">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-pink">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-blue">x1.0</div>
+            </div>
+        </div>
+
+        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="font-size: 11px; color: #aaa; background: #222; padding: 8px; border-radius: 8px; text-align: center;">⚪️ Серый (x0)<br><b style="font-size:13px;">30%</b></div>
+                <div style="font-size: 11px; color: #3498db; background: rgba(52, 152, 219, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🔵 Синий (x1.0)<br><b style="font-size:13px;">40%</b></div>
+                <div style="font-size: 11px; color: #2ecc71; background: rgba(46, 204, 113, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🟢 Зеленый (x1.5)<br><b style="font-size:13px;">20%</b></div>
+                <div style="font-size: 11px; color: #e67e22; background: rgba(230, 126, 34, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🟠 Оранж. (x2.0)<br><b style="font-size:13px;">8%</b></div>
+                <div style="font-size: 11px; color: #ff4d94; background: rgba(255, 77, 148, 0.1); padding: 8px; border-radius: 8px; grid-column: span 2; text-align: center;">🎰 Джекпот (x3.0)<br><b style="font-size:13px;">2%</b></div>
             </div>
         </div>
 
@@ -1807,46 +1807,39 @@ window.openCasinoScreen = function() {
         };
 
         let isSpinningCasino = false;
-        window.pullLeverAndSpin = function() {
+        window.spinCasinoNumbers = function() {
             if (isSpinningCasino) return;
             isSpinningCasino = true;
             
-            const lever = document.getElementById('casinoLeverArm');
             const slot1 = document.getElementById('slot1');
             const slot2 = document.getElementById('slot2');
             const slot3 = document.getElementById('slot3');
             
-            // 1. Опускаем рычаг
-            lever.classList.add('pulled');
+            // Начинаем крутить все три цифры очень быстро (каждые 30мс)
+            let int1 = setInterval(() => slot1.innerText = Math.floor(Math.random() * 8), 30);
+            let int2 = setInterval(() => slot2.innerText = Math.floor(Math.random() * 8), 30);
+            let int3 = setInterval(() => slot3.innerText = Math.floor(Math.random() * 8), 30);
 
-            // 2. Начинаем крутить все три цифры
-            let int1 = setInterval(() => slot1.innerText = Math.floor(Math.random() * 8), 50);
-            let int2 = setInterval(() => slot2.innerText = Math.floor(Math.random() * 8), 50);
-            let int3 = setInterval(() => slot3.innerText = Math.floor(Math.random() * 8), 50);
-
-            // 3. Через 1 секунду останавливаем первую цифру
+            // Через 0.8 секунды останавливаем первую цифру
             setTimeout(() => {
                 clearInterval(int1);
                 slot1.innerText = Math.floor(Math.random() * 8);
 
-                // Через 2 секунды останавливаем вторую
+                // Через 1.6 секунды останавливаем вторую
                 setTimeout(() => {
                     clearInterval(int2);
                     slot2.innerText = Math.floor(Math.random() * 8);
 
-                    // Через 3 секунды останавливаем третью
+                    // Через 2.4 секунды останавливаем третью
                     setTimeout(() => {
                         clearInterval(int3);
                         slot3.innerText = Math.floor(Math.random() * 8);
-
-                        // 4. Плавно поднимаем рычаг обратно
-                        lever.classList.remove('pulled');
                         
                         // Снимаем блокировку
-                        setTimeout(() => { isSpinningCasino = false; }, 600);
-                    }, 1000);
-                }, 1000);
-            }, 1000);
+                        setTimeout(() => { isSpinningCasino = false; }, 300);
+                    }, 800);
+                }, 800);
+            }, 800);
         };
 
         window.goToBotCasino = function() {
