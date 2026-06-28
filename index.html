@@ -263,10 +263,10 @@
         }
 
         .slot-num { display: inline-block; width: 35px; text-align: center; }
-        /* ИСПРАВЛЕНА ОШИБКА ПРЫЖКА 3-Й ЦИФРЫ (используем nth-of-type) */
-        .slot-num.idle:nth-of-type(1) { animation: jumpNum 3s infinite 0s; }
-        .slot-num.idle:nth-of-type(2) { animation: jumpNum 3s infinite 0.15s; }
-        .slot-num.idle:nth-of-type(3) { animation: jumpNum 3s infinite 0.3s; }
+        /* ЖЕЛЕЗОБЕТОННЫЕ ПРЫЖКИ ВСЕХ ТРЕХ ЦИФР */
+        #slot1.idle { animation: jumpNum 3s infinite 0s; }
+        #slot2.idle { animation: jumpNum 3s infinite 0.15s; }
+        #slot3.idle { animation: jumpNum 3s infinite 0.3s; }
         
         .slot-num.rolling { animation: rollSlot 0.1s infinite linear; color: #fff; text-shadow: 0 0 10px #fff; }
         .slot-num.stopped { animation: stopSlot 0.3s ease-out forwards; color: #f1c40f; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
@@ -451,11 +451,11 @@
             </p>
         </div>
 
-        <div class="casino-wrapper">
+        <div class="casino-wrapper" style="margin-top: 40px; margin-bottom: 40px;">
             <div class="casino-title-box" onclick="spinCasinoNumbers()">
                 <svg class="casino-circle-border" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                    <path d="M 15 30 A 45 45 0 0 1 85 30" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
-                    <path d="M 15 70 A 45 45 0 0 0 85 70" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
+                    <path d="M 20 20 A 45 45 0 0 1 80 20" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
+                    <path d="M 20 80 A 45 45 0 0 0 80 80" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
                 </svg>
                 <span class="slot-num idle" id="slot1">7</span>
                 <span class="slot-num idle" id="slot2">7</span>
@@ -467,15 +467,28 @@
             <div class="r-pointer-mini"></div>
             <div class="r-shadow-mini"></div>
             <div class="casino-track-mini">
-                <div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-pink">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-silver">x1.0</div>
-                <div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-pink">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-silver">x1.0</div>
+                <div class="c-item" style="background: #2a2a2a; color: #888;">x0</div>
+                <div class="c-item" style="background: #3d3d3d; color: #e0e0e0;">x1.0</div>
+                <div class="c-item" style="background: #27ae60; color: #fff;">x1.5</div>
+                <div class="c-item" style="background: #ff4d94; color: #fff;">x2.0</div>
+                <div class="c-item" style="background: #2a2a2a; color: #888;">x0</div>
+                <div class="c-item" style="background: #3d3d3d; color: #e0e0e0;">x1.0</div>
+                <div class="c-item" style="background: #f1c40f; color: #121212;">x3.0</div>
+                
+                <div class="c-item" style="background: #2a2a2a; color: #888;">x0</div>
+                <div class="c-item" style="background: #3d3d3d; color: #e0e0e0;">x1.0</div>
+                <div class="c-item" style="background: #27ae60; color: #fff;">x1.5</div>
+                <div class="c-item" style="background: #ff4d94; color: #fff;">x2.0</div>
+                <div class="c-item" style="background: #2a2a2a; color: #888;">x0</div>
+                <div class="c-item" style="background: #3d3d3d; color: #e0e0e0;">x1.0</div>
+                <div class="c-item" style="background: #f1c40f; color: #121212;">x3.0</div>
             </div>
         </div>
 
         <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="font-size: 11px; color: #aaa; background: #222; padding: 8px; border-radius: 8px; text-align: center;">⚪️ Серый (x0)<br><b style="font-size:13px;">35%</b></div>
-                <div style="font-size: 11px; color: #fff; background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🔘 Светло-серый (x1.0)<br><b style="font-size:13px;">30%</b></div>
+                <div style="font-size: 11px; color: #aaa; background: #222; padding: 8px; border-radius: 8px; text-align: center;">🔘 Серый (x0)<br><b style="font-size:13px;">35%</b></div>
+                <div style="font-size: 11px; color: #e0e0e0; background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 8px; text-align: center;">⚪️ Светло-серый (x1)<br><b style="font-size:13px;">30%</b></div>
                 <div style="font-size: 11px; color: #2ecc71; background: rgba(46, 204, 113, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🟢 Зеленый (x1.5)<br><b style="font-size:13px;">20%</b></div>
                 <div style="font-size: 11px; color: #ff4d94; background: rgba(255, 77, 148, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🌸 Розовый (x2.0)<br><b style="font-size:13px;">12%</b></div>
                 <div style="font-size: 12px; color: #f1c40f; background: rgba(241, 196, 15, 0.1); padding: 10px; border-radius: 8px; grid-column: span 2; text-align: center; text-transform: uppercase; font-weight: 800; border: 1px solid rgba(241, 196, 15, 0.3);">🎰 Джекпот (x3.0)<br><b style="font-size:15px;">3%</b></div>
@@ -485,7 +498,8 @@
         <button style="width: 100%; padding: 16px; background: #f1c40f; border: none; color: #121212; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); margin-top: 10px;" onclick="goToBotCasino()">
             ИГРАТЬ В БОТЕ
         </button>
-        <p style="font-size: 13px; color: #82ccdd; margin-top: 15px; font-weight: 600;">Курс: 1 балл = 10 фишек.</p>
+        
+        <p style="font-size: 14px; color: #82ccdd; margin-top: 20px; font-weight: 800;">Курс: 1 балл = 10 фишек.</p>
     </div>
 
     </div> <div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
@@ -596,14 +610,11 @@
         
         <!-- БЛОК ВВОДА ПРОМОКОДА -->
         <div class="cart-fixed-bottom">
-            <div class="promo-container" style="margin: 0 0 15px 0;">
+            <div class="promo-container" style="margin-bottom: 15px;">
                 <input type="text" id="promoCodeInput" class="promo-input" placeholder="Ввести промокод">
                 <button class="promo-btn" onclick="applyPromoCode()">Применить</button>
             </div>
             
-            <div class="cart-summary-row">        
-
-        <div class="cart-fixed-bottom">
             <div class="cart-summary-row">
                 <div>
                     <div class="cart-total-label">Итого:</div>
@@ -831,6 +842,9 @@
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
 
         let cart = {}; let currentStep = 1; let realPoints = 0; let cartTotal = 0; let globalUserName = 'Гость';
+        let myCasinoPoints = 0; 
+        let currentBet = 1;
+        let isSpinning = false;
         let menuData = {}; let categoriesData = {}; let currentCategory = 'all'; let citiesData = {};
         let favorites = JSON.parse(localStorage.getItem('glow_favs')) || {};
 
@@ -957,7 +971,11 @@
             
             // СОРТИРОВКА ТОВАРОВ (Поднятые в ТОП и новые сверху)
             let itemsArray = Object.entries(menuData).map(([id, item]) => ({ id, ...item }));
-            itemsArray.sort((a, b) => (b.added_at || 0) - (a.added_at || 0));
+            itemsArray.sort((a, b) => {
+                let timeA = a.added_at || 0;
+                let timeB = b.added_at || 0;
+                return timeB - timeA; // Чем новее время, тем ВЫШЕ товар
+            });
 
             for (let itemObj of itemsArray) {
                 let id = itemObj.id;
@@ -1617,9 +1635,6 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
 // =====================================================================
         // ЛОГИКА 777 (КАЗИНО)
         // =====================================================================
-        let myCasinoPoints = 0; 
-        let currentBet = 1;
-        let isSpinning = false;
         const itemWidth = 90; // Ширина одной ячейки из CSS (min-width: 90px)
 
         // Возможные исходы рулетки
