@@ -14,6 +14,9 @@
         .screen { display: none; animation: fadeIn 0.3s ease; position: relative; }
         #catalogScreen { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* КНОПКА НАВЕРХ */
+        #scrollTopBtn { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(130, 204, 221, 0.9); backdrop-filter: blur(5px); color: #121212; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(130, 204, 221, 0.4); opacity: 0; visibility: hidden; transition: 0.3s ease; z-index: 1000; border: none; }
+        #scrollTopBtn.visible { opacity: 1; visibility: visible; }
 
         /* =====================================================================
            ОБНОВЛЕННАЯ ПАНЕЛЬ
@@ -283,6 +286,7 @@
 </head>
 <body>
 
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
     <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
         <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#ff4d94" />
@@ -315,7 +319,7 @@
         <div class="side-menu-top-section">
             <div class="side-menu-item" onclick="openInfoScreen()">Общая информация</div>
             <hr class="glow-divider-short">
-            <div class="side-menu-item" onclick="openCasinoScreen()">777</div>
+            <div id="menuCasinoBtnWrapper"></div>
             <hr class="glow-divider-short">
             <div class="side-menu-item" onclick="openSupportScreen()">Поддержка</div>
         </div>
@@ -563,7 +567,7 @@
             <div class="main-title">WÜRTEN STORE</div>
         </div>
         
-        <div class="sub-title">Бери больше, кайфуй дольше</div>
+        <div class="sub-title" id="subTitleText" onclick="clickEasterEgg()">Бери больше, кайфуй дольше</div>
         
         <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
         
@@ -833,7 +837,53 @@
         
         // Теперь статистика состоит из 4 цифр: товары, потрачено, кэшбэк, кол-во друзей
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0, 0];
+            let totalItemsOrdered = parseInt(statsData[0]) || 0;
+        let ee1Avail = parseInt(urlParams.get('ee1')) || 0;
+        let eeClicks = 0;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Блокировка Казино
+            const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
+            if (casinoWrap) {
+                if (totalItemsOrdered > 0) {
+                    casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()">777</div>`;
+                } else {
+                    casinoWrap.innerHTML = `<div class="side-menu-item side-menu-disabled" style="display:flex; flex-direction:column; align-items:center;">???<span class="soon-text" style="position:relative; transform:none; top:0; left:0; margin-top:5px; margin-bottom:10px;">для открытия сделайте 1 заказ</span></div>`;
+                }
+            }
             
+            // Появление кнопки наверх
+            window.addEventListener('scroll', () => {
+                const btn = document.getElementById('scrollTopBtn');
+                if (window.scrollY > 250) btn.classList.add('visible');
+                else btn.classList.remove('visible');
+            });
+        });
+
+        // Нажатие на пасхалку
+        window.clickEasterEgg = function() {
+            eeClicks++;
+            if (eeClicks === 3) {
+                if (ee1Avail === 1) {
+                    document.getElementById('subTitleText').innerText = "Пасхалка №1";
+                    menuData['easter_egg_1'] = {
+                        name: "Светлана Elfliq",
+                        desc: "описание к пасхалке №1",
+                        price: 12,
+                        old_price: 0,
+                        stock: 1, 
+                        photo: "https://ibb.co/HTKckYPY", // Картинка с твоего хостинга
+                        category: "all",
+                        added_at: 999999999999 // Заставляет товар быть на 1-м месте
+                    };
+                    renderCatalog();
+                    tg.showAlert("🎉 Вы нашли Пасхалку №1! Товар добавлен в самое начало каталога.");
+                } else {
+                    tg.showAlert("❌ Пасхалка уже распродана или вы ее уже приобрели ранее!");
+                }
+            }
+        };
+
             document.getElementById('statItems').innerText = statsData[0]; 
             document.getElementById('statSpent').innerText = statsData[1];
             document.getElementById('statEarned').innerText = statsData[3] || 0;
@@ -889,10 +939,14 @@
 
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
-            for (let id in menuData) {
-                let item = menuData[id];
-                if (currentCategory === 'favorites' && !favorites[id]) continue;
-                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
+            
+            // СОРТИРОВКА ТОВАРОВ (Новые сверху)
+            let itemsArray = Object.entries(menuData).map(([id, item]) => ({ id, ...item }));
+            itemsArray.sort((a, b) => (b.added_at || 0) - (a.added_at || 0));
+
+            for (let itemObj of itemsArray) {
+                let id = itemObj.id;
+                let item = itemObj;
 
                 let isOut = item.stock <= 0; let cardClass = isOut ? "card disabled" : "card";
                 let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
