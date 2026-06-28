@@ -240,54 +240,48 @@
         .roulette-shadow { position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: inset 50px 0 30px -30px #121212, inset -50px 0 30px -30px #121212; pointer-events: none; z-index: 5; }
 
 /* =====================================================================
-           КАЗИНО 777: ПРЯМОУГОЛЬНИК И АНИМАЦИИ
+           КАЗИНО 777: КРУГ И АНИМАЦИИ
            ===================================================================== */
-        .casino-wrapper { display: flex; align-items: center; justify-content: center; margin: 20px 0 30px; }
-        .casino-title-box { position: relative; width: 180px; height: 100px; font-size: 55px; font-weight: 900; color: #f1c40f; letter-spacing: 4px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; box-shadow: inset 0 0 20px #000, 0 0 30px rgba(241, 196, 15, 0.1); cursor: pointer; transition: transform 0.2s; }
+        .casino-wrapper { display: flex; align-items: center; justify-content: center; margin: 30px 0 40px; }
+        .casino-title-box { position: relative; width: 140px; height: 140px; font-size: 45px; font-weight: 900; color: #f1c40f; letter-spacing: 2px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: inset 0 0 20px #000, 0 0 30px rgba(241, 196, 15, 0.15); cursor: pointer; transition: transform 0.2s; }
         .casino-title-box:active { transform: scale(0.95); }
+        .casino-circle-border { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         
-        /* Разорванный прямоугольник (SVG контур по твоему рисунку) */
-        .casino-rect-border { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        
-        /* 1. Анимация простоя (прыжки с паузой 2.5 секунды) */
         @keyframes jumpNum { 
             0%, 20%, 100% { transform: translateY(0); color: #f1c40f; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); } 
             10% { transform: translateY(-15px); color: #fff; text-shadow: 0 0 30px #fff; } 
         }
-        
-        /* 2. Анимация прокрутки (быстрый блюр, имитация слотов) */
         @keyframes rollSlot {
             0% { transform: translateY(-25px); filter: blur(2px); opacity: 0; }
             50% { transform: translateY(0); filter: blur(0); opacity: 1; }
             100% { transform: translateY(25px); filter: blur(2px); opacity: 0; }
         }
-        
-        /* 3. Анимация резкой остановки (отскок) */
         @keyframes stopSlot {
             0% { transform: translateY(-20px); opacity: 0; }
             50% { transform: translateY(5px); opacity: 1; }
             100% { transform: translateY(0); }
         }
 
-        .slot-num { display: inline-block; width: 40px; text-align: center; }
-        
-        /* Классы для JS */
-        .slot-num.idle:nth-child(1) { animation: jumpNum 3s infinite 0s; }
-        .slot-num.idle:nth-child(2) { animation: jumpNum 3s infinite 0.15s; }
-        .slot-num.idle:nth-child(3) { animation: jumpNum 3s infinite 0.3s; }
+        .slot-num { display: inline-block; width: 35px; text-align: center; }
+        /* ИСПРАВЛЕНА ОШИБКА ПРЫЖКА 3-Й ЦИФРЫ (используем nth-of-type) */
+        .slot-num.idle:nth-of-type(1) { animation: jumpNum 3s infinite 0s; }
+        .slot-num.idle:nth-of-type(2) { animation: jumpNum 3s infinite 0.15s; }
+        .slot-num.idle:nth-of-type(3) { animation: jumpNum 3s infinite 0.3s; }
         
         .slot-num.rolling { animation: rollSlot 0.1s infinite linear; color: #fff; text-shadow: 0 0 10px #fff; }
         .slot-num.stopped { animation: stopSlot 0.3s ease-out forwards; color: #f1c40f; text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); }
 
-        /* Бесконечный жирный барабан */
+        /* Барабан и Новые цвета */
         .casino-roulette-mini { width: 100%; height: 120px; background: #0a0a0a; border: 3px solid #222; border-radius: 20px; overflow: hidden; position: relative; margin: 25px 0; display: flex; align-items: center; box-shadow: inset 0 0 40px rgba(0,0,0,1); }
         .casino-track-mini { display: flex; height: 100%; width: max-content; animation: infiniteScroll 8s linear infinite; }
         .c-item { width: 110px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; font-size: 26px; border-right: 1px solid rgba(255,255,255,0.05); }
+        
         .c-grey { background: linear-gradient(135deg, #2a2a2a, #111); color: #888; }
-        .c-blue { background: linear-gradient(135deg, #1f618d, #154360); color: #fff; }
-        .c-green { background: linear-gradient(135deg, #27ae60, #1e8449); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .c-orange { background: linear-gradient(135deg, #e67e22, #d35400); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .c-pink { background: linear-gradient(135deg, #ff4d94, #ff0055); color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.8); box-shadow: inset 0 0 20px rgba(255, 77, 148, 0.4); }
+        .c-silver { background: linear-gradient(135deg, #444, #2a2a2a); color: #e0e0e0; } /* x1 - Светло-серый */
+        .c-green { background: linear-gradient(135deg, #1e8449, #145a32); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); } /* x1.5 - Зеленый */
+        .c-pink { background: linear-gradient(135deg, #ff4d94, #c8105e); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); } /* x2 - Розовый */
+        .c-gold { background: linear-gradient(135deg, #d4af37, #997a00); color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.8); box-shadow: inset 0 0 30px rgba(212, 175, 55, 0.4); } /* x3 - Золотой */
+        
         .r-pointer-mini { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background: #ff2a5f; z-index: 10; box-shadow: 0 0 20px #ff2a5f; border-radius: 2px;}
         .r-shadow-mini { position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: inset 60px 0 40px -30px #0a0a0a, inset -60px 0 40px -30px #0a0a0a; pointer-events: none; z-index: 5; }
         @keyframes infiniteScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -450,11 +444,18 @@
             <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
         </div>
         
-        <div class="casino-wrapper" style="margin-top: 60px; margin-bottom: 50px;">
+        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 10px; border: 1px solid #333; text-align: left;">
+            <h3 style="color: #f1c40f; margin-bottom: 10px; text-transform: uppercase; font-size: 16px; text-align: center;">WÜRTEN 777</h3>
+            <p style="font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 0;">
+                Забирай баллы всего за пару кликов!<br><br>В нашем Казино можно ставить 20, 40, 60, 80 или 100 фишек. С такими ставками у вас есть крупный шанс приумножить свои баллы и покупать дешевле. Нажми на круг 777, чтобы испытать демо-прокрут!
+            </p>
+        </div>
+
+        <div class="casino-wrapper">
             <div class="casino-title-box" onclick="spinCasinoNumbers()">
-                <svg class="casino-rect-border" viewBox="0 0 200 100" preserveAspectRatio="none">
-                    <path d="M 70 5 L 10 5 L 10 95 L 70 95" stroke="#f1c40f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(241,196,15,0.8));" />
-                    <path d="M 130 5 L 190 5 L 190 95 L 130 95" stroke="#f1c40f" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(241,196,15,0.8));" />
+                <svg class="casino-circle-border" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                    <path d="M 15 30 A 45 45 0 0 1 85 30" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
+                    <path d="M 15 70 A 45 45 0 0 0 85 70" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 4px #f1c40f);" />
                 </svg>
                 <span class="slot-num idle" id="slot1">7</span>
                 <span class="slot-num idle" id="slot2">7</span>
@@ -462,35 +463,29 @@
             </div>
         </div>
 
-        <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
-            <h3 style="color: #f1c40f; margin-bottom: 10px; text-transform: uppercase; font-size: 16px; text-align: center;">WÜRTEN 777</h3>
-            <p style="font-size: 13px; color: #ccc; line-height: 1.5; margin-bottom: 0;">
-                Забирай баллы всего за пару кликов!<br><b style="color: #82ccdd;">Курс: 1 балл = 10 фишек.</b><br><br>В нашем Казино можно ставить 20, 40, 60, 80 или 100 фишек. С такими ставками у вас есть крупный шанс приумножить свои баллы и покупать дешевле. Нажми на круг 777, чтобы испытать демо-прокрут!
-            </p>
-        </div>
-
         <div class="casino-roulette-mini">
             <div class="r-pointer-mini"></div>
             <div class="r-shadow-mini"></div>
             <div class="casino-track-mini">
-                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-orange">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-pink">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-blue">x1.0</div>
-                <div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-orange">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-blue">x1.0</div><div class="c-item c-pink">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-blue">x1.0</div>
+                <div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-pink">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-silver">x1.0</div>
+                <div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-green">x1.5</div><div class="c-item c-pink">x2.0</div><div class="c-item c-grey">x0</div><div class="c-item c-silver">x1.0</div><div class="c-item c-gold">x3.0</div><div class="c-item c-grey">x0</div><div class="c-item c-green">x1.5</div><div class="c-item c-silver">x1.0</div>
             </div>
         </div>
 
         <div style="background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <div style="font-size: 11px; color: #aaa; background: #222; padding: 8px; border-radius: 8px; text-align: center;">⚪️ Серый (x0)<br><b style="font-size:13px;">35%</b></div>
-                <div style="font-size: 11px; color: #3498db; background: rgba(52, 152, 219, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🔵 Синий (x1.0)<br><b style="font-size:13px;">30%</b></div>
+                <div style="font-size: 11px; color: #fff; background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🔘 Светло-серый (x1.0)<br><b style="font-size:13px;">30%</b></div>
                 <div style="font-size: 11px; color: #2ecc71; background: rgba(46, 204, 113, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🟢 Зеленый (x1.5)<br><b style="font-size:13px;">20%</b></div>
-                <div style="font-size: 11px; color: #e67e22; background: rgba(230, 126, 34, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🟠 Оранж. (x2.0)<br><b style="font-size:13px;">12%</b></div>
-                <div style="font-size: 12px; color: #ff4d94; background: rgba(255, 77, 148, 0.1); padding: 10px; border-radius: 8px; grid-column: span 2; text-align: center; text-transform: uppercase; font-weight: 800; border: 1px solid rgba(255, 77, 148, 0.3);">🎰 Джекпот (x3.0)<br><b style="font-size:15px;">3%</b></div>
+                <div style="font-size: 11px; color: #ff4d94; background: rgba(255, 77, 148, 0.1); padding: 8px; border-radius: 8px; text-align: center;">🌸 Розовый (x2.0)<br><b style="font-size:13px;">12%</b></div>
+                <div style="font-size: 12px; color: #f1c40f; background: rgba(241, 196, 15, 0.1); padding: 10px; border-radius: 8px; grid-column: span 2; text-align: center; text-transform: uppercase; font-weight: 800; border: 1px solid rgba(241, 196, 15, 0.3);">🎰 Джекпот (x3.0)<br><b style="font-size:15px;">3%</b></div>
             </div>
         </div>
 
         <button style="width: 100%; padding: 16px; background: #f1c40f; border: none; color: #121212; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); margin-top: 10px;" onclick="goToBotCasino()">
             ИГРАТЬ В БОТЕ
         </button>
+        <p style="font-size: 13px; color: #82ccdd; margin-top: 15px; font-weight: 600;">Курс: 1 балл = 10 фишек.</p>
     </div>
 
     </div> <div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
@@ -600,10 +595,13 @@
         <div class="cart-scroll-area" id="cartItemsList"></div>
         
         <!-- БЛОК ВВОДА ПРОМОКОДА -->
-        <div class="promo-container">
-            <input type="text" id="promoCodeInput" class="promo-input" placeholder="Промокод">
-            <button class="promo-btn" onclick="applyPromoCode()">Применить</button>
-        </div>
+        <div class="cart-fixed-bottom">
+            <div class="promo-container" style="margin: 0 0 15px 0;">
+                <input type="text" id="promoCodeInput" class="promo-input" placeholder="Ввести промокод">
+                <button class="promo-btn" onclick="applyPromoCode()">Применить</button>
+            </div>
+            
+            <div class="cart-summary-row">        
 
         <div class="cart-fixed-bottom">
             <div class="cart-summary-row">
@@ -881,10 +879,10 @@
             eeClicks++;
             if (eeClicks === 1) { // Изменили на 1 клик
                 if (ee1Avail === 1) {
-                    document.getElementById('subTitleText').innerText = "Пасхалка №1";
+                    document.getElementById('subTitleText').innerText = "НЕ БУДЬ ЛОХОМ, КУРИ VOEX";
                     menuData['easter_egg_1'] = {
                         name: "Светлана Elfliq",
-                        desc: "описание к пасхалке №1",
+                        desc: "Банка ELFLIQ по цене VOEX за вашу внимательность",
                         price: 12,
                         old_price: 0,
                         stock: 1, 
@@ -957,7 +955,7 @@
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
             
-            // СОРТИРОВКА ТОВАРОВ (Новые сверху)
+            // СОРТИРОВКА ТОВАРОВ (Поднятые в ТОП и новые сверху)
             let itemsArray = Object.entries(menuData).map(([id, item]) => ({ id, ...item }));
             itemsArray.sort((a, b) => (b.added_at || 0) - (a.added_at || 0));
 
@@ -965,12 +963,28 @@
                 let id = itemObj.id;
                 let item = itemObj;
 
-                let isOut = item.stock <= 0; let cardClass = isOut ? "card disabled" : "card";
+                if (currentCategory === 'favorites' && !favorites[id]) continue;
+                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
+
+                let isOut = item.stock <= 0; 
+                let cardClass = isOut ? "card disabled" : "card";
                 let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
-                let hasDiscount = (item.old_price && item.old_price > 0);
-                let priceClass = hasDiscount ? "new-price promo-price" : "new-price";
-                let oldPriceHtml = hasDiscount ? `<span class="old-price">${item.old_price} €</span>` : `<span class="old-price"></span>`;
-                let timerHtml = (item.timer_end && item.timer_end > 0) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
+                
+                let displayPrice = item.price;
+                let displayOldPrice = item.old_price;
+                let isPromo = displayOldPrice && displayOldPrice > 0;
+                let now = Math.floor(Date.now() / 1000);
+                let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
+
+                if (isPromo && (isOut || isExpired)) {
+                    displayPrice = item.old_price; 
+                    displayOldPrice = 0; 
+                    isPromo = false; 
+                }
+
+                let priceClass = isPromo ? "new-price promo-price" : "new-price";
+                let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
+                let timerHtml = (isPromo && item.timer_end && item.timer_end > now && !isOut) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
                 let isFavClass = favorites[id] ? "active" : "";
 
                 let cardHtml = `
@@ -985,8 +999,8 @@
                             <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
                             ${stockHtml}
                             <div class="price-row">
-                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${item.price} €</span></div>
-                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${item.price}, this)">${cartIconSvg}</button>
+                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
+                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${displayPrice}, this)">${cartIconSvg}</button>
                                 <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
                                     <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
                                     <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
@@ -1086,31 +1100,6 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             })); 
             tg.close();
         };
-
-        function renderCatalog() {
-            const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
-            for (let id in menuData) {
-                let item = menuData[id];
-                if (currentCategory === 'favorites' && !favorites[id]) continue;
-                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
-
-                let isOut = item.stock <= 0; 
-                let cardClass = isOut ? "card disabled" : "card";
-                let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
-                
-                // УМНАЯ ЛОГИКА ЦЕН И ТАЙМЕРА
-                let displayPrice = item.price;
-                let displayOldPrice = item.old_price;
-                let isPromo = displayOldPrice && displayOldPrice > 0;
-                let now = Math.floor(Date.now() / 1000);
-                let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
-
-                // Если товар закончился ИЛИ таймер истек -> отменяем акцию
-                if (isPromo && (isOut || isExpired)) {
-                    displayPrice = item.old_price; // Возвращаем старую (большую) цену как основную
-                    displayOldPrice = 0; // Убираем перечеркнутую цену
-                    isPromo = false; // Убираем красный цвет
-                }
 
                 let priceClass = isPromo ? "new-price promo-price" : "new-price";
                 let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
