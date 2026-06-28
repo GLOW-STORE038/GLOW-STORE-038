@@ -496,7 +496,7 @@
         <p style="font-size: 14px; color: #82ccdd; margin-top: 20px; font-weight: 800;">Курс: 1 балл = 10 фишек.</p>
     </div>
 
-    </div> <div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
+    <div id="refScreen" class="screen" style="display: none; padding-top: 10px;">
         <div class="cart-header-row" style="justify-content: flex-end;">
             <button class="cart-close-btn" onclick="goBackToCatalog()">×</button>
         </div>
@@ -948,7 +948,6 @@
                 renderCategories(); 
                 renderCatalog();
             } catch (e) { document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка загрузки</div>'; }
-        }
         }
 
         function renderCategories() {
