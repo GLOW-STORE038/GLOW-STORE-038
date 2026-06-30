@@ -8,7 +8,7 @@
     <style>
         
         /* КРАСНАЯ ТОЧКА (УВЕДОМЛЕНИЕ) */
-        .notif-dot { position: absolute; top: -2px; right: -4px; width: 10px; height: 10px; background: #e74c3c; border-radius: 50%; box-shadow: 0 0 5px #e74c3c; display: none; z-index: 100; }
+        .notif-dot { position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; box-shadow: 0 0 5px #e74c3c; display: none; z-index: 100; }
         
         /* ЖЕЛТАЯ ПЛАШКА КЭШБЭКА НА ТОВАРЕ */
         .cashback-badge { position: absolute; top: 45px; right: 10px; background: #f1c40f; color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.5); text-transform: uppercase; }
@@ -877,7 +877,9 @@
         // Блокировка Казино и Красная Точка
         const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
         if (casinoWrap) {
-            if (totalItemsOrdered > 0 && !localStorage.getItem('casino_opened_once')) {
+            // Если заказы есть, и человек еще ни разу ничего не выигрывал за неделю (cw === 0) И не открывал казино
+            let hasOpened = localStorage.getItem('casino_opened_once') === 'true';
+            if (totalItemsOrdered > 0 && !hasOpened && casWeeklyWon == 0) {
                 let mainDot = document.getElementById('mainNotifDot');
                 if (mainDot) mainDot.style.display = 'block'; 
                 casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()" style="position: relative;">777 <div class="notif-dot" id="menuCasinoDot" style="display:block; top: 12px; right: 15px;"></div></div>`;
