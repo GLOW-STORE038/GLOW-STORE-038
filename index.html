@@ -115,7 +115,7 @@
         .item-count { font-weight: bold; font-size: 14px; min-width: 16px; text-align: center; }
         .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border-radius: 50%; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; z-index: 10; backdrop-filter: blur(5px); border: none; cursor: pointer; }
         .fav-icon { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; transition: all 0.3s; }
-        .fav-btn.active .fav-icon { fill: url(#pinkGradient); stroke: none; transform: scale(1.1); }
+        .fav-btn.active .fav-icon { fill: #ff2a5f; stroke: none; transform: scale(1.1); }
 
         /* =====================================================================
            ОБНОВЛЕННАЯ КОРЗИНА
@@ -870,36 +870,30 @@
         let casWeeklyWon = urlParams.get('cw') || 0;
         let eeClicks = 0;
 
-        document.addEventListener("DOMContentLoaded", () => {
-// Мгновенное обновление выигрышей
-            let cwUi = document.getElementById('casWeeklyWonUi');
-            if (cwUi) cwUi.innerText = casWeeklyWon;
-            // Блокировка Казино и Красная Точка
-            const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
-            if (casinoWrap) {
-                // Если заказы есть, но человек ЕЩЕ НЕ ЗАХОДИЛ в казино
-                if (totalItemsOrdered > 0 && !localStorage.getItem('casino_opened_once')) {
-                    document.getElementById('mainNotifDot').style.display = 'block'; // Точка на 3 полосках
-                    casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()" style="position: relative;">777 <div class="notif-dot" id="menuCasinoDot" style="display:block; top: 12px; right: 15px;"></div></div>`;
-                } 
-                // Если заказы есть и он УЖЕ заходил в казино (точек нет)
-                else if (totalItemsOrdered > 0) {
-                    casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()">777</div>`;
-                } 
-                // Если заказов 0 (заблокировано)
-                else {
-                    casinoWrap.innerHTML = `<div class="side-menu-item side-menu-disabled" style="display:flex; flex-direction:column; align-items:center;">???<span class="soon-text" style="position:relative; transform:none; top:0; left:0; margin-top:5px; margin-bottom:10px;">для открытия сделайте 1 заказ</span></div>`;
-                }
+        // Мгновенное обновление выигрышей
+        let cwUi = document.getElementById('casWeeklyWonUi');
+        if (cwUi) cwUi.innerText = casWeeklyWon;
+        
+        // Блокировка Казино и Красная Точка
+        const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
+        if (casinoWrap) {
+            if (totalItemsOrdered > 0 && !localStorage.getItem('casino_opened_once')) {
+                let mainDot = document.getElementById('mainNotifDot');
+                if (mainDot) mainDot.style.display = 'block'; 
+                casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()" style="position: relative;">777 <div class="notif-dot" id="menuCasinoDot" style="display:block; top: 12px; right: 15px;"></div></div>`;
+            } else if (totalItemsOrdered > 0) {
+                casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()">777</div>`;
+            } else {
+                casinoWrap.innerHTML = `<div class="side-menu-item side-menu-disabled" style="display:flex; flex-direction:column; align-items:center;">???<span class="soon-text" style="position:relative; transform:none; top:0; left:0; margin-top:5px; margin-bottom:10px;">для открытия сделайте 1 заказ</span></div>`;
             }
-            
-            // Появление кнопки наверх ТОЛЬКО в каталоге
-            window.addEventListener('scroll', () => {
-                const btn = document.getElementById('scrollTopBtn');
-                if (currentStep === 1 && window.scrollY > 250) btn.classList.add('visible');
-                else btn.classList.remove('visible');
-            });
+        }
+        
+        // Появление кнопки наверх ТОЛЬКО в каталоге
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scrollTopBtn');
+            if (currentStep === 1 && window.scrollY > 250) btn.classList.add('visible');
+            else btn.classList.remove('visible');
         });
-
         // Нажатие на пасхалку (1 КЛИК)
         window.clickEasterEgg = function() {
             eeClicks++;
@@ -1035,13 +1029,8 @@
                         <div class="card-body">
                             <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
                             ${timerHtml}
-                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
-
-                        <div class="card-body">
-                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
-                            ${timerHtml}
                             ${cbHtml}
-
+                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
                             ${stockHtml}
                             <div class="price-row">
                                 <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
