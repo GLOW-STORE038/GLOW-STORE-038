@@ -6,6 +6,13 @@
     <title>WÜRTEN STORE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        
+        /* КРАСНАЯ ТОЧКА (УВЕДОМЛЕНИЕ) */
+        .notif-dot { position: absolute; top: -2px; right: -4px; width: 10px; height: 10px; background: #e74c3c; border-radius: 50%; box-shadow: 0 0 5px #e74c3c; display: none; z-index: 100; }
+        
+        /* ЖЕЛТАЯ ПЛАШКА КЭШБЭКА НА ТОВАРЕ */
+        .cashback-badge { position: absolute; top: 45px; right: 10px; background: #f1c40f; color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.5); text-transform: uppercase; }
+
         /* =====================================================================
            БАЗОВЫЕ СТИЛИ И ШРИФТЫ
            ===================================================================== */
@@ -444,11 +451,11 @@
         </div>
 
         <div class="casino-wrapper" style="margin-top: 20px; margin-bottom: 25px;">
-            <div class="casino-title-box" onclick="spinCasinoNumbers()" style="position: relative; width: 160px; height: 160px; font-size: 50px; font-weight: 900; color: #f1c40f; letter-spacing: 2px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: inset 0 10px 30px #000, 0 0 20px rgba(241, 196, 15, 0.2); cursor: pointer;">
+            <div class="casino-title-box" onclick="spinCasinoNumbers()" style="position: relative; width: 160px; height: 160px; font-size: 50px; font-weight: 900; color: #f1c40f; letter-spacing: 2px; background: #0a0a0a; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: inset 0 10px 30px #000, 0 0 20px rgba(241, 196, 15, 0.1); cursor: pointer;">
                 
                 <svg class="casino-circle-border" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
-                    <path d="M 16.5 20 A 45 45 0 0 1 83.5 20" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 6px #f1c40f);" />
-                    <path d="M 16.5 80 A 45 45 0 0 0 83.5 80" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 6px #f1c40f);" />
+                    <path d="M 30 10 A 45 45 0 0 0 30 90" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 6px #f1c40f);" />
+                    <path d="M 70 10 A 45 45 0 0 1 70 90" stroke="#f1c40f" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0 0 6px #f1c40f);" />
                 </svg>
 
                 <span class="slot-num idle" id="slot1">7</span>
@@ -867,12 +874,20 @@
 // Мгновенное обновление выигрышей
             let cwUi = document.getElementById('casWeeklyWonUi');
             if (cwUi) cwUi.innerText = casWeeklyWon;
-            // Блокировка Казино
+            // Блокировка Казино и Красная Точка
             const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
             if (casinoWrap) {
-                if (totalItemsOrdered > 0) {
+                // Если заказы есть, но человек ЕЩЕ НЕ ЗАХОДИЛ в казино
+                if (totalItemsOrdered > 0 && !localStorage.getItem('casino_opened_once')) {
+                    document.getElementById('mainNotifDot').style.display = 'block'; // Точка на 3 полосках
+                    casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()" style="position: relative;">777 <div class="notif-dot" id="menuCasinoDot" style="display:block; top: 12px; right: 15px;"></div></div>`;
+                } 
+                // Если заказы есть и он УЖЕ заходил в казино (точек нет)
+                else if (totalItemsOrdered > 0) {
                     casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()">777</div>`;
-                } else {
+                } 
+                // Если заказов 0 (заблокировано)
+                else {
                     casinoWrap.innerHTML = `<div class="side-menu-item side-menu-disabled" style="display:flex; flex-direction:column; align-items:center;">???<span class="soon-text" style="position:relative; transform:none; top:0; left:0; margin-top:5px; margin-bottom:10px;">для открытия сделайте 1 заказ</span></div>`;
                 }
             }
@@ -1004,6 +1019,11 @@
                 let priceClass = isPromo ? "new-price promo-price" : "new-price";
                 let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
                 let timerHtml = (isPromo && item.timer_end && item.timer_end > now && !isOut) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
+                let cbHtml = '';
+                if (item.show_cb && !isOut) {
+                    let cbVal = item.cashback !== undefined ? item.cashback : Math.floor(displayPrice * 0.10);
+                    cbHtml = `<div class="cashback-badge">+ ${cbVal} баллов</div>`;
+                }
                 let isFavClass = favorites[id] ? "active" : "";
 
                 let cardHtml = `
@@ -1016,6 +1036,12 @@
                             <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
                             ${timerHtml}
                             <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
+
+                        <div class="card-body">
+                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
+                            ${timerHtml}
+                            ${cbHtml}
+
                             ${stockHtml}
                             <div class="price-row">
                                 <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
@@ -1238,30 +1264,19 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             else if (currentStep === 2) { goToDelivery(); } 
         });
 
-        function renderCartScreen() {
-            const list = document.getElementById('cartItemsList'); list.innerHTML = '';
-            for(let id in cart) {
-                let item = cart[id]; let itemData = menuData[id];
-                let trashSvg = `<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
-                let html = `
-                    <div class="cart-item-card">
-                        <img src="${itemData.photo}" class="cart-item-img">
-                        <div class="cart-item-info">
-                            <div class="cart-item-title">${item.name}</div>
-                            <div class="cart-item-price">${item.price} €</div>
-                            <div class="cart-controls-wrapper">
-                                <div class="cart-quantity-controls">
-                                    <button class="cart-btn-minus" onclick="changeCartCount('${id}', -1)">-</button>
-                                    <span class="cart-item-count">${item.count}</span>
-                                    <button class="cart-btn-plus" onclick="changeCartCount('${id}', 1)">+</button>
-                                </div>
-                                <div class="cart-trash-btn" onclick="removeCartItem('${id}')">
-                                    ${trashSvg}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+        // Динамический расчет кэшбэка на сайте
+            let totalCb = 0;
+            for (let id in cart) {
+                if (menuData[id]) {
+                    let itemCb = menuData[id].cashback;
+                    if (itemCb !== undefined && itemCb !== null) {
+                        totalCb += parseFloat(itemCb) * cart[id].count;
+                    } else {
+                        totalCb += (menuData[id].price || 0) * 0.10 * cart[id].count;
+                    }
+                }
+            }
+            let pointsEarned = Math.floor(totalCb);
                 list.insertAdjacentHTML('beforeend', html);
             }
             document.getElementById('cartTotalUiDisplay').innerText = cartTotal;
@@ -1630,8 +1645,8 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             
             if (promo.type === "points") {
                 realPoints += promo.value; // Даем баллы сразу визуально
-                document.getElementById('cartPointsEarned').innerText = '+' + (Math.floor(cartTotal * 0.10) + promo.value) + ' (Промо)';
                 tg.showAlert(`🎉 Промокод применен! Вы получите бонус: +${promo.value} баллов к заказу.`);
+                renderCartScreen(); // Автоматически пересчитает всё с учетом нового индивидуального кэшбэка!
             } else if (promo.type === "items") {
                 promo.items.forEach(itemId => {
                     if (menuData[itemId]) {
@@ -1660,6 +1675,12 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             
             updateCasinoUI();
             generateRouletteTrack(); // Генерируем линию рулетки при открытии
+// Убираем красные точки навсегда
+            localStorage.setItem('casino_opened_once', 'true');
+            let mainDot = document.getElementById('mainNotifDot');
+            if (mainDot) mainDot.style.display = 'none';
+            let menuDot = document.getElementById('menuCasinoDot');
+            if (menuDot) menuDot.style.display = 'none';
         };
 
         window.updateCasinoUI = function() {
