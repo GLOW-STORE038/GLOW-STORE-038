@@ -1264,7 +1264,43 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             else if (currentStep === 2) { goToDelivery(); } 
         });
 
-        // Динамический расчет кэшбэка на сайте
+        function renderCartScreen() {
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+            
+            if (Object.keys(cart).length === 0) {
+                list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#888;">Корзина пуста</div>';
+                document.getElementById('cartTotalUiDisplay').innerText = "0";
+                document.getElementById('cartPointsEarned').innerText = "0";
+                return;
+            }
+
+            for (let id in cart) {
+                let item = cart[id];
+                let photo = menuData[id] ? menuData[id].photo : '';
+                let html = `
+                    <div class="cart-item-card">
+                        <img src="${photo}" class="cart-item-img">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">${item.price} €</div>
+                            <div class="cart-controls-wrapper">
+                                <div class="cart-quantity-controls">
+                                    <button class="cart-btn-minus" onclick="changeCartCount('${id}', -1)">-</button>
+                                    <span class="cart-item-count">${item.count}</span>
+                                    <button class="cart-btn-plus" onclick="changeCartCount('${id}', 1)">+</button>
+                                </div>
+                                <div class="cart-trash-btn" onclick="removeCartItem('${id}')">
+                                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.insertAdjacentHTML('beforeend', html);
+            }
+
+            // Динамический расчет кэшбэка на сайте
             let totalCb = 0;
             for (let id in cart) {
                 if (menuData[id]) {
@@ -1276,12 +1312,15 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
                     }
                 }
             }
-            let pointsEarned = Math.floor(totalCb);
-                list.insertAdjacentHTML('beforeend', html);
-            }
+            
             document.getElementById('cartTotalUiDisplay').innerText = cartTotal;
-            let earnedPoints = Math.floor(cartTotal * 0.10);
-            document.getElementById('cartPointsEarned').innerText = '+' + earnedPoints;
+            let finalPoints = Math.floor(totalCb);
+            if (activePromo && activePromo.type === "points") {
+                finalPoints += parseInt(activePromo.value);
+                document.getElementById('cartPointsEarned').innerText = '+' + finalPoints + ' (Промо)';
+            } else {
+                document.getElementById('cartPointsEarned').innerText = '+' + finalPoints;
+            }
         }
 
         window.changeCartCount = function(id, delta) {
