@@ -350,9 +350,12 @@
     </div>
 
     <!-- ШТОРКА ДЛЯ ВЫБОРА ДОСТАВКИ/САМОВЫВОЗА -->
-    <div class="filter-overlay" id="checkoutSheetOverlay">
-        <div class="filter-panel" id="checkoutSheetPanel">
-            <!-- Сюда JS вставит кнопки -->
+    <div class="filter-overlay" id="cityMainFilterOverlay">
+        <div class="filter-panel" id="cityMainFilterPanel">
+            <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('cityMainFilterOverlay').classList.remove('active')">×</button>
+            <div class="filter-header">ВЫБЕРИТЕ ГОРОД</div>
+            <div class="cat-btn cat-btn-all active" onclick="selectMainCityFilter('all', this)">Все города</div>
+            <div id="dynamicMainCities" style="display: contents;"></div>
         </div>
     </div>
 
@@ -586,7 +589,10 @@
         
         <div class="sub-title" id="subTitleText" onclick="clickEasterEgg()">Бери больше, кайфуй дольше</div>
         
-        <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
+            <div class="filter-btn" id="categoryFilterBtn" style="margin-bottom: 0;">Выбор товаров</div>
+            <div class="filter-btn" id="cityFilterBtn" style="margin-bottom: 0; background: #1a1a1a; border-color: #333; color: #aaa;">Выбор городов</div>
+        </div>
         
         <div id="favNotificationToggle" style="display: none; margin-bottom: 25px; align-items: center; gap: 10px; padding: 0 5px;">
             <input type="checkbox" id="favNotifyCheck" onchange="saveFavNotify()" style="width: 18px; height: 18px; accent-color: #82ccdd; flex-shrink: 0;">
@@ -1591,6 +1597,51 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
         const filterOverlay = document.getElementById('filterOverlay');
         document.getElementById('categoryFilterBtn').addEventListener('click', () => filterOverlay.classList.add('active'));
         filterOverlay.addEventListener('click', (e) => { if(e.target === filterOverlay) filterOverlay.classList.remove('active'); });
+        
+        let currentMainCityFilter = 'all';
+
+        // Открытие шторки городов
+        document.getElementById('cityFilterBtn').addEventListener('click', () => {
+            const overlay = document.getElementById('cityMainFilterOverlay');
+            const container = document.getElementById('dynamicMainCities');
+            container.innerHTML = '';
+            
+            // Собираем все уникальные города из базы
+            let allCities = [];
+            Object.values(citiesData).forEach(arr => { allCities = allCities.concat(arr); });
+            allCities = [...new Set(allCities)];
+            
+            allCities.forEach(c => {
+                let isActive = (currentMainCityFilter === c) ? 'active' : '';
+                let btnHtml = `<div class="cat-btn ${isActive}" onclick="selectMainCityFilter('${c}', this)">${c}</div>`;
+                container.insertAdjacentHTML('beforeend', btnHtml);
+            });
+            
+            overlay.classList.add('active');
+        });
+
+        // Выбор города в шторке
+        window.selectMainCityFilter = function(city, btnElement) {
+            currentMainCityFilter = city;
+            document.querySelectorAll('#cityMainFilterPanel .cat-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            let cleanName = btnElement.textContent.trim();
+            let btn = document.getElementById('cityFilterBtn');
+            btn.innerText = cleanName;
+            
+            if (city !== 'all') {
+                btn.style.background = '#fff'; btn.style.color = '#000';
+            } else {
+                btn.style.background = '#1a1a1a'; btn.style.color = '#aaa'; btn.innerText = "Выбор городов";
+            }
+            
+            document.getElementById('cityMainFilterOverlay').classList.remove('active');
+            renderCatalog(); // Перерисовываем каталог
+        };
+
+        const cityOverlay = document.getElementById('cityMainFilterOverlay');
+        cityOverlay.addEventListener('click', (e) => { if(e.target === cityOverlay) cityOverlay.classList.remove('active'); });
 
         document.getElementById('cartTopBtn').addEventListener('click', openCartScreen);
 
