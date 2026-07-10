@@ -339,16 +339,8 @@
         </div>
     </div>
 
-    <div class="filter-overlay" id="filterOverlay">
-        </div>
-    </div>
-
-    <div class="filter-overlay" id="checkoutSheetOverlay">
-        <div class="filter-panel" id="checkoutSheetPanel">
-            </div>
-    </div>
-
-    <div class="filter-overlay" id="cityMainFilterOverlay">
+<div class="filter-overlay" id="filterOverlay">
+        <div class="filter-panel" id="categoryFilterPanel">
             <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
             <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
             <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">Все товары</div>
@@ -357,7 +349,6 @@
         </div>
     </div>
 
-    <!-- ШТОРКА ДЛЯ ВЫБОРА ДОСТАВКИ/САМОВЫВОЗА -->
     <div class="filter-overlay" id="cityMainFilterOverlay">
         <div class="filter-panel" id="cityMainFilterPanel">
             <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('cityMainFilterOverlay').classList.remove('active')">×</button>
@@ -365,6 +356,11 @@
             <div class="cat-btn cat-btn-all active" onclick="selectMainCityFilter('all', this)">Все города</div>
             <div id="dynamicMainCities" style="display: contents;"></div>
         </div>
+    </div>
+
+    <div class="filter-overlay" id="checkoutSheetOverlay">
+        <div class="filter-panel" id="checkoutSheetPanel">
+            </div>
     </div>
 
 <div id="infoScreen" class="screen" style="display: none; padding-top: 10px; padding-bottom: 30px; position: relative;">
@@ -599,7 +595,7 @@
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
             <div class="filter-btn" id="categoryFilterBtn" style="margin-bottom: 0;">Выбор товаров</div>
-            <div class="filter-btn" id="cityFilterBtn" style="margin-bottom: 0; background: #1a1a1a; border-color: #333; color: #aaa;">Выбор городов</div>
+            <div class="filter-btn" id="cityFilterBtn" style="margin-bottom: 0;">Выбор городов</div>
         </div>
         
         <div id="favNotificationToggle" style="display: none; margin-bottom: 25px; align-items: center; gap: 10px; padding: 0 5px;">
