@@ -340,7 +340,15 @@
     </div>
 
     <div class="filter-overlay" id="filterOverlay">
-        <div class="filter-panel" id="filterPanel">
+        </div>
+    </div>
+
+    <div class="filter-overlay" id="checkoutSheetOverlay">
+        <div class="filter-panel" id="checkoutSheetPanel">
+            </div>
+    </div>
+
+    <div class="filter-overlay" id="cityMainFilterOverlay">
             <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
             <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
             <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">Все товары</div>
@@ -2001,15 +2009,6 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             });
         }
         loadMenu();
-
-window.openCasinoScreen = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
-            document.getElementById('topNav').style.display = 'none';
-            document.getElementById('casinoScreen').style.display = 'block';
-            currentStep = 9; 
-            tg.BackButton.show(); tg.MainButton.hide();
-        };
 
         let isSpinningCasino = false;
         window.spinCasinoNumbers = function() {
