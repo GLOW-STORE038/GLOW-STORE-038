@@ -1621,9 +1621,11 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             const container = document.getElementById('dynamicMainCities');
             container.innerHTML = '';
             
-            // Собираем все уникальные города из базы
             let allCities = [];
-            Object.values(citiesData).forEach(arr => { allCities = allCities.concat(arr); });
+            // Собираем ТОЛЬКО самовывоз и доставку, чтобы не вылезал [object Object]
+            ['perm', 'delivery'].forEach(key => {
+                if (citiesData[key]) allCities = allCities.concat(citiesData[key]);
+            });
             allCities = [...new Set(allCities)];
             
             allCities.forEach(c => {
@@ -1634,6 +1636,23 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             
             overlay.classList.add('active');
         });
+
+        // Выбор города в шторке
+        window.selectMainCityFilter = function(city, btnElement) {
+            currentMainCityFilter = city;
+            const btn = document.getElementById('cityFilterBtn');
+            if (city !== 'all') {
+                btn.style.background = '#fff'; 
+                btn.style.color = '#000';
+                btn.innerText = city;
+            } else {
+                btn.style.background = '#161616'; 
+                btn.style.color = '#fff'; 
+                btn.innerText = "Выбор городов";
+            }
+            document.getElementById('cityMainFilterOverlay').classList.remove('active');
+            renderCatalog(); 
+        };
 
         const cityOverlay = document.getElementById('cityMainFilterOverlay');
         cityOverlay.addEventListener('click', (e) => { if(e.target === cityOverlay) cityOverlay.classList.remove('active'); });
