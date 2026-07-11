@@ -840,95 +840,76 @@
     <script>
         let tg = window.Telegram.WebApp;
         try {
-            tg.ready(); 
-            tg.expand(); 
-            tg.MainButton.color = "#82ccdd"; 
-            tg.MainButton.textColor = "#121212";
-        } catch (e) {
-            console.log("Сайт открыт не в Telegram, часть функций отключена.");
-        }
+            tg.ready(); tg.expand(); tg.MainButton.color = "#82ccdd"; tg.MainButton.textColor = "#121212";
+        } catch (e) {}
 
         const JSONBIN_URL = "https://api.jsonbin.io/v3/b/6a26b5f6f5f4af5e29cb37ba"; 
         const JSONBIN_KEY = "$2a$10$4V93/RfmaApqzXfFS69EEOq7.Xh1kpFQP6iVs.rnoU7v/z45vsMoe"; 
 
         let cart = {}; let currentStep = 1; let realPoints = 0; let cartTotal = 0; let globalUserName = 'Гость';
-        let myCasinoPoints = 0; 
-        let currentBet = 1;
-        let isSpinning = false;
+        let myCasinoPoints = 0; let currentBet = 1; let isSpinning = false;
         let menuData = {}; let categoriesData = {}; let currentCategory = 'all'; let citiesData = {};
         let favorites = JSON.parse(localStorage.getItem('glow_favs')) || {};
 
-        let currentDelivery = null; 
-        let currentPickupType = null; 
-        let currentCity = null;
-        let currentPayment = null;
-        let activePromo = null; // Хранит примененный промокод
-        let promoDataDB = {}; // База промокодов из облака
+        let currentDelivery = null; let currentCity = null; let currentPayment = null;
+        let activePromo = null; let promoDataDB = {}; 
+        let currentMainCityFilter = 'all';
 
         const cartIconSvg = `<svg viewBox="0 0 24 24" style="width:18px; height:18px; fill:#121212;"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 15H5V8h14v13z"/></svg>`;        
         
         try {    
             const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('name')) globalUserName = urlParams.get('name');
-        if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
-        if (urlParams.get('cp')) myCasinoPoints = parseInt(urlParams.get('cp'));
-        
-        // Теперь статистика состоит из 4 цифр: товары, потрачено, кэшбэк, кол-во друзей
+            if (urlParams.get('name')) globalUserName = urlParams.get('name');
+            if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
+            if (urlParams.get('cp')) myCasinoPoints = parseInt(urlParams.get('cp'));
+            
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0, 0];
             let totalItemsOrdered = parseInt(statsData[0]) || 0;
-        let ee1Avail = parseInt(urlParams.get('ee1')) || 0;
-        let casWeeklyWon = urlParams.get('cw') || 0;
-        let eeClicks = 0;
+            let ee1Avail = parseInt(urlParams.get('ee1')) || 0;
+            
+            // Фикс бага Казино: переводим в число
+            let casWeeklyWon = parseInt(urlParams.get('cw')) || 0;
+            let eeClicks = 0;
 
-        // Мгновенное обновление выигрышей
-        let cwUi = document.getElementById('casWeeklyWonUi');
-        if (cwUi) cwUi.innerText = casWeeklyWon;
-        
-        // Блокировка Казино и Красная Точка
-        const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
-        if (casinoWrap) {
-            // Если заказы есть, и человек еще ни разу ничего не выигрывал за неделю (cw === 0) И не открывал казино
-            let hasOpened = localStorage.getItem('casino_opened_once') === 'true';
-            if (totalItemsOrdered > 0 && !hasOpened && casWeeklyWon == 0) {
-                let mainDot = document.getElementById('mainNotifDot');
-                if (mainDot) mainDot.style.display = 'block'; 
-                casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()" style="position: relative;">777 <div class="notif-dot" id="menuCasinoDot" style="display:block; top: 12px; right: 15px;"></div></div>`;
-            } else if (totalItemsOrdered > 0) {
-                casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()">777</div>`;
-            } else {
-                casinoWrap.innerHTML = `<div class="side-menu-item side-menu-disabled" style="display:flex; flex-direction:column; align-items:center;">???<span class="soon-text" style="position:relative; transform:none; top:0; left:0; margin-top:5px; margin-bottom:10px;">для открытия сделайте 1 заказ</span></div>`;
-            }
-        }
-        
-        // Появление кнопки наверх ТОЛЬКО в каталоге
-        window.addEventListener('scroll', () => {
-            const btn = document.getElementById('scrollTopBtn');
-            if (currentStep === 1 && window.scrollY > 250) btn.classList.add('visible');
-            else btn.classList.remove('visible');
-        });
-        // Нажатие на пасхалку (1 КЛИК)
-        window.clickEasterEgg = function() {
-            eeClicks++;
-            if (eeClicks === 1) { // Изменили на 1 клик
-                if (ee1Avail === 1) {
-                    document.getElementById('subTitleText').innerText = "НЕ БУДЬ ЛОХОМ, КУРИ VOEX";
-                    menuData['easter_egg_1'] = {
-                        name: "Светлана Elfliq",
-                        desc: "Банка ELFLIQ по цене VOEX за вашу внимательность",
-                        price: 12,
-                        old_price: 0,
-                        stock: 1, 
-                        photo: "https://files.catbox.moe/45rm92.jpg", // ИСПРАВЛЕНА ПРЯМАЯ ССЫЛКА НА ФОТО
-                        category: "all",
-                        added_at: 999999999999 // Заставляет товар быть на 1-м месте
-                    };
-                    renderCatalog();
-                    tg.showAlert("🎉 Вы нашли Пасхалку №1! Товар добавлен в самое начало каталога.");
+            let cwUi = document.getElementById('casWeeklyWonUi');
+            if (cwUi) cwUi.innerText = casWeeklyWon;
+            
+            const casinoWrap = document.getElementById('menuCasinoBtnWrapper');
+            if (casinoWrap) {
+                let hasOpened = localStorage.getItem('casino_opened_once') === 'true';
+                if (totalItemsOrdered > 0 && !hasOpened && casWeeklyWon === 0) {
+                    let mainDot = document.getElementById('mainNotifDot');
+                    if (mainDot) mainDot.style.display = 'block'; 
+                    casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()" style="position: relative;">777 <div class="notif-dot" id="menuCasinoDot" style="display:block; top: 12px; right: 15px;"></div></div>`;
+                } else if (totalItemsOrdered > 0) {
+                    casinoWrap.innerHTML = `<div class="side-menu-item" onclick="openCasinoScreen()">777</div>`;
                 } else {
-                    tg.showAlert("❌ Пасхалка уже распродана или вы ее уже приобрели ранее!");
+                    casinoWrap.innerHTML = `<div class="side-menu-item side-menu-disabled" style="display:flex; flex-direction:column; align-items:center;">???<span class="soon-text" style="position:relative; transform:none; top:0; left:0; margin-top:5px; margin-bottom:10px;">для открытия сделайте 1 заказ</span></div>`;
                 }
             }
-        };
+            
+            window.addEventListener('scroll', () => {
+                const btn = document.getElementById('scrollTopBtn');
+                if (currentStep === 1 && window.scrollY > 250) btn.classList.add('visible');
+                else btn.classList.remove('visible');
+            });
+
+            window.clickEasterEgg = function() {
+                eeClicks++;
+                if (eeClicks === 1) {
+                    if (ee1Avail === 1) {
+                        document.getElementById('subTitleText').innerText = "НЕ БУДЬ ЛОХОМ, КУРИ VOEX";
+                        menuData['easter_egg_1'] = {
+                            name: "Светлана Elfliq", desc: "Банка ELFLIQ по цене VOEX за вашу внимательность",
+                            price: 12, old_price: 0, stock: 1, 
+                            photo: "https://files.catbox.moe/45rm92.jpg", category: "all", added_at: 999999999999 
+                        };
+                        renderCatalog(); tg.showAlert("🎉 Вы нашли Пасхалку №1! Товар добавлен в самое начало каталога.");
+                    } else {
+                        tg.showAlert("❌ Пасхалка уже распродана или вы ее уже приобрели ранее!");
+                    }
+                }
+            };
 
             document.getElementById('statItems').innerText = statsData[0]; 
             document.getElementById('statSpent').innerText = statsData[1];
@@ -936,18 +917,11 @@
 
             let historyData = urlParams.get('h') ? JSON.parse(decodeURIComponent(urlParams.get('h'))) : [];
             const hScroll = document.getElementById('historyScroll');
-            
             if (historyData.length > 0) {
-                let recentOrders = historyData.slice().reverse().slice(0, 5);
-                recentOrders.forEach(order => {
+                historyData.slice().reverse().slice(0, 5).forEach(order => {
                     let popupText = `📦 Товары: ${order.f}\n💰 Сумма: ${order.t} €\n🎁 Списано баллов: ${order.s}`;
-                    let card = `<div class="history-card-new" onclick="tg.showAlert('${popupText}')"><img src="${order.p}" class="history-img-new"><div class="history-title-new">${order.n}</div></div>`;
-                    hScroll.insertAdjacentHTML('beforeend', card);
+                    hScroll.insertAdjacentHTML('beforeend', `<div class="history-card-new" onclick="tg.showAlert('${popupText}')"><img src="${order.p}" class="history-img-new"><div class="history-title-new">${order.n}</div></div>`);
                 });
-                if (historyData.length > 5) {
-                    let moreBtn = `<div class="history-more-btn" onclick="tg.showAlert('Всего заказов: ${historyData.length}\\n\\nФункция полной истории в разработке!')">еще...</div>`;
-                    hScroll.insertAdjacentHTML('beforeend', moreBtn);
-                }
             } else {
                 hScroll.innerHTML = '<p style="color:#666; font-size:13px; text-align:center; width:100%;">У вас пока нет заказов</p>';
             }
@@ -955,136 +929,28 @@
 
         async function loadMenu() {
             try {
-                // ДОБАВЛЕН cache: 'no-store' ЧТОБЫ ТОВАРЫ В ТОПЕ ОБНОВЛЯЛИСЬ СРАЗУ
-                const response = await fetch(JSONBIN_URL, { 
-                    headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" },
-                    cache: 'no-store' 
-                });
+                const response = await fetch(JSONBIN_URL, { headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }, cache: 'no-store' });
                 const json = await response.json();
                 let rawData = json.record || json; 
                 if (rawData.items) { 
-                    menuData = rawData.items; 
-                    categoriesData = rawData.categories || {}; 
-                    citiesData = rawData.cities || { perm: [], temp: [], delivery: [] };
-                    promoDataDB = rawData.promos || {}; 
+                    menuData = rawData.items; categoriesData = rawData.categories || {}; 
+                    citiesData = rawData.cities || { perm: [], delivery: [] }; promoDataDB = rawData.promos || {}; 
                 } else { menuData = rawData; }
-                
-                renderCategories(); 
-                renderCatalog();
+                renderCategories(); renderCatalog();
             } catch (e) { document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка загрузки</div>'; }
         }
 
         function renderCategories() {
             const container = document.getElementById('dynamicCategories'); container.innerHTML = '';
             for (let cat_id in categoriesData) {
-                let catHtml = `<div class="cat-btn" data-id="${cat_id}" onclick="selectCategory('${cat_id}', this)">${categoriesData[cat_id]}</div>`;
-                container.insertAdjacentHTML('beforeend', catHtml);
+                container.insertAdjacentHTML('beforeend', `<div class="cat-btn" data-id="${cat_id}" onclick="selectCategory('${cat_id}', this)">${categoriesData[cat_id]}</div>`);
             }
         }
 
         document.getElementById('favTopBtn').addEventListener('click', () => {
             let favBtn = document.getElementById('favFilterBtn');
-            favBtn.style.display = 'block'; 
-            selectCategory('favorites', favBtn);
+            favBtn.style.display = 'block'; selectCategory('favorites', favBtn);
         });
-
-        function renderCatalog() {
-            const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
-            
-            // СОРТИРОВКА ТОВАРОВ (Поднятые в ТОП и новые сверху)
-            let itemsArray = Object.entries(menuData).map(([id, item]) => ({ id, ...item }));
-            itemsArray.sort((a, b) => {
-                let timeA = a.added_at || 0;
-                let timeB = b.added_at || 0;
-                return timeB - timeA; // Чем новее время, тем ВЫШЕ товар
-            });
-
-            for (let itemObj of itemsArray) {
-                let id = itemObj.id;
-                let item = itemObj;
-
-                if (currentCategory === 'favorites' && !favorites[id]) continue;
-                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
-
-                let isOut = item.stock <= 0; 
-                let cardClass = isOut ? "card disabled" : "card";
-                let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
-                
-                let displayPrice = item.price;
-                let displayOldPrice = item.old_price;
-                let isPromo = displayOldPrice && displayOldPrice > 0;
-                let now = Math.floor(Date.now() / 1000);
-                let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
-
-                if (isPromo && (isOut || isExpired)) {
-                    displayPrice = item.old_price; 
-                    displayOldPrice = 0; 
-                    isPromo = false; 
-                }
-
-                let priceClass = isPromo ? "new-price promo-price" : "new-price";
-                let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
-                let timerHtml = (isPromo && item.timer_end && item.timer_end > now && !isOut) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
-                let cbHtml = '';
-                if (item.show_cb && !isOut) {
-                    let cbVal = item.cashback !== undefined ? item.cashback : Math.floor(displayPrice * 0.10);
-                    cbHtml = `<div class="cashback-badge">+ ${cbVal} баллов</div>`;
-                }
-                let isFavClass = favorites[id] ? "active" : "";
-
-                let cardHtml = `
-                    <div class="${cardClass}" data-id="${id}">
-                        <button class="fav-btn ${isFavClass}" onclick="toggleFav('${id}', this)">
-                            <svg class="fav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        </button>
-                        <img src="${item.photo}" class="product-image" alt="Товар" onclick="openProductModal('${id}')">
-                        <div class="card-body">
-                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
-                            ${timerHtml}
-                            ${cbHtml}
-                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
-                            ${stockHtml}
-                            <div class="price-row">
-                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
-                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${displayPrice}, this)">${cartIconSvg}</button>
-                                <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
-                                    <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
-                                    <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
-                                    <button class="btn-plus" onclick="changeCount('${id}', 1, this)">+</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.insertAdjacentHTML('beforeend', cardHtml);
-                if (cart[id]) grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
-            }
-            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
-        }
-
-let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; 
-        let hasSeenFavModal = localStorage.getItem('glow_seen_fav_modal') === 'true';
-
-        document.addEventListener("DOMContentLoaded", () => {
-            let chk = document.getElementById('favNotifyCheck');
-            if (chk) chk.checked = favNotify;
-        });
-
-        window.saveFavNotify = function() {
-            let chk = document.getElementById('favNotifyCheck');
-            favNotify = chk.checked;
-            localStorage.setItem('glow_fav_notify', favNotify);
-
-            // Мгновенно убираем или возвращаем кнопку снизу при переключении галочки
-            let favKeys = Object.keys(favorites);
-            if (favNotify && favKeys.length > 0) {
-                document.getElementById('favToast').classList.add('active');
-                document.getElementById('cartToast').classList.add('shifted');
-            } else {
-                document.getElementById('favToast').classList.remove('active');
-                document.getElementById('cartToast').classList.remove('shifted');
-            }
-        };
 
         window.selectCategory = function(cat_id, btnElement) {
             currentCategory = cat_id;
@@ -1097,30 +963,116 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             } else {
                 document.getElementById('favNotificationToggle').style.display = 'flex';
             }
-            
-            let cleanName = btnElement.textContent.trim();
-            document.getElementById('categoryFilterBtn').innerText = cleanName;
+            document.getElementById('categoryFilterBtn').innerText = btnElement.textContent.trim();
             document.getElementById('filterOverlay').classList.remove('active');
             renderCatalog();
         };
 
-        window.toggleFav = function(id, btn) {
-            if (favorites[id]) {
-                delete favorites[id]; btn.classList.remove('active');
-            } else {
-                favorites[id] = true; btn.classList.add('active');
-                
-                // Если клиент нажал сердечко ВПЕРВЫЕ за всю жизнь — показываем модалку обучения
-                if (!hasSeenFavModal) {
-                    document.getElementById('firstFavModal').classList.add('active');
-                    hasSeenFavModal = true;
-                    localStorage.setItem('glow_seen_fav_modal', 'true');
-                }
-            }
-            localStorage.setItem('glow_favs', JSON.stringify(favorites));
+        // --- ФИКС ФИЛЬТРА ГОРОДОВ НА ГЛАВНОЙ ---
+        document.getElementById('cityFilterBtn').addEventListener('click', () => {
+            const overlay = document.getElementById('cityMainFilterOverlay');
+            const container = document.getElementById('dynamicMainCities');
+            container.innerHTML = '';
+            
+            let allCities = [];
+            // Собираем ТОЛЬКО самовывоз и доставку, чтобы не было [object Object]
+            ['perm', 'delivery'].forEach(key => {
+                if (citiesData[key]) allCities = allCities.concat(citiesData[key]);
+            });
+            allCities = [...new Set(allCities)]; // Убираем дубликаты
+            
+            allCities.forEach(c => {
+                let isActive = (currentMainCityFilter === c) ? 'active' : '';
+                container.insertAdjacentHTML('beforeend', `<div class="cat-btn ${isActive}" onclick="selectMainCityFilter('${c}', this)">${c}</div>`);
+            });
+            overlay.classList.add('active');
+        });
 
-            // Показываем плашку "Обновить список" ТОЛЬКО если галочка включена
-            if (favNotify) {
+        window.selectMainCityFilter = function(city, btnElement) {
+            currentMainCityFilter = city;
+            document.querySelectorAll('#cityMainFilterPanel .cat-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            let btn = document.getElementById('cityFilterBtn');
+            if (city !== 'all') {
+                btn.style.background = '#fff'; btn.style.color = '#000'; btn.innerText = city;
+            } else {
+                // Фикс серой кнопки (возвращаем стандартные стили)
+                btn.style.background = ''; btn.style.color = ''; btn.innerText = "Выбор городов";
+            }
+            document.getElementById('cityMainFilterOverlay').classList.remove('active');
+            renderCatalog(); 
+        };
+
+        function renderCatalog() {
+            const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
+            let itemsArray = Object.entries(menuData).map(([id, item]) => ({ id, ...item }));
+            itemsArray.sort((a, b) => (b.added_at || 0) - (a.added_at || 0));
+
+            for (let itemObj of itemsArray) {
+                let id = itemObj.id; let item = itemObj;
+                if (currentCategory === 'favorites' && !favorites[id]) continue;
+                if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
+
+                let isOut = item.stock <= 0; 
+                let cardClass = isOut ? "card disabled" : "card";
+                let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
+                
+                let displayPrice = item.price; let displayOldPrice = item.old_price;
+                let isPromo = displayOldPrice && displayOldPrice > 0;
+                let now = Math.floor(Date.now() / 1000);
+                if (isPromo && (isOut || (item.timer_end > 0 && now >= item.timer_end))) {
+                    displayPrice = item.old_price; displayOldPrice = 0; isPromo = false; 
+                }
+
+                let priceClass = isPromo ? "new-price promo-price" : "new-price";
+                let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
+                let timerHtml = (isPromo && item.timer_end && item.timer_end > now && !isOut) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
+                let cbHtml = '';
+                if (item.show_cb && !isOut) cbHtml = `<div class="cashback-badge">+ ${item.cashback || Math.floor(displayPrice * 0.10)} баллов</div>`;
+
+                let isFavClass = favorites[id] ? "active" : "";
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="${cardClass}" data-id="${id}">
+                        <button class="fav-btn ${isFavClass}" onclick="toggleFav('${id}', this)">
+                            <svg class="fav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </button>
+                        <img src="${item.photo}" class="product-image" onclick="openProductModal('${id}')">
+                        <div class="card-body">
+                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
+                            ${timerHtml}${cbHtml}
+                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
+                            ${stockHtml}
+                            <div class="price-row">
+                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
+                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${displayPrice}, this)">${cartIconSvg}</button>
+                                <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
+                                    <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
+                                    <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
+                                    <button class="btn-plus" onclick="changeCount('${id}', 1, this)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`);
+                if (cart[id]) grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
+            }
+            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
+        }
+
+        let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; 
+        let hasSeenFavModal = localStorage.getItem('glow_seen_fav_modal') === 'true';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let chk = document.getElementById('favNotifyCheck');
+            if (chk) chk.checked = favNotify;
+        });
+
+        window.saveFavNotify = function() {
+            let chk = document.getElementById('favNotifyCheck');
+            favNotify = chk.checked;
+            localStorage.setItem('glow_fav_notify', favNotify);
+            let favKeys = Object.keys(favorites);
+            if (favNotify && favKeys.length > 0) {
                 document.getElementById('favToast').classList.add('active');
                 document.getElementById('cartToast').classList.add('shifted');
             } else {
@@ -1129,74 +1081,62 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             }
         };
 
+        window.toggleFav = function(id, btn) {
+            if (favorites[id]) { delete favorites[id]; btn.classList.remove('active'); } 
+            else {
+                favorites[id] = true; btn.classList.add('active');
+                if (!hasSeenFavModal) {
+                    document.getElementById('firstFavModal').classList.add('active');
+                    hasSeenFavModal = true; localStorage.setItem('glow_seen_fav_modal', 'true');
+                }
+            }
+            localStorage.setItem('glow_favs', JSON.stringify(favorites));
+
+            if (favNotify) {
+                document.getElementById('favToast').classList.add('active'); document.getElementById('cartToast').classList.add('shifted');
+            } else {
+                document.getElementById('favToast').classList.remove('active'); document.getElementById('cartToast').classList.remove('shifted');
+            }
+        };
+
         window.sendFavsToBot = function() {
             let favKeys = Object.keys(favorites);
             if (favKeys.length === 0) {
                 tg.showAlert('Сначала добавьте товары в избранное (нажмите на сердечко)!');
-                // Если пусто - прячем уведомления
-                document.getElementById('favToast').classList.remove('active');
-                document.getElementById('cartToast').classList.remove('shifted');
+                document.getElementById('favToast').classList.remove('active'); document.getElementById('cartToast').classList.remove('shifted');
                 return;
             }
-            // Отправляем боту специальный сигнал
-            tg.sendData(JSON.stringify({ 
-                action: 'save_settings',
-                favs: favKeys, 
-                fav_notify: favNotify 
-            })); 
-            tg.close();
+            tg.sendData(JSON.stringify({ action: 'save_settings', favs: favKeys, fav_notify: favNotify })); tg.close();
         };
 
         setInterval(() => {
-            let needsRender = false;
-            let needsCartUpdate = false;
-            let now = Math.floor(Date.now() / 1000); 
+            let needsRender = false; let needsCartUpdate = false; let now = Math.floor(Date.now() / 1000); 
 
-            // 1. Проверяем и обновляем визуальные таймеры на витрине
             document.querySelectorAll('.timer-badge').forEach(badge => {
                 let end = parseInt(badge.getAttribute('data-end')); 
                 if (end > now) {
-                    let diff = end - now; 
-                    let h = Math.floor(diff / 3600); 
-                    let m = Math.floor((diff % 3600) / 60); 
-                    let s = diff % 60;
+                    let diff = end - now; let h = Math.floor(diff / 3600); let m = Math.floor((diff % 3600) / 60); let s = diff % 60;
                     badge.innerText = `⏳ ${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
-                } else { 
-                    badge.style.display = 'none'; 
-                    needsRender = true; 
-                }
+                } else { badge.style.display = 'none'; needsRender = true; }
             });
 
-            // 2. УМНАЯ ПРОВЕРКА КОРЗИНЫ: Меняем цену, если акция закончилась!
             for (let id in cart) {
                 let item = menuData[id];
                 if (!item) continue;
-                
                 let actualPrice = item.price;
                 let isPromo = item.old_price && item.old_price > 0;
                 let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
                 let isOut = item.stock <= 0;
 
-                // Если акция закончилась (время вышло или товар кончился), цена становится регулярной
-                if (isPromo && (isOut || isExpired)) {
-                    actualPrice = item.old_price; 
-                }
-
-                // Если цена в корзине устарела - обновляем её
-                if (cart[id].price !== actualPrice) {
-                    cart[id].price = actualPrice;
-                    needsCartUpdate = true;
-                }
+                if (isPromo && (isOut || isExpired)) actualPrice = item.old_price; 
+                if (cart[id].price !== actualPrice) { cart[id].price = actualPrice; needsCartUpdate = true; }
             }
 
-            // 3. Если нужно, перерисовываем экраны
             if (needsRender) renderCatalog();
             if (needsCartUpdate) {
-                updateMainButton(); // Пересчитывает кнопку и корзину
-                if (currentStep === 2) {
-                    renderCartScreen(); // Обновляет цены на экране корзины
-                } else if (currentStep === 3) {
-                    // Обновляет текст чека и итог на экране оформления
+                updateMainButton(); 
+                if (currentStep === 2) renderCartScreen();
+                else if (currentStep === 3) {
                     let itemsTextHTML = "";
                     for (let id in cart) { itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`; }
                     let listEl = document.getElementById('receiptItemsList');
@@ -1210,20 +1150,16 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             const item = menuData[id];
             document.getElementById('modalImg').src = item.photo;
             document.getElementById('modalTitle').innerText = item.name;
-            document.getElementById('modalDesc').innerText = item.desc || 'Описание отсутствует';
+            document.getElementById('modalDesc').innerText = item.desc || '';
             document.getElementById('modalPrice').innerText = item.price + ' €';
             document.getElementById('productModal').classList.add('active');
-            tg.MainButton.hide(); 
         };
-        window.closeProductModal = function() { document.getElementById('productModal').classList.remove('active'); updateMainButton(); };
+        window.closeProductModal = function() { document.getElementById('productModal').classList.remove('active'); };
 
         let toastTimer;
         function showCartToast() {
-            const toast = document.getElementById('cartToast');
-            toast.classList.remove('active'); 
-            clearTimeout(toastTimer);
-            void toast.offsetWidth; 
-            toast.classList.add('active'); 
+            const toast = document.getElementById('cartToast'); toast.classList.remove('active'); 
+            clearTimeout(toastTimer); void toast.offsetWidth; toast.classList.add('active'); 
             toastTimer = setTimeout(() => { toast.classList.remove('active'); }, 3000);
         }
 
@@ -1232,9 +1168,7 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             if (menuData[id].stock <= 0) { card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return; }
             cart[id] = { name: name, price: price, count: 1 };
             btn.style.display = 'none'; card.querySelector('.quantity-controls').style.display = 'flex';
-            card.querySelector('.item-count').innerText = 1; 
-            updateMainButton();
-            showCartToast();
+            card.querySelector('.item-count').innerText = 1; updateMainButton(); showCartToast();
         };
 
         window.changeCount = function(id, delta, btn) {
@@ -1243,43 +1177,32 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             cart[id].count = newCount;
             if (cart[id].count <= 0) {
                 delete cart[id]; card.querySelector('.quantity-controls').style.display = 'none'; card.querySelector('.add-btn').style.display = 'flex';
-            } else { 
-                card.querySelector('.item-count').innerText = cart[id].count; 
-                if (delta > 0) showCartToast(); 
-            }
+            } else { card.querySelector('.item-count').innerText = cart[id].count; }
             updateMainButton();
         };
 
         function updateMainButton() {
             cartTotal = 0; let totalItems = 0;
             for (let id in cart) { cartTotal += cart[id].price * cart[id].count; totalItems += cart[id].count; }
-            
             const badge = document.getElementById('cartBadge');
             if (totalItems > 0) { badge.style.display = 'flex'; badge.innerText = totalItems; } else { badge.style.display = 'none'; }
-            
             tg.MainButton.hide(); 
         }
 
         tg.onEvent('mainButtonClicked', () => {
-            if (currentStep === 1) { openCartScreen(); } 
-            else if (currentStep === 2) { goToDelivery(); } 
+            if (currentStep === 1) openCartScreen(); else if (currentStep === 2) goToDelivery(); 
         });
 
         function renderCartScreen() {
-            const list = document.getElementById('cartItemsList');
-            list.innerHTML = '';
-            
+            const list = document.getElementById('cartItemsList'); list.innerHTML = '';
             if (Object.keys(cart).length === 0) {
                 list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#888;">Корзина пуста</div>';
-                document.getElementById('cartTotalUiDisplay').innerText = "0";
-                document.getElementById('cartPointsEarned').innerText = "0";
+                document.getElementById('cartTotalUiDisplay').innerText = "0"; document.getElementById('cartPointsEarned').innerText = "0";
                 return;
             }
-
             for (let id in cart) {
-                let item = cart[id];
-                let photo = menuData[id] ? menuData[id].photo : '';
-                let html = `
+                let item = cart[id]; let photo = menuData[id] ? menuData[id].photo : '';
+                list.insertAdjacentHTML('beforeend', `
                     <div class="cart-item-card">
                         <img src="${photo}" class="cart-item-img">
                         <div class="cart-item-info">
@@ -1291,94 +1214,60 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
                                     <span class="cart-item-count">${item.count}</span>
                                     <button class="cart-btn-plus" onclick="changeCartCount('${id}', 1)">+</button>
                                 </div>
-                                <div class="cart-trash-btn" onclick="removeCartItem('${id}')">
-                                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                                </div>
+                                <div class="cart-trash-btn" onclick="removeCartItem('${id}')"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
                             </div>
                         </div>
                     </div>
-                `;
-                list.insertAdjacentHTML('beforeend', html);
+                `);
             }
-
-            // Динамический расчет кэшбэка на сайте
             let totalCb = 0;
             for (let id in cart) {
-                if (menuData[id]) {
-                    let itemCb = menuData[id].cashback;
-                    if (itemCb !== undefined && itemCb !== null) {
-                        totalCb += parseFloat(itemCb) * cart[id].count;
-                    } else {
-                        totalCb += (menuData[id].price || 0) * 0.10 * cart[id].count;
-                    }
-                }
+                if (menuData[id]) totalCb += (menuData[id].cashback !== undefined ? parseFloat(menuData[id].cashback) : (menuData[id].price || 0) * 0.10) * cart[id].count;
             }
-            
             document.getElementById('cartTotalUiDisplay').innerText = cartTotal;
             let finalPoints = Math.floor(totalCb);
             if (activePromo && activePromo.type === "points") {
-                finalPoints += parseInt(activePromo.value);
-                document.getElementById('cartPointsEarned').innerText = '+' + finalPoints + ' (Промо)';
-            } else {
-                document.getElementById('cartPointsEarned').innerText = '+' + finalPoints;
-            }
+                finalPoints += parseInt(activePromo.value); document.getElementById('cartPointsEarned').innerText = '+' + finalPoints + ' (Промо)';
+            } else { document.getElementById('cartPointsEarned').innerText = '+' + finalPoints; }
         }
 
         window.changeCartCount = function(id, delta) {
             let newCount = cart[id].count + delta;
-            if (newCount <= 0) {
-                removeCartItem(id);
-            } else if (newCount <= menuData[id].stock) {
-                cart[id].count = newCount; updateMainButton(); renderCartScreen(); renderCatalog(); 
-            }
+            if (newCount <= 0) removeCartItem(id);
+            else if (newCount <= menuData[id].stock) { cart[id].count = newCount; updateMainButton(); renderCartScreen(); renderCatalog(); }
         };
 
         window.removeCartItem = function(id) {
             delete cart[id]; updateMainButton(); renderCartScreen(); renderCatalog(); 
-            if (cartTotal === 0) { goBackToCatalog(); } 
+            if (cartTotal === 0) goBackToCatalog(); 
         };
 
         function openCartScreen() {
             document.getElementById('cartToast').classList.remove('active');
-            if (cartTotal === 0) { showCustomModal('Ваша корзина пуста', ''); return; }
+            if (cartTotal === 0) return showCustomModal('Ваша корзина пуста', '');
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('cartScreen').style.display = 'flex'; currentStep = 2; tg.BackButton.show(); 
             renderCartScreen(); updateMainButton();
         }
 
-        // =====================================================================
-        // ЛОГИКА ОФОРМЛЕНИЯ ЗАКАЗА И ШТОРОК
-        // =====================================================================
-        
-        // Универсальное всплывающее окно
         window.showCustomModal = function(title, subText) {
             document.getElementById('emptyCartText').innerText = title;
             let sub = document.getElementById('emptyCartSub');
-            if (subText) {
-                sub.innerText = subText;
-                sub.style.display = 'block';
-            } else {
-                sub.style.display = 'none';
-            }
+            if (subText) { sub.innerText = subText; sub.style.display = 'block'; } else { sub.style.display = 'none'; }
             document.getElementById('emptyCartAlert').classList.add('active');
         };
 
-        window.clickPickupToggle = function() {
-            openCitySheet('perm'); 
-        };
-
-        window.clickDeliveryToggle = function() {
-            openCitySheet('delivery');
-        };
+        // --- ФИКС САМОВЫВОЗА (Сразу города) ---
+        window.clickPickupToggle = function() { openCitySheet('perm'); };
+        window.clickDeliveryToggle = function() { openCitySheet('delivery'); };
 
         window.openCitySheet = function(type) {
-            currentDelivery = (type === 'delivery') ? 'delivery' : 'pickup';
+            currentDelivery = type === 'delivery' ? 'delivery' : 'pickup';
             const sheet = document.getElementById('checkoutSheetOverlay');
             const panel = document.getElementById('checkoutSheetPanel');
-            let headerText = "ВЫБЕРИТЕ ГОРОД";
             let cities = citiesData[type] || [];
             
-            let html = `<button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="closeCheckoutSheet()">×</button><div class="filter-header">${headerText}</div>`;
+            let html = `<button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="closeCheckoutSheet()">×</button><div class="filter-header">ВЫБЕРИТЕ ГОРОД</div>`;
             cities.forEach(c => { html += `<div class="cat-btn" style="margin-bottom:10px;" onclick="selectCity('${c}')">${c}</div>`; });
             if (type === 'delivery') html += `<div class="cat-btn" onclick="selectCity('other')">Другие города...</div>`;
             
@@ -1392,51 +1281,15 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             updateCheckoutUI();
         };
 
-        window.closeCheckoutSheet = function() {
-            document.getElementById('checkoutSheetOverlay').classList.remove('active');
-        };
+        window.closeCheckoutSheet = function() { document.getElementById('checkoutSheetOverlay').classList.remove('active'); };
 
-        const checkoutSheetOverlay = document.getElementById('checkoutSheetOverlay');
-        checkoutSheetOverlay.addEventListener('click', (e) => { if(e.target === checkoutSheetOverlay) closeCheckoutSheet(); });
+        const sheetOverlay = document.getElementById('checkoutSheetOverlay');
+        sheetOverlay.addEventListener('click', (e) => { if(e.target === sheetOverlay) closeCheckoutSheet(); });
+        
+        const cityOverlay2 = document.getElementById('cityMainFilterOverlay');
+        cityOverlay2.addEventListener('click', (e) => { if(e.target === cityOverlay2) cityOverlay2.classList.remove('active'); });
 
-        window.selectMainCityFilter = function(city, btnElement) {
-            currentMainCityFilter = city;
-            document.querySelectorAll('#cityMainFilterPanel .cat-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            
-            let btn = document.getElementById('cityFilterBtn');
-            if (city !== 'all') {
-                btn.style.background = '#fff'; 
-                btn.style.color = '#000';
-                btn.innerText = city;
-            } else {
-                btn.style.background = '#161616'; 
-                btn.style.color = '#fff'; 
-                btn.innerText = "Выбор городов";
-            }
-            document.getElementById('cityMainFilterOverlay').classList.remove('active');
-            renderCatalog(); 
-        };
-
-        window.selectCity = function(city) {
-            currentCity = city;
-            closeCheckoutSheet();
-            updateCheckoutUI();
-        };
-
-        window.closeCheckoutSheet = function() {
-            document.getElementById('checkoutSheetOverlay').classList.remove('active');
-        };
-
-        const checkoutSheetOverlay = document.getElementById('checkoutSheetOverlay');
-        checkoutSheetOverlay.addEventListener('click', (e) => { 
-            if(e.target === checkoutSheetOverlay) closeCheckoutSheet(); 
-        });
-
-        window.setPaymentMethod = function(method) {
-            currentPayment = method;
-            updateCheckoutUI();
-        };
+        window.setPaymentMethod = function(method) { currentPayment = method; updateCheckoutUI(); };
 
         window.updateCheckoutUI = function() {
             document.getElementById('btnPickup').classList.toggle('active', currentDelivery === 'pickup');
@@ -1450,154 +1303,76 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
 
             if (currentDelivery === 'pickup' && currentCity) {
                 infoDiv.innerHTML = `📍 Самовывоз: ${currentCity}`;
-                infoDiv.style.display = 'flex';
-                deliveryManagerInfo.style.display = 'none';
+                infoDiv.style.display = 'flex'; deliveryManagerInfo.style.display = 'none';
             } else if (currentDelivery === 'delivery' && currentCity) {
-                let displayCity = currentCity === 'other' ? 'Другой город' : currentCity;
-                infoDiv.innerHTML = `📍 Доставка: ${displayCity}`;
-                infoDiv.style.display = 'flex';
-                deliveryManagerInfo.style.display = 'block'; 
+                infoDiv.innerHTML = `📍 Доставка: ${currentCity === 'other' ? 'Другой город' : currentCity}`;
+                infoDiv.style.display = 'flex'; deliveryManagerInfo.style.display = 'block'; 
             } else {
-                infoDiv.style.display = 'none';
-                deliveryManagerInfo.style.display = 'none';
+                infoDiv.style.display = 'none'; deliveryManagerInfo.style.display = 'none';
             }
+            window.updateReceiptTotal();
+        };
 
-        // Живой пересчет чека и прогресс-бара
         window.updateReceiptTotal = function() {
-            let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
-            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal);
-            if (ptsSpent < 0) ptsSpent = 0;
-
+            let ptsSpent = parseInt(document.getElementById('pointsInputNew').value) || 0;
             let discountRow = document.getElementById('receiptDiscountRow');
             let discountVal = document.getElementById('receiptDiscountVal');
             let totalSpan = document.getElementById('receiptTotal');
 
-            // 1. Считаем чек (Скидка белым цветом)
             if (ptsSpent >= 4 && ptsSpent <= realPoints && ptsSpent <= cartTotal) {
-                discountRow.style.display = 'flex';
-                discountVal.innerText = '-' + ptsSpent + ' €';
-                let finalPrice = cartTotal - ptsSpent;
-                if (finalPrice < 0) finalPrice = 0;
-                totalSpan.innerText = finalPrice + ' €';
+                discountRow.style.display = 'flex'; discountVal.innerText = '-' + ptsSpent + ' €';
+                totalSpan.innerText = Math.max(0, cartTotal - ptsSpent) + ' €';
             } else {
-                discountRow.style.display = 'none';
-                totalSpan.innerText = cartTotal + ' €';
+                discountRow.style.display = 'none'; totalSpan.innerText = cartTotal + ' €';
             }
 
-            // 2. Считаем полоску доставки (СТРОГО от начальной суммы cartTotal)
             const threshold = 70;
             const progressText = document.getElementById('deliveryProgressText');
             const progressBar = document.getElementById('deliveryProgressBar');
-
             if (progressText && progressBar) {
                 if (cartTotal >= threshold) {
-                    progressBar.style.width = '100%';
-                    progressText.innerHTML = '🎉 Вам доступна <span style="color:#82ccdd;">бесплатная доставка!</span>';
+                    progressBar.style.width = '100%'; progressText.innerHTML = '🎉 Вам доступна <span style="color:#82ccdd;">бесплатная доставка!</span>';
                 } else {
-                    let left = threshold - cartTotal;
-                    let percent = Math.round((cartTotal / threshold) * 100);
-                    progressBar.style.width = percent + '%';
-                    progressText.innerHTML = `Осталось <span style="color:#ff4d4d;">${left} €</span> до бесплатной доставки!`;
+                    progressBar.style.width = Math.round((cartTotal / threshold) * 100) + '%';
+                    progressText.innerHTML = `Осталось <span style="color:#ff4d4d;">${threshold - cartTotal} €</span> до бесплатной доставки!`;
                 }
             }
         };
 
         window.goToDelivery = function() {
-            document.getElementById('cartScreen').style.display = 'none'; 
-            document.getElementById('mapScreen').style.display = 'block'; 
-            currentStep = 3; 
-
-            let itemsTextHTML = "";
-            for (let id in cart) { itemsTextHTML += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`; }
-            document.getElementById('receiptItemsList').innerHTML = itemsTextHTML; 
-
-            currentDelivery = null; currentPickupType = null; currentCity = null; currentPayment = null;
-            document.getElementById('btnPickup').classList.remove('active');
-            document.getElementById('btnDelivery').classList.remove('active');
-            document.getElementById('btnCash').classList.remove('active');
-            document.getElementById('btnCard').classList.remove('active');
-
-            // ЛОГИКА РУЧНОГО ВВОДА БАЛЛОВ
-            let pInput = document.getElementById('pointsInputNew');
-            let pOverlay = document.getElementById('pointsOverlayNew');
+            document.getElementById('cartScreen').style.display = 'none'; document.getElementById('mapScreen').style.display = 'block'; currentStep = 3; 
+            let html = ""; for (let id in cart) html += `• ${cart[id].name} (x${cart[id].count}) - ${cart[id].price * cart[id].count}€<br>`;
+            document.getElementById('receiptItemsList').innerHTML = html; 
+            currentDelivery = null; currentCity = null; currentPayment = null;
+            document.getElementById('btnPickup').classList.remove('active'); document.getElementById('btnDelivery').classList.remove('active');
+            let pInput = document.getElementById('pointsInputNew'); pInput.value = '0';
             document.getElementById('availPointsUi').innerText = realPoints;
-
-            pInput.value = '0'; // Сброс до 0
-
-            // Блокировка если нет баллов
-            if (realPoints < 4) {
-                pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'У вас недостаточно баллов! (Минимум 4 балла)'); };
-            } else if (cartTotal < 4) {
-                pInput.disabled = true; pInput.style.color = '#666'; pOverlay.style.display = 'block';
-                pOverlay.onclick = () => { showCustomModal('Ошибка списания', 'Сумма заказа слишком мала (Минимум 4€)'); };
-            } else {
-                pInput.disabled = false; pInput.style.color = '#fff'; pOverlay.style.display = 'none';
-            }
-
             updateCheckoutUI();
-            updateReceiptTotal(); // Обязательно вызываем, чтобы не было "0 €" при старте!
         };
 
         window.submitCheckoutForm = function() {
-            const errorDiv = document.getElementById('checkoutError');
-            errorDiv.style.display = 'none';
+            const errorDiv = document.getElementById('checkoutError'); errorDiv.style.display = 'none';
+            if (!currentDelivery || !currentCity) { errorDiv.innerText = "❌ Выберите способ получения!"; errorDiv.style.display = 'block'; return; }
+            if (!currentPayment) { errorDiv.innerText = "❌ Выберите способ оплаты!"; errorDiv.style.display = 'block'; return; }
 
-            if (!currentDelivery || !currentCity) {
-                errorDiv.innerText = "❌ Выберите способ получения!";
-                errorDiv.style.display = 'block';
-                return;
-            }
+            let ptsSpent = parseInt(document.getElementById('pointsInputNew').value) || 0;
+            if (ptsSpent > 0 && ptsSpent < 4) return showCustomModal('Ошибка', 'Нельзя списать меньше 4 баллов!');
+            if (ptsSpent > realPoints) return showCustomModal('Ошибка', 'Недостаточно баллов!');
+            if (ptsSpent > cartTotal) return showCustomModal('Ошибка', 'Нельзя списать баллов больше суммы заказа!');
 
-            if (!currentPayment) {
-                errorDiv.innerText = "❌ Выберите способ оплаты!";
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            // Валидация баллов
-            let ptsInputVal = document.getElementById('pointsInputNew').value.trim();
-            let ptsSpent = ptsInputVal === '' ? 0 : parseInt(ptsInputVal); 
-
-            if (ptsSpent > 0 && ptsSpent < 4) { 
-                showCustomModal('Ошибка списания', 'Вы не можете списать меньше 4 баллов!');
-                return; 
-            }
-            if (ptsSpent > realPoints) { 
-                showCustomModal('Ошибка списания', 'У вас недостаточно баллов на балансе!');
-                return; 
-            }
-            if (ptsSpent > cartTotal) { 
-                showCustomModal('Ошибка списания', 'Нельзя списать баллов больше, чем сумма заказа!');
-                return; 
-            }
-
-            let finalAddress = "";
-            let finalAddress = "";
-            if (currentDelivery === 'pickup') {
-                finalAddress = `🏪 Самовывоз | Город: ${currentCity}`;
-            } else {
-                let actualCity = currentCity === 'other' ? 'Другой город' : currentCity;
-                finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
-            }
+            let finalAddress = (currentDelivery === 'pickup') ? `🏪 Самовывоз | Город: ${currentCity}` : `🚚 Доставка | Город: ${currentCity === 'other' ? 'Другой город' : currentCity} (Адрес уточнит менеджер)`;
             finalAddress += ` | 💰 Оплата: ${currentPayment === 'cash' ? 'Наличные' : 'Карта'}`;
 
-            let finalPriceToPay = cartTotal - ptsSpent;
-            if (finalPriceToPay < 0) finalPriceToPay = 0;
-
             tg.sendData(JSON.stringify({ 
-                action: 'order',
-                cart: cart, 
-                address: finalAddress, 
-                points: ptsSpent, 
-                total: finalPriceToPay,
-                promo: activePromo ? activePromo.code : null,
-                favs: Object.keys(favorites), 
-                fav_notify: favNotify 
+                action: 'order', cart: cart, address: finalAddress, points: ptsSpent, total: Math.max(0, cartTotal - ptsSpent),
+                promo: activePromo ? activePromo.code : null, favs: Object.keys(favorites), fav_notify: false 
             })); 
             tg.close();
         };
-             
+
+        const filterOverlayPanel = document.getElementById('filterOverlay');
+        filterOverlayPanel.addEventListener('click', (e) => { if(e.target === filterOverlayPanel) filterOverlayPanel.classList.remove('active'); });
+
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
@@ -1608,65 +1383,11 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
 
         const menuOverlay = document.getElementById('menuOverlay');
         document.getElementById('openMenuBtn').addEventListener('click', () => menuOverlay.classList.add('active'));
-        
-        const filterOverlay = document.getElementById('filterOverlay');
-        document.getElementById('categoryFilterBtn').addEventListener('click', () => filterOverlay.classList.add('active'));
-        filterOverlay.addEventListener('click', (e) => { if(e.target === filterOverlay) filterOverlay.classList.remove('active'); });
-        
-        let currentMainCityFilter = 'all';
 
-        // Открытие шторки городов
-        document.getElementById('cityFilterBtn').addEventListener('click', () => {
-            const overlay = document.getElementById('cityMainFilterOverlay');
-            const container = document.getElementById('dynamicMainCities');
-            container.innerHTML = '';
-            
-            let allCities = [];
-            // Собираем ТОЛЬКО самовывоз и доставку, чтобы не вылезал [object Object]
-            ['perm', 'delivery'].forEach(key => {
-                if (citiesData[key]) allCities = allCities.concat(citiesData[key]);
-            });
-            allCities = [...new Set(allCities)];
-            
-            allCities.forEach(c => {
-                let isActive = (currentMainCityFilter === c) ? 'active' : '';
-                let btnHtml = `<div class="cat-btn ${isActive}" onclick="selectMainCityFilter('${c}', this)">${c}</div>`;
-                container.insertAdjacentHTML('beforeend', btnHtml);
-            });
-            
-            overlay.classList.add('active');
-        });
-
-        // Выбор города в шторке
-        window.selectMainCityFilter = function(city, btnElement) {
-            currentMainCityFilter = city;
-            const btn = document.getElementById('cityFilterBtn');
-            if (city !== 'all') {
-                btn.style.background = '#fff'; 
-                btn.style.color = '#000';
-                btn.innerText = city;
-            } else {
-                btn.style.background = '#161616'; 
-                btn.style.color = '#fff'; 
-                btn.innerText = "Выбор городов";
-            }
-            document.getElementById('cityMainFilterOverlay').classList.remove('active');
-            renderCatalog(); 
-        };
-
-        const cityOverlay = document.getElementById('cityMainFilterOverlay');
-        cityOverlay.addEventListener('click', (e) => { if(e.target === cityOverlay) cityOverlay.classList.remove('active'); });
-
-        document.getElementById('cartTopBtn').addEventListener('click', openCartScreen);
-
-        window.openInfoScreen = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
-            document.getElementById('topNav').style.display = 'none';
-            document.getElementById('infoScreen').style.display = 'block';
-            currentStep = 6; 
-            tg.BackButton.show(); tg.MainButton.hide();
-        };
+        window.openInfoScreen = function() { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById('topNav').style.display = 'none'; document.getElementById('infoScreen').style.display = 'block'; currentStep = 6; tg.BackButton.show(); tg.MainButton.hide(); };
+        window.openSupportScreen = function() { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById('topNav').style.display = 'none'; document.getElementById('supportScreen').style.display = 'block'; currentStep = 8; tg.BackButton.show(); tg.MainButton.hide(); };
+        window.openReferralScreen = function() { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById('topNav').style.display = 'none'; document.getElementById('refScreen').style.display = 'block'; currentStep = 7; tg.BackButton.show(); tg.MainButton.hide(); };
+        window.openCasinoScreen = function() { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById('topNav').style.display = 'none'; document.getElementById('casinoScreen').style.display = 'block'; currentStep = 9; tg.BackButton.show(); tg.MainButton.hide(); updateCasinoUI(); generateRouletteTrack(); };
 
         window.goBackToCatalog = function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
@@ -1676,389 +1397,105 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
         };
 
         tg.onEvent('backButtonClicked', () => {
-            if (currentStep === 5 || currentStep === 2 || currentStep === 6 || currentStep === 7 || currentStep === 8 || currentStep === 9) { goBackToCatalog(); } 
-            else if (currentStep === 3) {
-                document.getElementById('mapScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'flex';
-                currentStep = 2; updateMainButton();
-            }
+            if ([5, 2, 6, 7, 8, 9].includes(currentStep)) goBackToCatalog(); 
+            else if (currentStep === 3) { document.getElementById('mapScreen').style.display = 'none'; document.getElementById('cartScreen').style.display = 'flex'; currentStep = 2; updateMainButton(); }
         });
 
-        // Функция открытия экрана поддержки
-        window.openSupportScreen = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
-            document.getElementById('topNav').style.display = 'none';
-            document.getElementById('supportScreen').style.display = 'block';
-            currentStep = 8; 
-            tg.BackButton.show(); tg.MainButton.hide();
-        };
-
-        // Функция отправки сообщения в поддержку
         window.submitSupport = function() {
             let text = document.getElementById('supportInput').value.trim();
-            if (!text) {
-                tg.showAlert('Пожалуйста, напишите ваше сообщение!');
-                return;
-            }
-            
-            // Отправляем данные в Питон (позже научим бота принимать это)
-            tg.sendData(JSON.stringify({ 
-                action: 'support', 
-                message: text 
-            }));
-            tg.close();
+            if (!text) return tg.showAlert('Пожалуйста, напишите ваше сообщение!');
+            tg.sendData(JSON.stringify({ action: 'support', message: text })); tg.close();
         };
 
-// =====================================================================
-        // ЛОГИКА 777 (КАЗИНО)
-        // =====================================================================
-        const itemWidth = 90; // Ширина одной ячейки из CSS (min-width: 90px)
+        const itemWidth = 90; 
+        const rouletteItems = [{ text: 'x1.2', class: 'r-grey' }, { text: 'x1.5', class: 'r-grey' }, { text: 'x2.0', class: 'r-purple' }, { text: 'x3.0', class: 'r-gold' }];
 
-        // Возможные исходы рулетки
-        const rouletteItems = [
-            { text: 'x1.2', class: 'r-grey' },
-            { text: 'x1.5', class: 'r-grey' },
-            { text: 'x2.0', class: 'r-purple' },
-            { text: 'x3.0', class: 'r-gold' }
-        ];
-
-// Логика кнопки "Применить промокод"
         window.applyPromoCode = function() {
             let input = document.getElementById('promoCodeInput').value.trim().toUpperCase();
             if (!input) return;
-            
-            if (activePromo) {
-                return tg.showAlert("Вы уже применили промокод для этого заказа!");
-            }
-
+            if (activePromo) return tg.showAlert("Вы уже применили промокод для этого заказа!");
             let promo = promoDataDB[input];
-            if (!promo || promo.uses <= 0) {
-                return tg.showAlert("❌ Промокод не существует или закончился!");
-            }
-
+            if (!promo || promo.uses <= 0) return tg.showAlert("❌ Промокод не существует или закончился!");
             activePromo = { code: input, type: promo.type, value: promo.value, items: promo.items };
-            
             if (promo.type === "points") {
-                realPoints += promo.value; // Даем баллы сразу визуально
-                tg.showAlert(`🎉 Промокод применен! Вы получите бонус: +${promo.value} баллов к заказу.`);
-                renderCartScreen(); // Автоматически пересчитает всё с учетом нового индивидуального кэшбэка!
+                realPoints += promo.value; tg.showAlert(`🎉 Промокод применен! Вы получите бонус: +${promo.value} баллов к заказу.`); renderCartScreen(); 
             } else if (promo.type === "items") {
-                promo.items.forEach(itemId => {
-                    if (menuData[itemId]) {
-                        if(cart[itemId]) cart[itemId].count += 1;
-                        else cart[itemId] = { name: menuData[itemId].name, price: 0, count: 1 }; // Цена 0, так как бесплатно
-                    }
-                });
-                renderCartScreen();
-                updateMainButton();
-                tg.showAlert(`🎉 Промокод применен! Бесплатные товары добавлены в корзину.`);
+                promo.items.forEach(itemId => { if (menuData[itemId]) { if(cart[itemId]) cart[itemId].count += 1; else cart[itemId] = { name: menuData[itemId].name, price: 0, count: 1 }; } });
+                renderCartScreen(); updateMainButton(); tg.showAlert(`🎉 Промокод применен! Бесплатные товары добавлены в корзину.`);
             }
-            
-            document.getElementById('promoCodeInput').disabled = true;
-            document.getElementById('promoCodeInput').value = "ПРИМЕНЕН: " + input;
-            document.querySelector('.promo-btn').style.background = "#27ae60";
+            document.getElementById('promoCodeInput').disabled = true; document.getElementById('promoCodeInput').value = "ПРИМЕНЕН: " + input; document.querySelector('.promo-btn').style.background = "#27ae60";
         };
 
-        window.openCasinoScreen = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.getElementById('casWeeklyWonUi').innerText = casWeeklyWon;
-            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
-            document.getElementById('topNav').style.display = 'none';
-            document.getElementById('casinoScreen').style.display = 'block';
-            currentStep = 9; // Новый шаг для истории "назад"
-            tg.BackButton.show(); tg.MainButton.hide();
-            
-            updateCasinoUI();
-            generateRouletteTrack(); // Генерируем линию рулетки при открытии
-// Убираем красные точки навсегда
-            localStorage.setItem('casino_opened_once', 'true');
-            let mainDot = document.getElementById('mainNotifDot');
-            if (mainDot) mainDot.style.display = 'none';
-            let menuDot = document.getElementById('menuCasinoDot');
-            if (menuDot) menuDot.style.display = 'none';
-        };
-
-        window.updateCasinoUI = function() {
-            document.getElementById('casRealPointsUi').innerText = realPoints;
-            document.getElementById('casCasinoPointsUi').innerText = myCasinoPoints;
-            document.getElementById('casBetAmountUi').innerText = currentBet;
-        };
-
-        // Обмен валют (Визуальный, пока без Питона)
         window.exchangeToCas = function() {
             if (realPoints <= 0) return showCustomModal('Ошибка', 'У вас нет обычных баллов для обмена.');
-            myCasinoPoints += realPoints;
-            realPoints = 0;
-            updateCasinoUI();
+            myCasinoPoints += realPoints; realPoints = 0; updateCasinoUI();
         };
 
         window.exchangeToReal = function() {
             if (myCasinoPoints <= 0) return showCustomModal('Ошибка', 'Нет казбаллов для вывода.');
-            // Комиссия 10%
-            let amountToGive = Math.floor(myCasinoPoints * 0.9);
-            realPoints += amountToGive;
-            myCasinoPoints = 0;
-            updateCasinoUI();
-            showCustomModal('Успешно', `Вы вывели баллы с учетом комиссии 10%. Получено: ${amountToGive} б.`);
+            let amountToGive = Math.floor(myCasinoPoints * 0.9); realPoints += amountToGive; myCasinoPoints = 0; updateCasinoUI(); showCustomModal('Успешно', `Вы вывели баллы с учетом комиссии 10%. Получено: ${amountToGive} б.`);
         };
 
         window.changeBet = function(delta) {
             if (isSpinning) return;
-            currentBet += delta;
-            if (currentBet < 1) currentBet = 1;
-            if (currentBet > myCasinoPoints && myCasinoPoints > 0) currentBet = myCasinoPoints;
-            updateCasinoUI();
+            currentBet += delta; if (currentBet < 1) currentBet = 1; if (currentBet > myCasinoPoints && myCasinoPoints > 0) currentBet = myCasinoPoints; updateCasinoUI();
         };
 
-        // Генерация длинной полосы с ячейками
         function generateRouletteTrack() {
-            const track = document.getElementById('rouletteTrack');
-            track.style.transition = 'none';
-            track.style.transform = `translateX(0px)`;
-            track.innerHTML = '';
-
-            // Генерируем 70 случайных блоков
+            const track = document.getElementById('rouletteTrack'); track.style.transition = 'none'; track.style.transform = `translateX(0px)`; track.innerHTML = '';
             for (let i = 0; i < 70; i++) {
-                // Имитация шансов (45% x1.2, 30% x1.5, 15% x2.0, 10% x3.0)
-                let rand = Math.random() * 100;
-                let item;
-                if (rand < 45) item = rouletteItems[0];
-                else if (rand < 75) item = rouletteItems[1];
-                else if (rand < 90) item = rouletteItems[2];
-                else item = rouletteItems[3];
-
+                let rand = Math.random() * 100; let item = rand < 45 ? rouletteItems[0] : rand < 75 ? rouletteItems[1] : rand < 90 ? rouletteItems[2] : rouletteItems[3];
                 track.innerHTML += `<div class="roulette-item ${item.class}">${item.text}</div>`;
             }
         }
 
-        window.saveCasinoAndExit = function() {
-            tg.sendData(JSON.stringify({ 
-                action: 'save_casino', 
-                real_points: realPoints,
-                cas_points: myCasinoPoints 
-            })); 
-            tg.close();
-        };
+        window.saveCasinoAndExit = function() { tg.sendData(JSON.stringify({ action: 'save_casino', real_points: realPoints, cas_points: myCasinoPoints })); tg.close(); };
 
         window.spinRoulette = function() {
-            if (isSpinning) return;
-            if (currentBet > myCasinoPoints) return showCustomModal('Ошибка', 'Недостаточно Казбаллов для ставки!');
-
-            isSpinning = true;
-            document.getElementById('spinBtn').style.opacity = '0.5';
-            
-            // Списываем ставку
-            myCasinoPoints -= currentBet;
-            updateCasinoUI();
-
-            const track = document.getElementById('rouletteTrack');
-            
-            // Возвращаем в начало (чтобы можно было крутить несколько раз подряд)
-            track.style.transition = 'none';
-            track.style.transform = `translateX(0px)`;
-            
-            // Небольшая задержка, чтобы браузер применил сброс позиции
+            if (isSpinning) return; if (currentBet > myCasinoPoints) return showCustomModal('Ошибка', 'Недостаточно Казбаллов для ставки!');
+            isSpinning = true; document.getElementById('spinBtn').style.opacity = '0.5'; myCasinoPoints -= currentBet; updateCasinoUI();
+            const track = document.getElementById('rouletteTrack'); track.style.transition = 'none'; track.style.transform = `translateX(0px)`;
             setTimeout(() => {
-                // Выбираем выигрышный блок (где-то между 50 и 60 ячейкой)
-                const winningIndex = Math.floor(Math.random() * 10) + 50; 
-                
-                // Рандомное смещение внутри самой ячейки, чтобы стрелка не вставала ровно по центру
-                const randomOffsetWithinItem = Math.floor(Math.random() * (itemWidth - 10)) - (itemWidth / 2 - 5); 
-                
-                // Рассчитываем, на сколько пикселей нужно сдвинуть полосу влево
-                // Половина ширины экрана (чтобы победитель был по центру) минус позиция элемента
-                const screenCenter = document.querySelector('.roulette-container').offsetWidth / 2;
-                const finalPosition = -(winningIndex * itemWidth) + screenCenter - (itemWidth / 2) + randomOffsetWithinItem;
-
-                track.style.transition = 'transform 5s cubic-bezier(0.15, 0.85, 0.1, 1)';
-                track.style.transform = `translateX(${finalPosition}px)`;
-
-                // Ждем окончания анимации (5 секунд)
+                const winningIndex = Math.floor(Math.random() * 10) + 50; const randomOffsetWithinItem = Math.floor(Math.random() * (itemWidth - 10)) - (itemWidth / 2 - 5); 
+                const screenCenter = document.querySelector('.roulette-container').offsetWidth / 2; const finalPosition = -(winningIndex * itemWidth) + screenCenter - (itemWidth / 2) + randomOffsetWithinItem;
+                track.style.transition = 'transform 5s cubic-bezier(0.15, 0.85, 0.1, 1)'; track.style.transform = `translateX(${finalPosition}px)`;
                 setTimeout(() => {
-                    // Смотрим, какой блок выиграл, читая его текст
-                    const winningItem = track.children[winningIndex];
-                    const multiplierStr = winningItem.innerText.replace('x', '');
-                    const multiplier = parseFloat(multiplierStr);
-                    
-                    const winnings = Math.floor(currentBet * multiplier);
-                    myCasinoPoints += winnings;
-                    updateCasinoUI();
-                    
-                    showCustomModal('Результат', `Выпало x${multiplier}!\nВаш выигрыш: ${winnings} Казбаллов.`);
-                    
-                    isSpinning = false;
-                    document.getElementById('spinBtn').style.opacity = '1';
+                    const winningItem = track.children[winningIndex]; const multiplier = parseFloat(winningItem.innerText.replace('x', ''));
+                    const winnings = Math.floor(currentBet * multiplier); myCasinoPoints += winnings; updateCasinoUI();
+                    showCustomModal('Результат', `Выпало x${multiplier}!\nВаш выигрыш: ${winnings} Казбаллов.`); isSpinning = false; document.getElementById('spinBtn').style.opacity = '1';
                 }, 5100);
             }, 50);
         };
 
-        // Открытие экрана рефералки
-        // Открытие экрана рефералки с логикой снятия баллов
-        window.openReferralScreen = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.filter-overlay, .side-menu-fullscreen').forEach(s => s.classList.remove('active'));
-            document.getElementById('topNav').style.display = 'none';
-            document.getElementById('refScreen').style.display = 'block';
-            currentStep = 7; 
-            tg.BackButton.show(); tg.MainButton.hide();
-
-            let botUsername = "Reutlingen_test_bot"; 
-            let urlUid = new URLSearchParams(window.location.search).get('uid');
-            let myId = urlUid || tg.initDataUnsafe?.user?.id || 'id_ошибка';
-            document.getElementById('refLinkText').innerText = `https://t.me/${botUsername}?start=${myId}`;
-
-            // ЧИТАЕМ СПИСОК ДРУЗЕЙ ИЗ ПИТОНА
-            let refsParam = new URLSearchParams(window.location.search).get('r');
-            let refsData = refsParam ? JSON.parse(decodeURIComponent(refsParam)) : [];
-            
-            let refsContainer = document.getElementById('refHistoryContainer');
-            refsContainer.innerHTML = '';
-            let totalEarnedFromRefs = 0;
-
-            if (refsData.length === 0) {
-                refsContainer.innerHTML = '<div style="text-align:center; color:#666; font-size:13px; padding:20px 0;">У вас пока нет приглашенных друзей</div>';
-            } else {
-                refsData.forEach(friend => {
-                    let total_items = friend.o;
-                    let earned = 0;
-                    
-                    if (total_items > 0) {
-                        earned = 2 + Math.floor(total_items / 4) * 2;
-                        if (earned > 24) earned = 24; // Лимит 24 балла (на 44-м товаре)
-                    }
-                    
-                    let withdrawn = friend.w; // уже снято
-                    let available = earned - withdrawn; // доступно к снятию
-                    totalEarnedFromRefs += withdrawn; // В статистику пишем только то, что реально сняли
-                    
-                    let canWithdraw = false;
-                    let minToWithdraw = (withdrawn === 0) ? 4 : 2; // Первый раз снимаем от 4, потом от 2
-                    if (available >= minToWithdraw) canWithdraw = true;
-                    
-                    let html = '';
-                    if (canWithdraw) {
-                        html = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 15px; border-radius: 16px; border: 1px solid #333; box-shadow: 0 5px 20px rgba(0, 119, 255, 0.15); margin-bottom: 10px; position: relative; z-index: 1;">
-                            <div style="display: flex; align-items: center; gap: 12px; max-width: 50%;">
-                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #444;">
-                                <div style="display: flex; flex-direction: column; overflow: hidden;">
-                                    <div style="font-size: 14px; color: #fff; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.u}</div>
-                                    <div style="font-size: 11px; color: #666; margin-top: 2px;">Добавить имя...</div>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                                    <div style="font-size: 10px; color: #888; text-transform: uppercase;">Снято всего</div>
-                                    <b style="color:#ffffff; font-size:15px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);">${withdrawn}</b>
-                                </div>
-                                <button style="background: rgba(130, 204, 221, 0.15); border: 1px solid #82ccdd; color: #82ccdd; border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 0 10px rgba(130, 204, 221, 0.4);" onclick="tg.sendData(JSON.stringify({action: 'withdraw_ref', friend_id: '${friend.id}'})); tg.close();">${available} б.</button>
-                            </div>
-                        </div>`;
-                    } else {
-                        html = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 12px 15px; border-radius: 16px; border: 1px solid #333; margin-bottom: 10px; position: relative; z-index: 1;">
-                            <div style="display: flex; align-items: center; gap: 12px; max-width: 50%;">
-                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #444;">
-                                <div style="display: flex; flex-direction: column; overflow: hidden;">
-                                    <div style="font-size: 14px; color: #fff; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${friend.u}</div>
-                                    <div style="font-size: 11px; color: #666; margin-top: 2px;">Добавить имя...</div>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                                    <div style="font-size: 10px; color: #888; text-transform: uppercase;">Снято всего</div>
-                                    <b style="color:#ffffff; font-size:15px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);">${withdrawn}</b>
-                                </div>
-                                <button style="background: #2a2a2a; border: 1px solid #444; color: #666; border-radius: 10px; padding: 8px 12px; font-size: 13px; font-weight: 800; cursor: not-allowed;">${available} б.</button>
-                            </div>
-                        </div>`;
-                    }
-                    refsContainer.insertAdjacentHTML('beforeend', html);
-                });
-            }
-
-            let refsCount = statsData[3] || 0;
-            document.getElementById('refCountUi').innerText = refsCount;
-            document.getElementById('refEarnedUi').innerText = totalEarnedFromRefs; 
-        };
-
-        // Копирование ссылки с красивым уведомлением
         window.copyRefLink = function() {
-            let text = document.getElementById('refLinkText').innerText;
-            
-            // Функция вызова нашей плашки
-            let showCopyToast = function() {
-                let toast = document.getElementById('copyToast');
-                toast.classList.remove('active');
-                void toast.offsetWidth; // Сбрасываем анимацию
-                toast.classList.add('active');
-                setTimeout(() => { toast.classList.remove('active'); }, 3000);
-            };
-
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(showCopyToast);
-            } else {
-                let textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand("Copy");
-                textArea.remove();
-                showCopyToast();
-            }
-        };
-
-        if (tg.initDataUnsafe?.user?.photo_url) {
-            document.addEventListener("DOMContentLoaded", () => {
-                const avatarImg = document.getElementById('profileAvatarBig');
-                if (avatarImg) avatarImg.src = tg.initDataUnsafe.user.photo_url;
+            let text = `https://t.me/Reutlingen_test_bot?start=${new URLSearchParams(window.location.search).get('uid') || tg.initDataUnsafe?.user?.id}`;
+            navigator.clipboard.writeText(text).then(() => {
+                let toast = document.getElementById('copyToast'); toast.classList.remove('active'); void toast.offsetWidth; toast.classList.add('active'); setTimeout(() => { toast.classList.remove('active'); }, 3000);
             });
-        }
-        loadMenu();
+        };
 
         let isSpinningCasino = false;
         window.spinCasinoNumbers = function() {
-            if (isSpinningCasino) return;
-            isSpinningCasino = true;
-            
+            if (isSpinningCasino) return; isSpinningCasino = true;
             const slots = [document.getElementById('slot1'), document.getElementById('slot2'), document.getElementById('slot3')];
-            
-            // Запускаем эффект крутящихся слотов
-            slots.forEach(slot => {
-                slot.classList.remove('idle', 'stopped');
-                slot.classList.add('rolling');
-            });
-
-            // Каждые 50мс меняем цифру под эффектом размытия
+            slots.forEach(slot => { slot.classList.remove('idle', 'stopped'); slot.classList.add('rolling'); });
             let ints = slots.map(slot => setInterval(() => slot.innerText = Math.floor(Math.random() * 8), 50));
-
-            // Поочередно резко останавливаем с крутым эффектом
             slots.forEach((slot, index) => {
                 setTimeout(() => {
-                    clearInterval(ints[index]);
-                    slot.classList.remove('rolling');
-                    slot.classList.add('stopped'); // Добавляет CSS отскок и делает цвет золотым
-                    slot.innerText = Math.floor(Math.random() * 8);
-
-                    // Когда остановилась последняя цифра (третья)
-                    if (index === 2) {
-                        setTimeout(() => {
-                            // Возвращаем обычные синхронные прыжки
-                            slots.forEach(s => {
-                                s.classList.remove('stopped');
-                                s.classList.add('idle');
-                            });
-                            isSpinningCasino = false; // Разрешаем крутить снова
-                        }, 600); // Пауза после полной остановки, чтобы игрок успел увидеть цифры
-                    }
-                }, 800 + (index * 800)); // Первая останавливается через 800мс, вторая 1600мс, третья 2400мс
+                    clearInterval(ints[index]); slot.classList.remove('rolling'); slot.classList.add('stopped'); slot.innerText = Math.floor(Math.random() * 8);
+                    if (index === 2) { setTimeout(() => { slots.forEach(s => { s.classList.remove('stopped'); s.classList.add('idle'); }); isSpinningCasino = false; }, 600); }
+                }, 800 + (index * 800)); 
             });
         };
 
-        window.goToBotCasino = function() {
-            tg.sendData(JSON.stringify({ action: 'start_casino' }));
-            tg.close();
-        };
-
+        window.goToBotCasino = function() { tg.sendData(JSON.stringify({ action: 'start_casino' })); tg.close(); };
+        
+        if (tg.initDataUnsafe?.user?.photo_url) {
+            document.addEventListener("DOMContentLoaded", () => {
+                const avatarImg = document.getElementById('profileAvatarBig'); if (avatarImg) avatarImg.src = tg.initDataUnsafe.user.photo_url;
+            });
+        }
+        loadMenu();
     </script>
+</body>
 </html>
