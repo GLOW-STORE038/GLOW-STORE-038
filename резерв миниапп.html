@@ -1373,28 +1373,49 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
 
         window.openCitySheet = function(type) {
             currentDelivery = (type === 'delivery') ? 'delivery' : 'pickup';
-            
             const sheet = document.getElementById('checkoutSheetOverlay');
             const panel = document.getElementById('checkoutSheetPanel');
-            
             let headerText = "ВЫБЕРИТЕ ГОРОД";
             let cities = citiesData[type] || [];
             
-            let html = `
-                <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="closeCheckoutSheet()">×</button>
-                <div class="filter-header">${headerText}</div>
-            `;
-            
-            cities.forEach(c => {
-                html += `<div class="cat-btn" style="margin-bottom:10px;" onclick="selectCity('${c}')">${c}</div>`;
-            });
-            
-            if (type === 'delivery') {
-                html += `<div class="cat-btn" onclick="selectCity('other')">Другие города...</div>`;
-            }
+            let html = `<button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="closeCheckoutSheet()">×</button><div class="filter-header">${headerText}</div>`;
+            cities.forEach(c => { html += `<div class="cat-btn" style="margin-bottom:10px;" onclick="selectCity('${c}')">${c}</div>`; });
+            if (type === 'delivery') html += `<div class="cat-btn" onclick="selectCity('other')">Другие города...</div>`;
             
             panel.innerHTML = html;
             sheet.classList.add('active');
+        };
+
+        window.selectCity = function(city) {
+            currentCity = city;
+            closeCheckoutSheet();
+            updateCheckoutUI();
+        };
+
+        window.closeCheckoutSheet = function() {
+            document.getElementById('checkoutSheetOverlay').classList.remove('active');
+        };
+
+        const checkoutSheetOverlay = document.getElementById('checkoutSheetOverlay');
+        checkoutSheetOverlay.addEventListener('click', (e) => { if(e.target === checkoutSheetOverlay) closeCheckoutSheet(); });
+
+        window.selectMainCityFilter = function(city, btnElement) {
+            currentMainCityFilter = city;
+            document.querySelectorAll('#cityMainFilterPanel .cat-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            let btn = document.getElementById('cityFilterBtn');
+            if (city !== 'all') {
+                btn.style.background = '#fff'; 
+                btn.style.color = '#000';
+                btn.innerText = city;
+            } else {
+                btn.style.background = '#161616'; 
+                btn.style.color = '#fff'; 
+                btn.innerText = "Выбор городов";
+            }
+            document.getElementById('cityMainFilterOverlay').classList.remove('active');
+            renderCatalog(); 
         };
 
         window.selectCity = function(city) {
@@ -1613,23 +1634,6 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             
             overlay.classList.add('active');
         });
-
-        // Выбор города в шторке
-        window.selectMainCityFilter = function(city) {
-            currentMainCityFilter = city;
-            const btn = document.getElementById('cityFilterBtn');
-            if (city !== 'all') {
-                btn.style.background = '#fff'; 
-                btn.style.color = '#000';
-                btn.innerText = city;
-            } else {
-                btn.style.background = '#161616'; 
-                btn.style.color = '#fff'; 
-                btn.innerText = "Выбор городов";
-            }
-            filterProducts();
-            closeMainCityFilterSheet();
-        };
 
         const cityOverlay = document.getElementById('cityMainFilterOverlay');
         cityOverlay.addEventListener('click', (e) => { if(e.target === cityOverlay) cityOverlay.classList.remove('active'); });
