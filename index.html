@@ -349,6 +349,16 @@
         </div>
     </div>
 
+<!-- ШТОРКА ДЛЯ ВЫБОРА ГОРОДА НА ГЛАВНОЙ -->
+    <div class="filter-overlay" id="cityMainFilterOverlay">
+        <div class="filter-panel" id="cityMainFilterPanel">
+            <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('cityMainFilterOverlay').classList.remove('active')">×</button>
+            <div class="filter-header">ВЫБЕРИТЕ ГОРОД</div>
+            <div class="cat-btn cat-btn-all active" onclick="selectMainCityFilter('all', this)">Все города</div>
+            <div id="dynamicMainCities" style="display: contents;"></div>
+        </div>
+    </div>
+
     <!-- ШТОРКА ДЛЯ ВЫБОРА ДОСТАВКИ/САМОВЫВОЗА -->
     <div class="filter-overlay" id="checkoutSheetOverlay">
         <div class="filter-panel" id="checkoutSheetPanel">
@@ -586,7 +596,10 @@
         
         <div class="sub-title" id="subTitleText" onclick="clickEasterEgg()">Бери больше, кайфуй дольше</div>
         
-        <div class="filter-btn" id="categoryFilterBtn">Выбор товаров</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
+            <div class="filter-btn" id="categoryFilterBtn" style="margin-bottom: 0;">Выбор товаров</div>
+            <div class="filter-btn" id="cityFilterBtn" style="margin-bottom: 0;">Выбор городов</div>
+        </div>
         
         <div id="favNotificationToggle" style="display: none; margin-bottom: 25px; align-items: center; gap: 10px; padding: 0 5px;">
             <input type="checkbox" id="favNotifyCheck" onchange="saveFavNotify()" style="width: 18px; height: 18px; accent-color: #82ccdd; flex-shrink: 0;">
@@ -996,6 +1009,12 @@
                 if (currentCategory === 'favorites' && !favorites[id]) continue;
                 if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
 
+// Фильтр по городу: скрываем товар, если его нет на складе выбранного города
+                if (currentMainCityFilter !== 'all') {
+                    let cityStock = (item.city_stock && item.city_stock[currentMainCityFilter]) ? item.city_stock[currentMainCityFilter] : 0;
+                    if (cityStock <= 0) continue; 
+                }
+
                 let isOut = item.stock <= 0; 
                 let cardClass = isOut ? "card disabled" : "card";
                 let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
@@ -1093,6 +1112,47 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
             document.getElementById('filterOverlay').classList.remove('active');
             renderCatalog();
         };
+
+let currentMainCityFilter = 'all';
+
+        // Открытие шторки городов (собираем только perm и delivery, чтобы не было object)
+        document.getElementById('cityFilterBtn').addEventListener('click', () => {
+            const overlay = document.getElementById('cityMainFilterOverlay');
+            const container = document.getElementById('dynamicMainCities');
+            container.innerHTML = '';
+            
+            let allCities = [];
+            ['perm', 'delivery'].forEach(key => {
+                if (citiesData[key]) allCities = allCities.concat(citiesData[key]);
+            });
+            allCities = [...new Set(allCities)];
+            
+            allCities.forEach(c => {
+                let isActive = (currentMainCityFilter === c) ? 'active' : '';
+                container.insertAdjacentHTML('beforeend', `<div class="cat-btn ${isActive}" onclick="selectMainCityFilter('${c}', this)">${c}</div>`);
+            });
+            
+            overlay.classList.add('active');
+        });
+
+        // Выбор города
+        window.selectMainCityFilter = function(city, btnElement) {
+            currentMainCityFilter = city;
+            document.querySelectorAll('#cityMainFilterPanel .cat-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            let btn = document.getElementById('cityFilterBtn');
+            if (city !== 'all') {
+                btn.style.background = '#fff'; btn.style.color = '#000'; btn.innerText = city;
+            } else {
+                btn.style.background = ''; btn.style.color = ''; btn.innerText = "Выбор городов";
+            }
+            document.getElementById('cityMainFilterOverlay').classList.remove('active');
+            renderCatalog(); 
+        };
+
+        const cityOverlay = document.getElementById('cityMainFilterOverlay');
+        cityOverlay.addEventListener('click', (e) => { if(e.target === cityOverlay) cityOverlay.classList.remove('active'); });
 
         window.toggleFav = function(id, btn) {
             if (favorites[id]) {
@@ -1354,15 +1414,7 @@ let favNotify = localStorage.getItem('glow_fav_notify') !== 'false';
         };
 
         window.clickPickupToggle = function() {
-            const sheet = document.getElementById('checkoutSheetOverlay');
-            const panel = document.getElementById('checkoutSheetPanel');
-            panel.innerHTML = `
-                <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="closeCheckoutSheet()">×</button>
-                <div class="filter-header">ТИП САМОВЫВОЗА</div>
-                <div class="cat-btn" style="margin-bottom:10px;" onclick="openCitySheet('perm')">Постоянный</div>
-                <div class="cat-btn" onclick="openCitySheet('temp')">Непостоянный</div>
-            `;
-            sheet.classList.add('active');
+            openCitySheet('perm'); 
         };
 
         window.clickDeliveryToggle = function() {
