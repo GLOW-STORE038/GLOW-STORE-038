@@ -343,7 +343,7 @@
         <div class="filter-panel" id="filterPanel">
             <button class="unified-close-btn" style="top: 15px; right: 15px;" onclick="document.getElementById('filterOverlay').classList.remove('active')">×</button>
             <div class="filter-header">ВЫБЕРИТЕ КАТЕГОРИЮ</div>
-            <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">Все товары</div>
+            <div class="cat-btn cat-btn-all active" onclick="selectCategory('all', this)">Фильтр товаров</div>
             <div id="dynamicCategories" style="display: contents;"></div>
             <div class="cat-btn" id="favFilterBtn" style="display: none;" onclick="selectCategory('favorites', this)">Избранное</div>
         </div>
@@ -1009,9 +1009,13 @@
                 if (currentCategory === 'favorites' && !favorites[id]) continue;
                 if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
 
-// Фильтр по городу: скрываем товар, если его нет на складе выбранного города
+// Фильтр по городу с учетом общих складов (связей)
                 if (currentMainCityFilter !== 'all') {
-                    let cityStock = (item.city_stock && item.city_stock[currentMainCityFilter]) ? item.city_stock[currentMainCityFilter] : 0;
+                    let links = citiesData.links || {};
+                    // Если для города есть донор (например Буча -> Киев), берем склад Киева
+                    let targetCity = links[currentMainCityFilter] ? links[currentMainCityFilter] : currentMainCityFilter;
+                    
+                    let cityStock = (item.city_stock && item.city_stock[targetCity]) ? item.city_stock[targetCity] : 0;
                     if (cityStock <= 0) continue; 
                 }
 
