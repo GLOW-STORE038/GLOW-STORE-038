@@ -876,7 +876,13 @@
         if (urlParams.get('points')) realPoints = parseInt(urlParams.get('points'));
         if (urlParams.get('cp')) myCasinoPoints = parseInt(urlParams.get('cp'));
         
-        // Теперь статистика состоит из 4 цифр: товары, потрачено, кэшбэк, кол-во друзей
+        // --- СИНХРОНИЗАЦИЯ КОРЗИНЫ ---
+        if (urlParams.get('bc')) {
+            try { cart = JSON.parse(decodeURIComponent(urlParams.get('bc'))); } 
+            catch(e) {}
+        }
+        
+        // Теперь статистика состоит из 4 цифр:
             let statsData = urlParams.get('stats') ? urlParams.get('stats').split('_') : [0, 0, 0, 0];
             let totalItemsOrdered = parseInt(statsData[0]) || 0;
         let ee1Avail = parseInt(urlParams.get('ee1')) || 0;
@@ -974,6 +980,7 @@
                 
                 renderCategories(); 
                 renderCatalog();
+                updateMainButton(); // СИНХРОНИЗАЦИЯ: Обновляем бейджик корзины при старте!
             } catch (e) { document.getElementById('catalogGrid').innerHTML = '<div class="loader">❌ Ошибка загрузки</div>'; }
         }
 
@@ -990,6 +997,13 @@
             favBtn.style.display = 'block'; 
             selectCategory('favorites', favBtn);
         });
+
+        window.getActualStock = function(item) {
+            if (currentMainCityFilter === 'all') return item.stock || 0;
+            let links = citiesData.links || {};
+            let targetCity = links[currentMainCityFilter] ? links[currentMainCityFilter] : currentMainCityFilter;
+            return (item.city_stock && item.city_stock[targetCity]) ? item.city_stock[targetCity] : 0;
+        };
 
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid'); grid.innerHTML = '';
@@ -1009,19 +1023,24 @@
                 if (currentCategory === 'favorites' && !favorites[id]) continue;
                 if (currentCategory !== 'all' && currentCategory !== 'favorites' && item.category !== currentCategory) continue;
 
-// Фильтр по городу с учетом общих складов (связей)
-                if (currentMainCityFilter !== 'all') {
-                    let links = citiesData.links || {};
-                    // Если для города есть донор (например Буча -> Киев), берем склад Киева
-                    let targetCity = links[currentMainCityFilter] ? links[currentMainCityFilter] : currentMainCityFilter;
-                    
-                    let cityStock = (item.city_stock && item.city_stock[targetCity]) ? item.city_stock[targetCity] : 0;
-                    if (cityStock <= 0) continue; 
-                }
+let actualStock = getActualStock(item);
 
-                let isOut = item.stock <= 0; 
+                // Фильтр по городу с учетом общих складов
+                if (currentMainCityFilter !== 'all' && actualStock <= 0) continue; 
+
+                let isOut = actualStock <= 0; 
                 let cardClass = isOut ? "card disabled" : "card";
-                let stockHtml = isOut ? `<div class="stock-empty">Нет в наличии</div>` : `<div class="stock-ok">В наличии</div>`;
+                
+                let stockHtml = "";
+                if (isOut) {
+                    stockHtml = `<div class="stock-empty">Нет в наличии</div>`;
+                } else {
+                    if (currentMainCityFilter === 'all') {
+                        stockHtml = `<div class="stock-ok">В наличии</div>`;
+                    } else {
+                        stockHtml = `<div class="stock-ok">В наличии: ${actualStock}</div>`;
+                    }
+                }
                 
                 let displayPrice = item.price;
                 let displayOldPrice = item.old_price;
@@ -1483,8 +1502,7 @@ let currentMainCityFilter = 'all';
             document.getElementById('checkoutError').style.display = 'none';
 
             if (currentDelivery === 'pickup' && currentCity) {
-                let typeName = currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный';
-                infoDiv.innerHTML = `📍 Самовывоз (${typeName}): ${currentCity}`;
+                infoDiv.innerHTML = `📍 Самовывоз | Город: ${currentCity}`;
                 infoDiv.style.display = 'flex';
                 deliveryManagerInfo.style.display = 'none';
             } else if (currentDelivery === 'delivery' && currentCity) {
@@ -1610,7 +1628,7 @@ let currentMainCityFilter = 'all';
 
             let finalAddress = "";
             if (currentDelivery === 'pickup') {
-                finalAddress = `🏪 Самовывоз (${currentPickupType === 'perm' ? 'Постоянный' : 'Непостоянный'}) | Город: ${currentCity}`;
+                finalAddress = `🏪 Самовывоз | Город: ${currentCity}`;
             } else {
                 let actualCity = currentCity === 'other' ? 'Другой город' : currentCity;
                 finalAddress = `🚚 Доставка | Город: ${actualCity} (Адрес уточнит менеджер)`;
