@@ -1153,76 +1153,7 @@
             if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
         }
 
-                // Фильтр по городу с учетом общих складов
-                if (currentMainCityFilter !== 'all' && actualStock <= 0) continue; 
-
-                let isOut = actualStock <= 0; 
-                let cardClass = isOut ? "card disabled" : "card";
-                
-                let stockHtml = "";
-                if (isOut) {
-                    stockHtml = `<div class="stock-empty">Нет в наличии</div>`;
-                } else {
-                    if (currentMainCityFilter === 'all') {
-                        stockHtml = `<div class="stock-ok">В наличии</div>`;
-                    } else {
-                        stockHtml = `<div class="stock-ok">В наличии: ${actualStock}</div>`;
-                    }
-                }
-                
-                let displayPrice = item.price;
-                let displayOldPrice = item.old_price;
-                let isPromo = displayOldPrice && displayOldPrice > 0;
-                let now = Math.floor(Date.now() / 1000);
-                let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
-
-                if (isPromo && (isOut || isExpired)) {
-                    displayPrice = item.old_price; 
-                    displayOldPrice = 0; 
-                    isPromo = false; 
-                }
-
-                let priceClass = isPromo ? "new-price promo-price" : "new-price";
-                let oldPriceHtml = isPromo ? `<span class="old-price">${displayOldPrice} €</span>` : `<span class="old-price"></span>`;
-                let timerHtml = (isPromo && item.timer_end && item.timer_end > now && !isOut) ? `<div class="timer-badge" data-end="${item.timer_end}">⏳ ...</div>` : ``;
-                let cbHtml = '';
-                if (item.show_cb && !isOut) {
-                    let cbVal = item.cashback !== undefined ? item.cashback : Math.floor(displayPrice * 0.10);
-                    cbHtml = `<div class="cashback-badge">+ ${cbVal} баллов</div>`;
-                }
-                let isFavClass = favorites[id] ? "active" : "";
-
-                let cardHtml = `
-                    <div class="${cardClass}" data-id="${id}">
-                        <button class="fav-btn ${isFavClass}" onclick="toggleFav('${id}', this)">
-                            <svg class="fav-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        </button>
-                        <img src="${item.photo}" class="product-image" alt="Товар" onclick="openProductModal('${id}')">
-                        <div class="card-body">
-                            <div class="title" onclick="openProductModal('${id}')">${item.name}</div>
-                            ${timerHtml}
-                            ${cbHtml}
-                            <div class="specs" onclick="openProductModal('${id}')">${item.desc || ''}</div>
-                            ${stockHtml}
-                            <div class="price-row">
-                                <div class="price-box">${oldPriceHtml}<span class="${priceClass}">${displayPrice} €</span></div>
-                                <button class="add-btn" onclick="addToCart('${id}', '${item.name}', ${displayPrice}, this)">${cartIconSvg}</button>
-                                <div class="quantity-controls" style="display: ${cart[id] ? 'flex' : 'none'}">
-                                    <button class="btn-minus" onclick="changeCount('${id}', -1, this)">-</button>
-                                    <span class="item-count">${cart[id] ? cart[id].count : 1}</span>
-                                    <button class="btn-plus" onclick="changeCount('${id}', 1, this)">+</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.insertAdjacentHTML('beforeend', cardHtml);
-                if (cart[id]) grid.lastElementChild.querySelector('.add-btn').style.display = 'none';
-            }
-            if (grid.innerHTML === '') grid.innerHTML = '<div class="loader">Здесь пока пусто 🥲</div>';
-        }
-
-let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; 
+        let favNotify = localStorage.getItem('glow_fav_notify') !== 'false'; 
         let hasSeenFavModal = localStorage.getItem('glow_seen_fav_modal') === 'true';
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -1792,7 +1723,7 @@ let currentMainCityFilter = 'all';
             })); 
             tg.close();
         };
-
+             
         document.getElementById('openProfileBtn').addEventListener('click', () => {
             document.getElementById('catalogScreen').style.display = 'none'; document.getElementById('topNav').style.display = 'none';
             document.getElementById('profileScreen').style.display = 'flex'; currentStep = 5; 
