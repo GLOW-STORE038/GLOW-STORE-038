@@ -1007,11 +1007,20 @@
         });
 
         window.getActualStock = function(item) {
-            if (currentMainCityFilter === 'all') return item.stock || 0;
+            // ДИНАМИЧЕСКИ СУММИРУЕМ ВЕСЬ СКЛАД (защита от рассинхрона старых товаров)
+            let totalStock = 0;
+            if (item.city_stock) {
+                for (let city in item.city_stock) {
+                    totalStock += item.city_stock[city];
+                }
+            }
+            let globalStock = Math.max(item.stock || 0, totalStock);
+
+            if (currentMainCityFilter === 'all') return globalStock;
             
             // ВАРИАНТ 4: Если город относится к ДОСТАВКЕ, смотрим общий склад (наличие по всей сети)
             if (citiesData.delivery && citiesData.delivery.includes(currentMainCityFilter)) {
-                return item.stock || 0; 
+                return globalStock; 
             }
             
             // Иначе (САМОВЫВОЗ) проверяем конкретный склад
@@ -1349,8 +1358,10 @@ let currentMainCityFilter = 'all';
         }
 
         window.addToCart = function(id, name, price, btn) {
+            let item = menuData[id];
+            let actualStock = getActualStock(item); // Берем реальный склад, а не устаревший
             let card = btn.closest('.card');
-            if (menuData[id].stock <= 0) { card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return; }
+            if (actualStock <= 0) { card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return; }
             cart[id] = { name: name, price: price, count: 1 };
             btn.style.display = 'none'; card.querySelector('.quantity-controls').style.display = 'flex';
             card.querySelector('.item-count').innerText = 1; 
@@ -1359,8 +1370,10 @@ let currentMainCityFilter = 'all';
         };
 
         window.changeCount = function(id, delta, btn) {
+            let item = menuData[id];
+            let actualStock = getActualStock(item); // Берем реальный склад
             let card = btn.closest('.card'); let newCount = cart[id].count + delta;
-            if (newCount > menuData[id].stock) { card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return; }
+            if (newCount > actualStock) { card.classList.add('shake-error'); setTimeout(() => card.classList.remove('shake-error'), 400); return; }
             cart[id].count = newCount;
             if (cart[id].count <= 0) {
                 delete cart[id]; card.querySelector('.quantity-controls').style.display = 'none'; card.querySelector('.add-btn').style.display = 'flex';
@@ -1446,17 +1459,13 @@ let currentMainCityFilter = 'all';
         }
 
         window.changeCartCount = function(id, delta) {
+            let actualStock = getActualStock(menuData[id]); // Строгая проверка
             let newCount = cart[id].count + delta;
             if (newCount <= 0) {
                 removeCartItem(id);
-            } else if (newCount <= menuData[id].stock) {
+            } else if (newCount <= actualStock) {
                 cart[id].count = newCount; updateMainButton(); renderCartScreen(); renderCatalog(); 
             }
-        };
-
-        window.removeCartItem = function(id) {
-            delete cart[id]; updateMainButton(); renderCartScreen(); renderCatalog(); 
-            if (cartTotal === 0) { goBackToCatalog(); } 
         };
 
         function openCartScreen() {
