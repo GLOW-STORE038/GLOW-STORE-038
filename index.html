@@ -604,9 +604,8 @@
         
         <div class="sub-title" id="subTitleText" onclick="clickEasterEgg()">Бери больше, кайфуй дольше</div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px;">
-            <div class="filter-btn" id="categoryFilterBtn" style="margin-bottom: 0;">Выбор товаров</div>
-            <div class="filter-btn" id="cityFilterBtn" style="margin-bottom: 0;">Выбор городов</div>
+        <div style="margin-bottom: 25px;">
+            <div class="filter-btn" id="categoryFilterBtn" style="margin-bottom: 0; width: 100%;">Выбор товаров</div>
         </div>
         
         <div id="favNotificationToggle" style="display: none; margin-bottom: 25px; align-items: center; gap: 10px; padding: 0 5px;">
@@ -1207,24 +1206,6 @@
 let currentMainCityFilter = 'all';
 
         // Открытие шторки городов (собираем только perm и delivery, чтобы не было object)
-        document.getElementById('cityFilterBtn').addEventListener('click', () => {
-            const overlay = document.getElementById('cityMainFilterOverlay');
-            const container = document.getElementById('dynamicMainCities');
-            container.innerHTML = '';
-            
-            let allCities = [];
-            ['perm', 'delivery'].forEach(key => {
-                if (citiesData[key]) allCities = allCities.concat(citiesData[key]);
-            });
-            allCities = [...new Set(allCities)];
-            
-            allCities.forEach(c => {
-                let isActive = (currentMainCityFilter === c) ? 'active' : '';
-                container.insertAdjacentHTML('beforeend', `<div class="cat-btn ${isActive}" onclick="selectMainCityFilter('${c}', this)">${c}</div>`);
-            });
-            
-            overlay.classList.add('active');
-        });
 
         // Выбор города
         window.selectMainCityFilter = function(city, btnElement) {
