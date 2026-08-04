@@ -1006,26 +1006,14 @@
         });
 
         window.getActualStock = function(item) {
-            // ДИНАМИЧЕСКИ СУММИРУЕМ ВЕСЬ СКЛАД (защита от рассинхрона старых товаров)
+            // ВРЕМЕННО: Просто суммируем всё, что есть, игнорируя фильтры по городам
             let totalStock = 0;
             if (item.city_stock) {
                 for (let city in item.city_stock) {
                     totalStock += item.city_stock[city];
                 }
             }
-            let globalStock = Math.max(item.stock || 0, totalStock);
-
-            if (currentMainCityFilter === 'all') return globalStock;
-            
-            // ВАРИАНТ 4: Если город относится к ДОСТАВКЕ, смотрим общий склад (наличие по всей сети)
-            if (citiesData.delivery && citiesData.delivery.includes(currentMainCityFilter)) {
-                return globalStock; 
-            }
-            
-            // Иначе (САМОВЫВОЗ) проверяем конкретный склад
-            let links = citiesData.links || {};
-            let targetCity = links[currentMainCityFilter] ? links[currentMainCityFilter] : currentMainCityFilter;
-            return (item.city_stock && item.city_stock[targetCity]) ? item.city_stock[targetCity] : 0;
+            return Math.max(item.stock || 0, totalStock);
         };
 
         // Умное склонение дней и часов
