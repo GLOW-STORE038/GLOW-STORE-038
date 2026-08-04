@@ -1287,7 +1287,9 @@ let currentMainCityFilter = 'all';
                 let actualPrice = item.price;
                 let isPromo = item.old_price && item.old_price > 0;
                 let isExpired = item.timer_end && item.timer_end > 0 && now >= item.timer_end;
-                if (isPromo && (item.stock <= 0 || isExpired)) actualPrice = item.old_price; 
+                
+                // Используем единый склад для проверки наличия
+                if (isPromo && (getActualStock(item) <= 0 || isExpired)) actualPrice = item.old_price; 
                 if (cart[id].price !== actualPrice) { cart[id].price = actualPrice; needsCartUpdate = true; }
             }
 
@@ -1642,7 +1644,7 @@ let currentMainCityFilter = 'all';
             if (ptsSpent > realPoints) { return showCustomModal('Ошибка списания', 'У вас недостаточно баллов на балансе!'); }
             if (ptsSpent > cartTotal) { return showCustomModal('Ошибка списания', 'Нельзя списать баллов больше, чем сумма заказа!'); }
 
-            // ВАРИАНТ 4: Строгая проверка складов перед отправкой
+            // ЕДИНЫЙ СКЛАД: Строгая проверка перед отправкой (без привязки к городу)
             let finalTotal = 0;
             let totalCb = 0.0;
             let items_list = [];
@@ -1651,17 +1653,11 @@ let currentMainCityFilter = 'all';
                 let i_data = cart[i_id];
                 if (!menuData[i_id]) return showCustomModal("Ошибка", "Товар не найден.");
                 
-                let requiredStock = 0;
-                if (currentDelivery === 'pickup') {
-                    let links = citiesData.links || {};
-                    let targetCity = links[currentCity] ? links[currentCity] : currentCity;
-                    requiredStock = (menuData[i_id].city_stock && menuData[i_id].city_stock[targetCity]) ? menuData[i_id].city_stock[targetCity] : 0;
-                } else {
-                    requiredStock = menuData[i_id].stock || 0;
-                }
+                // Берем глобальное наличие, игнорируя города!
+                let requiredStock = getActualStock(menuData[i_id]);
 
                 if (requiredStock < i_data['count']) {
-                    showCustomModal("❌ Ошибка склада", `К сожалению, товара "${i_data['name']}" в количестве ${i_data['count']} шт. нет для выбранного способа получения.`);
+                    showCustomModal("❌ Ошибка склада", `К сожалению, товара "${i_data['name']}" в количестве ${i_data['count']} шт. нет в наличии.`);
                     return;
                 }
                 
