@@ -1439,6 +1439,14 @@ let currentMainCityFilter = 'all';
             }
         };
 
+        window.removeCartItem = function(id) {
+            delete cart[id]; 
+            updateMainButton(); 
+            renderCartScreen(); 
+            renderCatalog(); 
+            if (cartTotal === 0) { goBackToCatalog(); } 
+        };
+
         function openCartScreen() {
             document.getElementById('cartToast').classList.remove('active');
             if (cartTotal === 0) { showCustomModal('Ваша корзина пуста', ''); return; }
@@ -1644,16 +1652,15 @@ let currentMainCityFilter = 'all';
             if (ptsSpent > realPoints) { return showCustomModal('Ошибка списания', 'У вас недостаточно баллов на балансе!'); }
             if (ptsSpent > cartTotal) { return showCustomModal('Ошибка списания', 'Нельзя списать баллов больше, чем сумма заказа!'); }
 
-            // ЕДИНЫЙ СКЛАД: Строгая проверка перед отправкой (без привязки к городу)
+            // ЕДИНЫЙ СКЛАД: Проверка только глобального наличия!
             let finalTotal = 0;
             let totalCb = 0.0;
-            let items_list = [];
 
             for (let i_id in cart) {
                 let i_data = cart[i_id];
                 if (!menuData[i_id]) return showCustomModal("Ошибка", "Товар не найден.");
                 
-                // Берем глобальное наличие, игнорируя города!
+                // Смотрим только на общий остаток через нашу исправленную функцию
                 let requiredStock = getActualStock(menuData[i_id]);
 
                 if (requiredStock < i_data['count']) {
